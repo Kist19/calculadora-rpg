@@ -1,0 +1,11 @@
+package com.arthur.calculadorarpg.loja;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface LojaItemRepository extends JpaRepository<LojaItem, Long> {
+
+    List<LojaItem> findByLojaId(Long lojaId);
+
+}
