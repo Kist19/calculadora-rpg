@@ -13,15 +13,18 @@ import com.arthur.calculadorarpg.status.StatusRepository;
 
 @Service
 public class LojaService {
+    private final LojaRepository lojaRepository;
     private final LojaItemRepository lojaItemRepository;
     private final PersonagemRepository personagemRepository;
     private final InventarioRepository inventarioRepository;
     private final StatusRepository statusRepository;
 
-    public LojaService(LojaItemRepository lojaItemRepository,
+    public LojaService(LojaRepository lojaRepository,
+            LojaItemRepository lojaItemRepository,
             PersonagemRepository personagemRepository,
             InventarioRepository inventarioRepository,
             StatusRepository statusRepository) {
+        this.lojaRepository = lojaRepository;
         this.lojaItemRepository = lojaItemRepository;
         this.personagemRepository = personagemRepository;
         this.inventarioRepository = inventarioRepository;
@@ -33,37 +36,37 @@ public class LojaService {
         Optional<LojaItem> lojaItemOpt = lojaItemRepository.findById(lojaItemId);
 
         if (personagemOpt.isEmpty()) {
-            return "Personagem não encontrado. ";
+            return "Personagem não encontrado.";
         }
 
         if (lojaItemOpt.isEmpty()) {
-            return "Item da loja não encontrado. ";
+            return "Item da loja não encontrado.";
         }
 
         Personagem personagem = personagemOpt.get();
         LojaItem lojaItem = lojaItemOpt.get();
 
         if (Boolean.FALSE.equals(lojaItem.getDisponivel())) {
-            return "Este item não está disponivel para compra. ";
+            return "Este item não está disponível para compra.";
         }
 
         if (lojaItem.getLojaQuantidade() == null || lojaItem.getLojaQuantidade() <= 0) {
-            return "Item sem estoque na loja. ";
+            return "Item sem estoque na loja.";
         }
 
         Status status = personagem.getStatus();
         if (status == null) {
-            return "O personagem não possui status cadastrado. ";
+            return "O personagem não possui status cadastrado.";
         }
 
-        Integer dinheiroAtual = status.getDinheiro() != null ? status.getDinheiro() : 0;
+        Integer dinheiroAtual = status.getStatusDinheiro() != null ? status.getStatusDinheiro() : 0;
         Integer precoItem = lojaItem.getLojaPreco() != null ? lojaItem.getLojaPreco() : 0;
 
         if (dinheiroAtual < precoItem) {
-            return "Dinheiro insuficiente. ";
+            return "Dinheiro insuficiente.";
         }
 
-        status.setDinheiro(dinheiroAtual - precoItem);
+        status.setStatusDinheiro(dinheiroAtual - precoItem);
         statusRepository.save(status);
 
         lojaItem.setLojaQuantidade(lojaItem.getLojaQuantidade() - 1);
@@ -77,17 +80,64 @@ public class LojaService {
                 .orElse(null);
 
         if (inventarioExistente != null) {
-            Integer quantidadeAtual = inventarioExistente.getInventarioQuantidade() != null ? inventarioExistente.getInventarioQuantidade() : 0;
+            Integer quantidadeAtual = inventarioExistente.getInventarioQuantidade() != null
+                    ? inventarioExistente.getInventarioQuantidade()
+                    : 0;
 
             inventarioExistente.setInventarioQuantidade(quantidadeAtual + 1);
             inventarioRepository.save(inventarioExistente);
-        }else{
+        } else {
             Inventario novoInventario = new Inventario();
             novoInventario.setPersonagem(personagem);
             novoInventario.setItem(lojaItem.getItem());
             novoInventario.setInventarioQuantidade(1);
             inventarioRepository.save(novoInventario);
         }
-        return "Compra realiza com sucesso. ";
+
+        return "Compra realizada com sucesso.";
+    }
+
+    public Loja atualizarLoja(Long id, Loja dadosAtualizados) {
+
+        Loja loja = lojaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Loja não encontrada"));
+
+        if (dadosAtualizados.getLojaNome() != null) {
+            loja.setLojaNome(dadosAtualizados.getLojaNome());
+        }
+
+        if (dadosAtualizados.getLojaTipo() != null) {
+            loja.setLojaTipo(dadosAtualizados.getLojaTipo());
+        }
+
+        return lojaRepository.save(loja);
+    }
+
+    public void deletarLoja(Long id) {
+
+        Loja loja = lojaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Loja não encontrada"));
+
+        lojaRepository.delete(loja);
+    }
+
+    public LojaItem atualizarLojaItem(Long id, LojaItem dadosAtualizados) {
+
+        LojaItem lojaItem = lojaItemRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Item da loja não encontrado"));
+
+        if (dadosAtualizados.getLojaPreco() != null) {
+            lojaItem.setLojaPreco(dadosAtualizados.getLojaPreco());
+        }
+
+        return lojaItemRepository.save(lojaItem);
+    }
+
+    public void deletarLojaItem(Long id) {
+
+        LojaItem lojaItem = lojaItemRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Item da loja não encontrado"));
+
+        lojaItemRepository.delete(lojaItem);
     }
 }

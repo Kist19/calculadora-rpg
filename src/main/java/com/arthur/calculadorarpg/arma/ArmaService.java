@@ -6,19 +6,15 @@ import com.arthur.calculadorarpg.inventario.Inventario;
 import com.arthur.calculadorarpg.personagem.Personagem;
 import com.arthur.calculadorarpg.status.Status;
 import com.arthur.calculadorarpg.status.StatusRepository;
-import com.arthur.calculadorarpg.personagem.PersonagemRepository;
 
 @Service
 public class ArmaService {
     private final ArmaRepository armaRepositorio;
     private final StatusRepository statusRepositorio;
-    private final PersonagemRepository personagemRepositorio;
 
-    public ArmaService(ArmaRepository armaRepositorio, StatusRepository statusRepositorio,
-            PersonagemRepository personagemRepositorio) {
-        this.armaRepositorio = armaRepositorio;
-        this.statusRepositorio = statusRepositorio;
-        this.personagemRepositorio = personagemRepositorio;
+    public ArmaService(ArmaRepository armaRepository, StatusRepository statusRepository) {
+        this.armaRepositorio = armaRepository;
+        this.statusRepositorio = statusRepository;
     }
 
     public Arma criarArma(Arma arma) {
@@ -27,6 +23,30 @@ public class ArmaService {
 
     public java.util.List<Arma> listarArmas() {
         return armaRepositorio.findAll();
+    }
+
+    public Arma atualizarArma(Long id, Arma dados) {
+
+        Arma arma = armaRepositorio.findById(id)
+                .orElseThrow(() -> new RuntimeException("Arma não encontrada"));
+
+        if (dados.getArmaNome() != null) {
+            arma.setArmaNome(dados.getArmaNome());
+        }
+
+        if (dados.getArmaPreco() != null) {
+            arma.setArmaPreco(dados.getArmaPreco());
+        }
+
+        return armaRepositorio.save(arma);
+    }
+
+    public void deletarArma(Long id) {
+
+        Arma arma = armaRepositorio.findById(id)
+                .orElseThrow(() -> new RuntimeException("Arma não encontrada"));
+
+        armaRepositorio.delete(arma);
     }
 
     public void venderArma(Long armaId) {
@@ -39,37 +59,13 @@ public class ArmaService {
 
         Status status = personagem.getStatus();
 
-        Integer dinheiro = status.getDinheiro() == null ? 0 : status.getDinheiro();
+        Integer dinheiro = status.getStatusDinheiro() == null ? 0 : status.getStatusDinheiro();
 
-        status.setDinheiro(dinheiro + arma.getArmaPreco());
+        status.setStatusDinheiro(dinheiro + arma.getArmaPreco());
 
         statusRepositorio.save(status);
 
         armaRepositorio.delete(arma);
     }
-
-    public void equiparArma(Long personagemId, Long armaId) {
-
-        Personagem personagem = personagemRepositorio.findById(personagemId).orElseThrow();
-
-        Arma arma = armaRepositorio.findById(armaId).orElseThrow();
-
-        if (!arma.getInventario().getPersonagem().getId().equals(personagemId)) {
-            throw new RuntimeException("Esta arma não pertence ao personagem");
-        }
-
-        personagem.setArmaEquipada(arma);
-
-        personagemRepositorio.save(personagem);
-    }
-    public Personagem desequiparArma(Long personagemId) {
-
-    Personagem personagem = personagemRepositorio.findById(personagemId)
-            .orElseThrow(() -> new RuntimeException("Personagem não encontrado"));
-
-    personagem.setArmaEquipada(null);
-
-    return personagemRepositorio.save(personagem);
-}
 
 }

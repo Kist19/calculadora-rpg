@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.arthur.calculadorarpg.inventario.Inventario;
 import com.arthur.calculadorarpg.inventario.InventarioRepository;
+import com.arthur.calculadorarpg.loja.LojaItemRepository;
 import com.arthur.calculadorarpg.status.Status;
 import com.arthur.calculadorarpg.status.StatusRepository;
 
@@ -16,14 +17,16 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final InventarioRepository inventarioRepository;
     private final StatusRepository statusRepository;
+    private final LojaItemRepository lojaItemRepository;
 
     public ItemService(
             ItemRepository itemRepository,
             InventarioRepository inventarioRepository,
-            StatusRepository statusRepository) {
+            StatusRepository statusRepository, LojaItemRepository lojaItemRepository) {
         this.itemRepository = itemRepository;
         this.inventarioRepository = inventarioRepository;
         this.statusRepository = statusRepository;
+        this.lojaItemRepository = lojaItemRepository;
     }
 
     public Item criarItem(Item item) {
@@ -32,6 +35,50 @@ public class ItemService {
 
     public List<Item> listarItens() {
         return itemRepository.findAll();
+    }
+
+    public Item atualizarItem(Long id, Item dadosAtualizados) {
+
+        Item item = itemRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Item não encontrado"));
+
+        if (dadosAtualizados.getItemNome() != null) {
+            item.setItemNome(dadosAtualizados.getItemNome());
+        }
+
+        if (dadosAtualizados.getItemPreco() != null) {
+            item.setItemPreco(dadosAtualizados.getItemPreco());
+        }
+
+        if (dadosAtualizados.getItemBonusDano() != null) {
+            item.setItemBonusDano(dadosAtualizados.getItemBonusDano());
+        }
+
+        if (dadosAtualizados.getItemBonusAtaque() != null) {
+            item.setItemBonusAtaque(dadosAtualizados.getItemBonusAtaque());
+        }
+
+        if (dadosAtualizados.getItemBonusPv() != null) {
+            item.setItemBonusPv(dadosAtualizados.getItemBonusPv());
+        }
+
+        if (dadosAtualizados.getItemBonusPm() != null) {
+            item.setItemBonusPm(dadosAtualizados.getItemBonusPm());
+        }
+
+        return itemRepository.save(item);
+    }
+
+    public void deletarItem(Long id) {
+
+        Item item = itemRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Item não encontrado"));
+
+        if (lojaItemRepository.existsByItemId(id)) {
+            throw new RuntimeException("Não é possível deletar o item. Remova ele da loja primeiro.");
+        }
+
+        itemRepository.delete(item);
     }
 
     public String venderItem(Long personagemId, Long itemId) {
@@ -56,10 +103,10 @@ public class ItemService {
             return "O personagem não possui status cadastrado.";
         }
 
-        Integer dinheiroAtual = status.getDinheiro() != null ? status.getDinheiro() : 0;
+        Integer dinheiroAtual = status.getStatusDinheiro() != null ? status.getStatusDinheiro() : 0;
         Integer precoItem = inventario.getItem().getItemPreco() != null ? inventario.getItem().getItemPreco() : 0;
 
-        status.setDinheiro(dinheiroAtual + precoItem);
+        status.setStatusDinheiro(dinheiroAtual + precoItem);
         statusRepository.save(status);
 
         Integer quantidadeAtual = inventario.getInventarioQuantidade() != null

@@ -1,48 +1,43 @@
 package com.arthur.calculadorarpg.personagem;
 
-import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.arthur.calculadorarpg.armadura.Armadura;
+import com.arthur.calculadorarpg.arma.Arma;
 import com.arthur.calculadorarpg.atributo.Atributo;
+import com.arthur.calculadorarpg.habilidade.Habilidade;
+import com.arthur.calculadorarpg.inventario.Inventario;
 import com.arthur.calculadorarpg.pericia.Pericia;
 import com.arthur.calculadorarpg.status.Status;
-import com.arthur.calculadorarpg.arma.Arma;
-import com.arthur.calculadorarpg.armadura.Armadura;
+
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "tb_personagem")
-public class Personagem{
+public class Personagem {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String nomePersonagem;
 
-    @ManyToOne
-    @JoinColumn(name = "arma_equipada_id")
-    private Arma armaEquipada;
+    @Column(length = 30, nullable = false)
+    private String personagemNome;
 
-    @ManyToOne
-    @JoinColumn(name = "armadura_equipada_id")
-    private Armadura armaduraEquipada;
+    @Column(length = 20, nullable = false)
+    private String personagemRaca;
 
-    @ManyToOne
-    @JoinColumn(name = "escudo_equipado_id")
-    private Armadura escudoEquipado;
+    @Column(length = 20, nullable = false)
+    private String personagemClasse;
 
-    @Column(length = 20, nullable = false, unique = false)
-    private String racaPersonagem;
+    @Column(length = 30, nullable = false)
+    private String personagemOrigem;
 
-    @Column(length = 20, nullable = false, unique = false)
-    private String classePersonagem;
+    @Column(nullable = false)
+    private int personagemNivel;
 
-    @Column(length = 30, nullable = false, unique = false)
-    private String origemPersonagem;
-
-    @Column(nullable = false, unique = false)
-    private int nivelPersonagem;
-
-    public Personagem(){
-
-    }
+    @OneToOne(mappedBy = "personagem", cascade = CascadeType.ALL)
+    private Status status;
 
     @OneToOne(mappedBy = "personagem", cascade = CascadeType.ALL)
     private Atributo atributo;
@@ -51,14 +46,77 @@ public class Personagem{
     private Pericia pericia;
 
     @OneToOne(mappedBy = "personagem", cascade = CascadeType.ALL)
-    private Status status;
+    private Inventario inventario;
 
-    public Atributo getAtributo() {
-        return atributo;
+    @ManyToMany
+    @JoinTable(
+        name = "tb_personagem_habilidade",
+        joinColumns = @JoinColumn(name = "personagem_id"),
+        inverseJoinColumns = @JoinColumn(name = "habilidade_id")
+    )
+    private List<Habilidade> habilidades = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "arma_equipada_id", nullable = true)
+    private Arma armaEquipada;
+
+    @ManyToOne
+    @JoinColumn(name = "armadura_equipada_id", nullable = true)
+    private Armadura armaduraEquipada;
+
+    @ManyToOne
+    @JoinColumn(name = "escudo_equipado_id", nullable = true)
+    private Armadura escudoEquipado;
+
+    public Personagem() {
     }
 
-    public Pericia getPericia() {
-        return pericia;
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getPersonagemNome() {
+        return personagemNome;
+    }
+
+    public void setPersonagemNome(String personagemNome) {
+        this.personagemNome = personagemNome;
+    }
+
+    public String getPersonagemRaca() {
+        return personagemRaca;
+    }
+
+    public void setPersonagemRaca(String personagemRaca) {
+        this.personagemRaca = personagemRaca;
+    }
+
+    public String getPersonagemClasse() {
+        return personagemClasse;
+    }
+
+    public void setPersonagemClasse(String personagemClasse) {
+        this.personagemClasse = personagemClasse;
+    }
+
+    public String getPersonagemOrigem() {
+        return personagemOrigem;
+    }
+
+    public void setPersonagemOrigem(String personagemOrigem) {
+        this.personagemOrigem = personagemOrigem;
+    }
+
+    public int getPersonagemNivel() {
+        return personagemNivel;
+    }
+
+    public void setPersonagemNivel(int personagemNivel) {
+        this.personagemNivel = personagemNivel;
     }
 
     public Status getStatus() {
@@ -69,53 +127,36 @@ public class Personagem{
         this.status = status;
     }
 
-
-
-    public Long getId(){
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
+    public Atributo getAtributo() {
+        return atributo;
     }
 
-    public String getNomePersonagem() {
-        return nomePersonagem;
+    public void setAtributo(Atributo atributo) {
+        this.atributo = atributo;
     }
 
-    public void setNomePersonagem(String nomePersonagem) {
-        this.nomePersonagem = nomePersonagem;
+    public Pericia getPericia() {
+        return pericia;
     }
 
-    public String getRacaPersonagem() {
-        return racaPersonagem;
+    public void setPericia(Pericia pericia) {
+        this.pericia = pericia;
     }
 
-    public void setRacaPersonagem(String racaPersonagem) {
-        this.racaPersonagem = racaPersonagem;
+    public Inventario getInventario() {
+        return inventario;
     }
 
-    public String getClassePersonagem() {
-        return classePersonagem;
+    public void setInventario(Inventario inventario) {
+        this.inventario = inventario;
     }
 
-    public void setClassePersonagem(String classePersonagem) {
-        this.classePersonagem = classePersonagem;
+    public List<Habilidade> getHabilidades() {
+        return habilidades;
     }
 
-    public String getOrigemPersonagem() {
-        return origemPersonagem;
-    }
-
-    public void setOrigemPersonagem(String origemPersonagem) {
-        this.origemPersonagem = origemPersonagem;
-    }
-
-    public int getNivelPersonagem() {
-        return nivelPersonagem;
-    }
-
-    public void setNivelPersonagem(int nivelPersonagem) {
-        this.nivelPersonagem = nivelPersonagem;
+    public void setHabilidades(List<Habilidade> habilidades) {
+        this.habilidades = habilidades;
     }
 
     public Arma getArmaEquipada() {
@@ -141,5 +182,4 @@ public class Personagem{
     public void setEscudoEquipado(Armadura escudoEquipado) {
         this.escudoEquipado = escudoEquipado;
     }
-    
 }

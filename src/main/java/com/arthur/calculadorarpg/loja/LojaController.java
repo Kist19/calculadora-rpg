@@ -1,6 +1,8 @@
 package com.arthur.calculadorarpg.loja;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +20,8 @@ public class LojaController {
     private final LojaItemRepository lojaItemRepository;
     private final LojaService lojaService;
 
-    public LojaController(LojaRepository lojaRepository, LojaItemRepository lojaItemRepository, LojaService lojaService) {
+    public LojaController(LojaRepository lojaRepository, LojaItemRepository lojaItemRepository,
+            LojaService lojaService) {
         this.lojaRepository = lojaRepository;
         this.lojaItemRepository = lojaItemRepository;
         this.lojaService = lojaService;
@@ -44,11 +47,31 @@ public class LojaController {
         return lojaService.comprarItem(personagemId, lojaItemId);
     }
 
+    @PatchMapping("/{id}")
+    public Loja atualizarLoja(@PathVariable Long id, @RequestBody Loja dadosAtualizados) {
+        return lojaService.atualizarLoja(id, dadosAtualizados);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deletarLoja(@PathVariable Long id) {
+        lojaService.deletarLoja(id);
+    }
+
     @PostMapping("/{lojaId}/itens")
-    public LojaItem adicionarItemNaLoja(@PathVariable Long lojaId, @RequestBody LojaItem lojaItem){
+    public LojaItem adicionarItemNaLoja(@PathVariable Long lojaId, @RequestBody LojaItem lojaItem) {
         Loja loja = lojaRepository.findById(lojaId).orElseThrow(() -> new RuntimeException("Loja não encontrada"));
 
         lojaItem.setLoja(loja);
         return lojaItemRepository.save(lojaItem);
+    }
+
+    @PatchMapping("/loja-item/{id}")
+    public LojaItem atualizarLojaItem(@PathVariable Long id, @RequestBody LojaItem dadosAtualizados) {
+        return lojaService.atualizarLojaItem(id, dadosAtualizados);
+    }
+
+    @DeleteMapping("/loja-item/{id}")
+    public void deletarLojaItem(@PathVariable Long id) {
+        lojaService.deletarLojaItem(id);
     }
 }

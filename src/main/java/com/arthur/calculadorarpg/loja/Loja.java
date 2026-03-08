@@ -5,23 +5,27 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "tb_loja")
 public class Loja {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
+	@Column(length = 30, nullable = false)
 	private String lojaNome;
 
-	private String lojaTipo;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private LojaTipoLoja lojaTipo;
 
+	@Column(nullable = false)
 	private Boolean ativa = true;
 
-    public Loja(){
+	public Loja() {
 
-    }
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
 	public String getLojaNome() {
 		return lojaNome;
@@ -31,14 +35,6 @@ public class Loja {
 		this.lojaNome = lojaNome;
 	}
 
-	public String getLojaTipo() {
-		return lojaTipo;
-	}
-
-	public void setLojaTipo(String lojaTipo) {
-		this.lojaTipo = lojaTipo;
-	}
-
 	public Boolean getAtiva() {
 		return ativa;
 	}
@@ -46,5 +42,13 @@ public class Loja {
 	public void setAtiva(Boolean ativa) {
 		this.ativa = ativa;
 	}
-    
+
+	public LojaTipoLoja getLojaTipo() {
+		return lojaTipo;
+	}
+
+	public void setLojaTipo(LojaTipoLoja lojaTipo) {
+		this.lojaTipo = lojaTipo;
+	}
+	
 }

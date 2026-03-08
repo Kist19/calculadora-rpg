@@ -3,6 +3,7 @@ package com.arthur.calculadorarpg.status;
 import jakarta.persistence.*;
 
 import com.arthur.calculadorarpg.personagem.Personagem;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "tb_status")
@@ -10,28 +11,40 @@ public class Status {
     @Id
     private Long id;
 
+    @JsonIgnoreProperties({ "status", "atributo", "pericia", "inventario", "habilidades", "armaEquipada", "armaduraEquipada" })
     @OneToOne
     @MapsId
-    @JoinColumn(name = "personagem_id")
+    @JoinColumn(name = "personagem_id", nullable = false)
     private Personagem personagem;
 
-    private Integer vidaBase;
-    private Integer vidaAtual;
+    @Column(nullable = true)
+    private Integer statusVidaBase;
 
-    private Integer manaBase;
-    private Integer manaAtual;
+    @Column(nullable = true)
+    private Integer statusVidaAtual;
 
-    private Integer defesa;
+    @Column(nullable = true)
+    private Integer statusManaBase;
 
-    private Integer dinheiro;
+    @Column(nullable = true)
+    private Integer statusManaAtual;
 
-    private Double espacoBase;
-    private Double espacoAtual;
+    @Column(nullable = true)
+    private Integer statusDefesa;
+
+    @Column(nullable = true)
+    private Integer statusDinheiro;
+
+    @Column(nullable = true)
+    private Double statusEspacoBase;
+
+    @Column(nullable = true)
+    private Double statusEspacoAtual;
 
     public Status() {
 
     }
-    
+
     public Personagem getPersonagem() {
         return personagem;
     }
@@ -40,68 +53,76 @@ public class Status {
         this.personagem = personagem;
     }
 
-    public Integer getVidaBase() {
-        return vidaBase;
+    public Integer getStatusVidaBase() {
+        return statusVidaBase;
     }
 
-    public void setVidaBase(Integer vidaBase) {
-        this.vidaBase = vidaBase;
+    public void setStatusVidaBase(Integer statusVidaBase) {
+        this.statusVidaBase = statusVidaBase;
     }
 
-    public Integer getVidaAtual() {
-        return vidaAtual;
+    public Integer getStatusVidaAtual() {
+        return statusVidaAtual;
     }
 
-    public void setVidaAtual(Integer vidaAtual) {
-        this.vidaAtual = vidaAtual;
+    public void setStatusVidaAtual(Integer statusVidaAtual) {
+        this.statusVidaAtual = statusVidaAtual;
     }
 
-    public Integer getManaBase() {
-        return manaBase;
+    public Integer getStatusManaBase() {
+        return statusManaBase;
     }
 
-    public void setManaBase(Integer manaBase) {
-        this.manaBase = manaBase;
+    public void setStatusManaBase(Integer statusManaBase) {
+        this.statusManaBase = statusManaBase;
     }
 
-    public Integer getManaAtual() {
-        return manaAtual;
+    public Integer getStatusManaAtual() {
+        return statusManaAtual;
     }
 
-    public void setManaAtual(Integer manaAtual) {
-        this.manaAtual = manaAtual;
+    public void setStatusManaAtual(Integer statusManaAtual) {
+        this.statusManaAtual = statusManaAtual;
     }
 
-    public Integer getDefesa() {
-        return defesa;
+    public Integer getStatusDefesa() {
+        return statusDefesa;
     }
 
-    public void setDefesa(Integer defesa) {
-        this.defesa = defesa;
+    public void setStatusDefesa(Integer statusDefesa) {
+        this.statusDefesa = statusDefesa;
     }
 
-    public Integer getDinheiro() {
-        return dinheiro;
+    public Integer getStatusDinheiro() {
+        return statusDinheiro;
     }
 
-    public void setDinheiro(Integer dinheiro) {
-        this.dinheiro = dinheiro;
+    public void setStatusDinheiro(Integer statusDinheiro) {
+        this.statusDinheiro = statusDinheiro;
     }
 
-    public Double getEspacoBase() {
-        return espacoBase;
+    public Double getStatusEspacoBase() {
+        return statusEspacoBase;
     }
 
-    public void setEspacoBase(Double espacoBase) {
-        this.espacoBase = espacoBase;
+    public void setStatusEspacoBase(Double statusEspacoBase) {
+        this.statusEspacoBase = statusEspacoBase;
     }
 
-    public Double getEspacoAtual() {
-        return espacoAtual;
+    public Double getStatusEspacoAtual() {
+        return statusEspacoAtual;
     }
 
-    public void setEspacoAtual(Double espacoAtual) {
-        this.espacoAtual = espacoAtual;
+    public void setStatusEspacoAtual(Double statusEspacoAtual) {
+        this.statusEspacoAtual = statusEspacoAtual;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
 }

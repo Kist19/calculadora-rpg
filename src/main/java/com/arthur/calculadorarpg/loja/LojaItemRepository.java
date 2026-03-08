@@ -8,4 +8,6 @@ public interface LojaItemRepository extends JpaRepository<LojaItem, Long> {
 
     List<LojaItem> findByLojaId(Long lojaId);
 
+    boolean existsByItemId(Long itemId);
+
 }

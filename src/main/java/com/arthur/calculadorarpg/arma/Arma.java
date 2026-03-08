@@ -14,50 +14,61 @@ public class Arma {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "inventario_id")
+    @JoinColumn(name = "inventario_id", nullable = true)
     @JsonIgnore
     private Inventario inventario;
 
-    @Column(length = 30, nullable = true, unique = false)
+    @Column(length = 30, nullable = false)
     private String armaNome;
 
-    @Column(length = 10, nullable = true, unique = false)
+    @Column(length = 10, nullable = false)
     private String armaTesteAtaque = "1d20";
 
+    @Column(nullable = false)
     private Integer armaBonusTesteAtaque = 0;
+    @Column(nullable = false)
     private Integer armaPenalidadeTesteAtaque = 0;
 
-    @Column(nullable = true)
+    @Column(nullable = false)
     private Integer armaQuantidadeDado = 1;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 10, nullable = true, unique = false)
+    @Column(length = 5, nullable = false)
     private ArmaTipoDado armaTipoDado;
 
+    @Column(nullable = false)
     private Integer armaBonusDano = 0;
+    @Column(nullable = false)
     private Integer armaPenalidadeDano = 0;
 
+    @Column(nullable = false)
     private Integer armaCriticoMinimo;
 
+    @Column(nullable = false)
     private Integer armaCriticoMultiplicador;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 10, nullable = true, unique = false)
+    @Column(length = 10, nullable = false)
     private ArmaTipoAlcance armaAlcance;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 15, nullable = true, unique = false)
+    @Column(length = 25, nullable = false)
     private ArmaTipoArma armaTipo;
 
+    @Column(nullable = false)
     private Integer armaEspaco;
 
-    @Column(nullable = true)
+    @Column(nullable = false)
     private Integer armaPreco;
 
+    @Column(nullable = false)
     private Integer armaBonusPv = 0;
+    @Column(nullable = false)
     private Integer armaPenalidadePv = 0;
 
+    @Column(nullable = false)
     private Integer armaBonusPm = 0;
+    @Column(nullable = false)
     private Integer armaPenalidadePm = 0;
 
     public Arma(){
@@ -110,14 +121,6 @@ public class Arma {
 
     public void setArmaPenalidadeTesteAtaque(Integer armaPenalidadeTesteAtaque) {
         this.armaPenalidadeTesteAtaque = armaPenalidadeTesteAtaque;
-    }
-
-    public Integer getArmaQuantidadeDados() {
-        return armaQuantidadeDado;
-    }
-
-    public void setArmaQuantidadeDados(Integer armaQuantidadeDados) {
-        this.armaQuantidadeDado = armaQuantidadeDados;
     }
 
     public ArmaTipoDado getArmaTipoDado() {

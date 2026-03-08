@@ -1,22 +1,19 @@
 package com.arthur.calculadorarpg.status;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-
-@Controller
+@RestController
 @RequestMapping("/status")
 public class StatusController {
     private final StatusService statusService;
+
     public StatusController(StatusService statusService) {
         this.statusService = statusService;
     }
 
     @PostMapping
-    public Status criarStatus(Status status) {
+    public Status criarStatus(@RequestBody Status status) {
         return statusService.criarStatus(status);
     }
 
@@ -25,4 +22,13 @@ public class StatusController {
         return statusService.listarStatus();
     }
 
+    @PatchMapping("/{id}")
+    public Status atualizarStatus(@PathVariable Long id, @RequestBody Status dadosAtualizados) {
+        return statusService.atualizarStatus(id, dadosAtualizados);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deletarStatus(@PathVariable Long id) {
+        statusService.deletarStatus(id);
+    }
 }

@@ -10,24 +10,35 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 30, nullable = false)
     private String itemNome;
 
+    @Column(length = 25, nullable = false)
     @Enumerated(EnumType.STRING)
     private ItemTipo itemTipo;
 
+    @Column(nullable = false)
     private Integer itemPreco;
 
-    private Integer bonusAtaque = 0;
-    private Integer penalidadeAtaque = 0;
+    @Column(nullable = false)
+    private Integer itemBonusAtaque = 0;
+    @Column(nullable = false)
+    private Integer itemPenalidadeAtaque = 0;
 
-    private Integer bonusDano = 0;
-    private Integer penalidadeDano = 0;
+    @Column(nullable = false)
+    private Integer itemBonusDano = 0;
+    @Column(nullable = false)
+    private Integer itemPenalidadeDano = 0;
 
-    private Integer bonusPv = 0;
-    private Integer penalidadePv = 0;
+    @Column(nullable = false)
+    private Integer itemBonusPv = 0;
+    @Column(nullable = false)
+    private Integer itemPenalidadePv = 0;
 
-    private Integer bonusPm = 0;
-    private Integer penalidadePm = 0;
+    @Column(nullable = false)
+    private Integer itemBonusPm = 0;
+    @Column(nullable = false)
+    private Integer itemPenalidadePm = 0;
 
     public Item() {
     }
@@ -64,68 +75,70 @@ public class Item {
         this.itemPreco = itemPreco;
     }
 
-    public Integer getBonusAtaque() {
-        return bonusAtaque;
+    public Integer getItemBonusAtaque() {
+        return itemBonusAtaque;
     }
 
-    public void setBonusAtaque(Integer bonusAtaque) {
-        this.bonusAtaque = bonusAtaque;
+    public void setItemBonusAtaque(Integer itemBonusAtaque) {
+        this.itemBonusAtaque = itemBonusAtaque;
     }
 
-    public Integer getPenalidadeAtaque() {
-        return penalidadeAtaque;
+    public Integer getItemPenalidadeAtaque() {
+        return itemPenalidadeAtaque;
     }
 
-    public void setPenalidadeAtaque(Integer penalidadeAtaque) {
-        this.penalidadeAtaque = penalidadeAtaque;
+    public void setItemPenalidadeAtaque(Integer itemPenalidadeAtaque) {
+        this.itemPenalidadeAtaque = itemPenalidadeAtaque;
     }
 
-    public Integer getBonusDano() {
-        return bonusDano;
+    public Integer getItemBonusDano() {
+        return itemBonusDano;
     }
 
-    public void setBonusDano(Integer bonusDano) {
-        this.bonusDano = bonusDano;
+    public void setItemBonusDano(Integer itemBonusDano) {
+        this.itemBonusDano = itemBonusDano;
     }
 
-    public Integer getPenalidadeDano() {
-        return penalidadeDano;
+    public Integer getItemPenalidadeDano() {
+        return itemPenalidadeDano;
     }
 
-    public void setPenalidadeDano(Integer penalidadeDano) {
-        this.penalidadeDano = penalidadeDano;
+    public void setItemPenalidadeDano(Integer itemPenalidadeDano) {
+        this.itemPenalidadeDano = itemPenalidadeDano;
     }
 
-    public Integer getBonusPv() {
-        return bonusPv;
+    public Integer getItemBonusPv() {
+        return itemBonusPv;
     }
 
-    public void setBonusPv(Integer bonusPv) {
-        this.bonusPv = bonusPv;
+    public void setItemBonusPv(Integer itemBonusPv) {
+        this.itemBonusPv = itemBonusPv;
     }
 
-    public Integer getPenalidadePv() {
-        return penalidadePv;
+    public Integer getItemPenalidadePv() {
+        return itemPenalidadePv;
     }
 
-    public void setPenalidadePv(Integer penalidadePv) {
-        this.penalidadePv = penalidadePv;
+    public void setItemPenalidadePv(Integer itemPenalidadePv) {
+        this.itemPenalidadePv = itemPenalidadePv;
     }
 
-    public Integer getBonusPm() {
-        return bonusPm;
+    public Integer getItemBonusPm() {
+        return itemBonusPm;
     }
 
-    public void setBonusPm(Integer bonusPm) {
-        this.bonusPm = bonusPm;
+    public void setItemBonusPm(Integer itemBonusPm) {
+        this.itemBonusPm = itemBonusPm;
     }
 
-    public Integer getPenalidadePm() {
-        return penalidadePm;
+    public Integer getItemPenalidadePm() {
+        return itemPenalidadePm;
     }
 
-    public void setPenalidadePm(Integer penalidadePm) {
-        this.penalidadePm = penalidadePm;
+    public void setItemPenalidadePm(Integer itemPenalidadePm) {
+        this.itemPenalidadePm = itemPenalidadePm;
     }
+
+    
     
 }

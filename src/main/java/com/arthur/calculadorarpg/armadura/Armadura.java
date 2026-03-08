@@ -19,17 +19,22 @@ public class Armadura {
     @JsonIgnore
     private Inventario inventario;
 
-    @Column(length = 40)
+    @Column(length = 30, nullable = false)
     private String armaduraNome;
 
+    @Column(nullable = false)
     private Integer armaduraPreco;
 
+    @Column(nullable = false)
     private Integer armaduraBonusDefesa;
 
-    private Integer armaduraPenalidadeArmadura;
+    @Column(nullable = false)
+    private Integer armaduraPenalidadeArmadura = 0;
 
+    @Column(nullable = false)
     private Integer armaduraEspaco;
 
+    @Column(length = 10, nullable = false)
     @Enumerated(EnumType.STRING)
     private ArmaduraTipo armaduraTipo;
 

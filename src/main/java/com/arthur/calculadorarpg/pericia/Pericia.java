@@ -2,73 +2,131 @@ package com.arthur.calculadorarpg.pericia;
 
 import jakarta.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+
 import com.arthur.calculadorarpg.personagem.Personagem;
 
 @Entity
 @Table(name = "tb_pericia")
 public class Pericia {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnoreProperties({"status", "atributo", "pericia", "inventario", "habilidades", "armaEquipada", "armaduraEquipada"})
     @OneToOne
-    @MapsId
-    @JoinColumn(name = "personagem_id")
+    @JoinColumn(name = "personagem_id", nullable = false)
     private Personagem personagem;
 
+    @Column(nullable = false)
     private Integer periciaReligiao = 0;
+    @Column(nullable = false)
     private Integer periciaOficio = 0;
-    private Integer periciaNobreza = 0; 
+    @Column(nullable = false)
+    private Integer periciaNobreza = 0;
+    @Column(nullable = false)
     private Integer periciaMisticismo = 0;
+    @Column(nullable = false)
     private Integer periciaLuta = 0;
+    @Column(nullable = false)
     private Integer periciaLadinagem = 0;
+    @Column(nullable = false)
     private Integer periciaIntuicao = 0;
+    @Column(nullable = false)
     private Integer periciaIntimidacao = 0;
+    @Column(nullable = false)
     private Integer periciaGuerra = 0;
+    @Column(nullable = false)
     private Integer periciaEnganacao = 0;
+    @Column(nullable = false)
     private Integer periciaDiplomacia = 0;
+    @Column(nullable = false)
     private Integer periciaCura = 0;
+    @Column(nullable = false)
     private Integer periciaConhecimento = 0;
+    @Column(nullable = false)
     private Integer periciaCavalgar = 0;
+    @Column(nullable = false)
     private Integer periciaAtuacao = 0;
+    @Column(nullable = false)
     private Integer periciaAcrobacia = 0;
+    @Column(nullable = false)
     private Integer periciaReflexo = 0;
+    @Column(nullable = false)
     private Integer periciaFortitude = 0;
+    @Column(nullable = false)
     private Integer periciaVontade = 0;
+    @Column(nullable = false)
     private Integer periciaAdestramento = 0;
+    @Column(nullable = false)
     private Integer periciaAtletismo = 0;
+    @Column(nullable = false)
     private Integer periciaFurtividade = 0;
+    @Column(nullable = false)
     private Integer periciaIniciativa = 0;
+    @Column(nullable = false)
     private Integer periciaInvestigacao = 0;
+    @Column(nullable = false)
     private Integer periciaPercepcao = 0;
+    @Column(nullable = false)
     private Integer periciaPontaria = 0;
+    @Column(nullable = false)
     private Integer periciaSobrevivencia = 0;
 
+    @Column(nullable = false)
     private Integer outrosReligiao = 0;
+    @Column(nullable = false)
     private Integer outrosOficio = 0;
-    private Integer outrosNobreza = 0; 
+    @Column(nullable = false)
+    private Integer outrosNobreza = 0;
+    @Column(nullable = false)
     private Integer outrosMisticismo = 0;
+    @Column(nullable = false)
     private Integer outrosLuta = 0;
+    @Column(nullable = false)
     private Integer outrosLadinagem = 0;
+    @Column(nullable = false)
     private Integer outrosIntuicao = 0;
+    @Column(nullable = false)
     private Integer outrosIntimidacao = 0;
+    @Column(nullable = false)
     private Integer outrosGuerra = 0;
+    @Column(nullable = false)
     private Integer outrosEnganacao = 0;
+    @Column(nullable = false)
     private Integer outrosDiplomacia = 0;
+    @Column(nullable = false)
     private Integer outrosCura = 0;
+    @Column(nullable = false)
     private Integer outrosConhecimento = 0;
+    @Column(nullable = false)
     private Integer outrosCavalgar = 0;
+    @Column(nullable = false)
     private Integer outrosAtuacao = 0;
+    @Column(nullable = false)
     private Integer outrosAcrobacia = 0;
+    @Column(nullable = false)
     private Integer outrosReflexo = 0;
+    @Column(nullable = false)
     private Integer outrosFortitude = 0;
+    @Column(nullable = false)
     private Integer outrosVontade = 0;
+    @Column(nullable = false)
     private Integer outrosAdestramento = 0;
+    @Column(nullable = false)
     private Integer outrosAtletismo = 0;
+    @Column(nullable = false)
     private Integer outrosFurtividade = 0;
+    @Column(nullable = false)
     private Integer outrosIniciativa = 0;
+    @Column(nullable = false)
     private Integer outrosInvestigacao = 0;
+    @Column(nullable = false)
     private Integer outrosPercepcao = 0;
+    @Column(nullable = false)
     private Integer outrosPontaria = 0;
+    @Column(nullable = false)
     private Integer outrosSobrevivencia = 0;
 
     public Pericia() {

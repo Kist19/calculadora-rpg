@@ -2,6 +2,7 @@ package com.arthur.calculadorarpg.atributo;
 
 import jakarta.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.arthur.calculadorarpg.personagem.Personagem;
 
 @Entity
@@ -11,28 +12,29 @@ public class Atributo {
     @Id
     private Long id;
 
+    @JsonIgnoreProperties({"status", "atributo", "pericia", "inventario", "habilidades", "armaEquipada", "armaduraEquipada"})
     @OneToOne
     @MapsId
-    @JoinColumn(name = "personagem_id")
+    @JoinColumn(name = "personagem_id", nullable = false)
     private Personagem personagem;
 
-    @Column(nullable = false, unique = false)
-    private int atributoForca;
+    @Column(nullable = false)
+    private Integer atributoForca;
 
-    @Column(nullable = false, unique = false)
-    private int atributoDestreza;
+    @Column(nullable = false)
+    private Integer atributoDestreza;
 
-    @Column(nullable = false, unique = false)
-    private int atributoConstituicao;
+    @Column(nullable = false)
+    private Integer atributoConstituicao;
 
-    @Column(nullable = false, unique = false)
-    private int atributoInteligencia;
+    @Column(nullable = false)
+    private Integer atributoInteligencia;
 
-    @Column(nullable = false, unique = false)
-    private int atributoSabedoria;
+    @Column(nullable = false)
+    private Integer atributoSabedoria;
 
-    @Column(nullable = false, unique = false)
-    private int atributoCarisma;
+    @Column(nullable = false)
+    private Integer atributoCarisma;
 
     public Atributo() {
 
@@ -48,7 +50,7 @@ public class Atributo {
 
     
 
-    public int getAtributoForca() {
+    public Integer getAtributoForca() {
         return atributoForca;
     }
 
@@ -56,7 +58,7 @@ public class Atributo {
         this.atributoForca = atributoForca;
     }
 
-    public int getAtributoDestreza() {
+    public Integer getAtributoDestreza() {
         return atributoDestreza;
     }
 
@@ -64,7 +66,7 @@ public class Atributo {
         this.atributoDestreza = atributoDestreza;
     }
 
-    public int getAtributoConstituicao() {
+    public Integer getAtributoConstituicao() {
         return atributoConstituicao;
     }
 
@@ -72,7 +74,7 @@ public class Atributo {
         this.atributoConstituicao = atributoConstituicao;
     }
 
-    public int getAtributoInteligencia() {
+    public Integer getAtributoInteligencia() {
         return atributoInteligencia;
     }
 
@@ -80,7 +82,7 @@ public class Atributo {
         this.atributoInteligencia = atributoInteligencia;
     }
 
-    public int getAtributoSabedoria() {
+    public Integer getAtributoSabedoria() {
         return atributoSabedoria;
     }
 
@@ -88,7 +90,7 @@ public class Atributo {
         this.atributoSabedoria = atributoSabedoria;
     }
 
-    public int getAtributoCarisma() {
+    public Integer getAtributoCarisma() {
         return atributoCarisma;
     }
 
