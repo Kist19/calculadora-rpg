@@ -10,4 +10,8 @@ public interface InventarioRepository extends JpaRepository<Inventario, Long> {
     List<Inventario> findByPersonagemId(Long personagemId);
 
     Optional<Inventario> findByPersonagemIdAndItemId(Long personagemId, Long itemId);
+
+    boolean existsByItemId(Long itemId);
+
+    Optional<Inventario> findFirstByPersonagemIdAndItemIsNull(Long personagemId);
 }

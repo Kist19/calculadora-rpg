@@ -1,12 +1,14 @@
 package com.arthur.calculadorarpg.loja;
 
+import com.arthur.calculadorarpg.armadura.Armadura;
+import com.arthur.calculadorarpg.arma.Arma;
 import com.arthur.calculadorarpg.item.Item;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name= "tb_loja_item")
+@Table(name = "tb_loja_item")
 public class LojaItem {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,8 +18,16 @@ public class LojaItem {
     private Loja loja;
 
     @ManyToOne
-    @JoinColumn(name = "item_id", nullable = false)
+    @JoinColumn(name = "item_id", nullable = true)
     private Item item;
+
+    @ManyToOne
+    @JoinColumn(name = "arma_id", nullable = true)
+    private Arma arma;
+
+    @ManyToOne
+    @JoinColumn(name = "armadura_id", nullable = true)
+    private Armadura armadura;
 
     @Column(nullable = false)
     private Integer lojaPreco;
@@ -28,11 +38,10 @@ public class LojaItem {
     @Column(nullable = false)
     private Boolean disponivel = true;
 
-    public LojaItem(){
-
+    public LojaItem() {
     }
 
-    public Long getId(){
+    public Long getId() {
         return id;
     }
 
@@ -50,6 +59,22 @@ public class LojaItem {
 
     public void setItem(Item item) {
         this.item = item;
+    }
+
+    public Arma getArma() {
+        return arma;
+    }
+
+    public void setArma(Arma arma) {
+        this.arma = arma;
+    }
+
+    public Armadura getArmadura() {
+        return armadura;
+    }
+
+    public void setArmadura(Armadura armadura) {
+        this.armadura = armadura;
     }
 
     public Integer getLojaPreco() {
@@ -75,5 +100,18 @@ public class LojaItem {
     public void setDisponivel(Boolean disponivel) {
         this.disponivel = disponivel;
     }
-    
+
+    @Transient
+    public String getLojaCategoria() {
+        if (item != null) {
+            return "ITEM";
+        }
+        if (arma != null) {
+            return "ARMA";
+        }
+        if (armadura != null) {
+            return "ARMADURA";
+        }
+        return null;
+    }
 }

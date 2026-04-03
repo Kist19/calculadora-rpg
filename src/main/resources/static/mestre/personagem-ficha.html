@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha do Personagem</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/mestre-theme.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        .topo-admin {
+            background: #0f172a;
+            color: white;
+            padding: 8px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: nowrap;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .logo-admin {
+            font-size: 22px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .menu-admin {
+            display: flex;
+            gap: 12px;
+            flex-wrap: nowrap;
+            justify-content: flex-end;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        .menu-admin a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: #1e293b;
+            white-space: nowrap;
+        }
+
+        .menu-admin a:hover,
+        .menu-admin a.ativo {
+            background: #334155;
+        }
+
+        .conteudo {
+            padding: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .topo-ficha {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+        }
+
+        .titulo-pagina h1 {
+            margin: 0;
+        }
+
+        .grid-topo {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+            align-items: stretch;
+            margin-bottom: 20px;
+        }
+
+        .card-ficha {
+            padding: 22px 24px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
+        }
+
+        .card-topo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .card-topo h2 {
+            margin: 0;
+        }
+
+        .botao-topo,
+        .botao-acao {
+            background: rgba(255, 255, 255, 0.04);
+            color: #f8fafc;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            border-radius: 16px;
+            padding: 12px 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+        }
+
+        .botao-topo:hover,
+        .botao-acao:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.16);
+        }
+
+        .lista-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .linha-info {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            line-height: 1.45;
+            color: #e7edf7;
+            word-break: break-word;
+        }
+
+        .linha-info strong {
+            color: #f8fafc;
+            font-weight: 700;
+        }
+
+        .bloco-largo {
+            margin-top: 0;
+        }
+
+        .lista-simples {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .item-simples {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            color: #e7edf7;
+            line-height: 1.45;
+            word-break: break-word;
+        }
+
+        .item-simples+.item-simples {
+            border-top: 1px solid rgba(255, 255, 255, 0.10);
+            padding-top: 10px !important;
+        }
+
+        .vazio {
+            color: #c4cfdd;
+        }
+
+        .bloco-largo+.bloco-largo {
+            margin-top: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-topo {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .topo-admin {
+                flex-wrap: wrap;
+                align-items: flex-start;
+            }
+
+            .menu-admin {
+                width: 100%;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .conteudo {
+                padding: 18px;
+            }
+
+            .topo-ficha {
+                align-items: stretch;
+            }
+
+            .botao-topo,
+            .botao-acao {
+                width: 100%;
+            }
+
+            .card-topo {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(3, 8, 20, 0.72);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 9999;
+        }
+
+        .modal-overlay.ativo {
+            display: flex;
+        }
+
+        .modal {
+            width: 100%;
+            max-width: 760px;
+            max-height: 88vh;
+            overflow-y: auto;
+            background: linear-gradient(180deg, rgba(20, 34, 58, 0.98) 0%, rgba(11, 23, 42, 0.98) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+            padding: 24px;
+        }
+
+        .modal-cabecalho {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .modal-cabecalho h3 {
+            margin: 0;
+            color: #f8fafc;
+            font-size: 1.4rem;
+        }
+
+        .modal-fechar {
+            background: rgba(255, 255, 255, 0.04);
+            color: #f8fafc;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            border-radius: 14px;
+            padding: 10px 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .modal-fechar:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .modal-campo {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .modal-campo label {
+            color: #dbe7f5;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .modal-campo input,
+        .modal-campo select {
+            width: 100%;
+            min-height: 48px;
+            background: rgba(255, 255, 255, 0.04);
+            color: #f8fafc;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            border-radius: 14px;
+            padding: 12px 14px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .modal-campo input:focus,
+        .modal-campo select:focus {
+            border-color: rgba(255, 255, 255, 0.22);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .modal-campo option {
+            color: #111827;
+        }
+
+        .modal-acoes {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 22px;
+            flex-wrap: wrap;
+        }
+
+        .modal-botao-secundario,
+        .modal-botao-principal {
+            border-radius: 16px;
+            padding: 12px 18px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .modal-botao-secundario {
+            background: rgba(255, 255, 255, 0.04);
+            color: #f8fafc;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+        }
+
+        .modal-botao-principal {
+            background: rgba(255, 255, 255, 0.10);
+            color: #f8fafc;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+        }
+
+        .modal-botao-secundario:hover,
+        .modal-botao-principal:hover {
+            transform: translateY(-1px);
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        @media (max-width: 768px) {
+            .modal {
+                padding: 18px;
+                border-radius: 20px;
+            }
+
+            .modal-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-acoes {
+                flex-direction: column;
+            }
+
+            .modal-botao-secundario,
+            .modal-botao-principal,
+            .modal-fechar {
+                width: 100%;
+            }
+
+            .modal-cabecalho {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="topo-admin">
+        <div class="logo-admin">Painel do Mestre</div>
+        <nav class="menu-admin">
+            <a href="dashboard-mestre.html">Dashboard</a>
+            <a href="personagens.html" class="ativo">Personagens</a>
+            <a href="biblioteca.html">Biblioteca</a>
+            <a href="loja-mestre.html">Loja</a>
+            <a href="efeitos.html">Efeitos</a>
+            <a href="combate.html">Combate</a>
+        </nav>
+    </header>
+
+    <main class="conteudo">
+        <section class="topo-ficha">
+            <div class="titulo-pagina">
+                <h1>Ficha do Personagem</h1>
+            </div>
+
+            <button class="botao-topo" onclick="voltarPagina()">Voltar</button>
+        </section>
+
+        <section class="grid-topo">
+            <article class="card card-ficha">
+                <div class="card-topo">
+                    <h2>Informações</h2>
+                    <button class="botao-acao" onclick="abrirModalInformacoes()">Alterar</button>
+                </div>
+
+                <div class="lista-info" id="blocoInformacoes">
+                    <div class="linha-info"><strong>Nome:</strong> -</div>
+                    <div class="linha-info"><strong>Classe:</strong> -</div>
+                    <div class="linha-info"><strong>Nível:</strong> -</div>
+                    <div class="linha-info"><strong>Raça:</strong> -</div>
+                    <div class="linha-info"><strong>Origem:</strong> -</div>
+                    <div class="linha-info"><strong>Em combate:</strong> -</div>
+                </div>
+            </article>
+
+            <article class="card card-ficha">
+                <div class="card-topo">
+                    <h2>Status</h2>
+                    <button class="botao-acao" onclick="abrirModalStatus()">Alterar</button>
+                </div>
+
+                <div class="lista-info" id="blocoStatus">
+                    <div class="linha-info"><strong>Vida:</strong> -</div>
+                    <div class="linha-info"><strong>Mana:</strong> -</div>
+                    <div class="linha-info"><strong>Defesa:</strong> -</div>
+                    <div class="linha-info"><strong>Dinheiro:</strong> -</div>
+                    <div class="linha-info"><strong>Espaço:</strong> -</div>
+                </div>
+            </article>
+
+            <article class="card card-ficha">
+                <div class="card-topo">
+                    <h2>Atributos</h2>
+                    <button class="botao-acao" onclick="abrirModalAtributos()">Alterar</button>
+                </div>
+
+                <div class="lista-info" id="blocoAtributos">
+                    <div class="linha-info"><strong>Força:</strong> -</div>
+                    <div class="linha-info"><strong>Destreza:</strong> -</div>
+                    <div class="linha-info"><strong>Constituição:</strong> -</div>
+                    <div class="linha-info"><strong>Inteligência:</strong> -</div>
+                    <div class="linha-info"><strong>Sabedoria:</strong> -</div>
+                    <div class="linha-info"><strong>Carisma:</strong> -</div>
+                </div>
+            </article>
+        </section>
+
+        <section class="card card-ficha bloco-largo">
+            <div class="card-topo">
+                <h2>Perícias</h2>
+                <button class="botao-acao" onclick="abrirModalPericias()">Alterar</button>
+            </div>
+
+            <div class="lista-info" id="blocoPericias">
+                <div class="linha-info"><strong>Luta:</strong> -</div>
+                <div class="linha-info"><strong>Pontaria:</strong> -</div>
+            </div>
+        </section>
+
+        <section class="card card-ficha bloco-largo">
+            <div class="card-topo">
+                <h2>Inventário</h2>
+                <button class="botao-acao" onclick="gerenciarInventario()">Gerenciar</button>
+            </div>
+
+            <div class="lista-simples" id="blocoInventario">
+                <div class="item-simples vazio">Nenhum item encontrado.</div>
+            </div>
+        </section>
+
+        <section class="card card-ficha bloco-largo">
+            <div class="card-topo">
+                <h2>Habilidades</h2>
+                <button class="botao-acao" onclick="gerenciarHabilidades()">Gerenciar</button>
+            </div>
+
+            <div class="lista-simples" id="blocoHabilidades">
+                <div class="item-simples vazio">Nenhuma habilidade encontrada.</div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const API_BASE = "http://localhost:8080";
+        const parametros = new URLSearchParams(window.location.search);
+        const personagemId = Number(parametros.get("id"));
+
+        let personagemAtual = null;
+        let statusAtual = null;
+        let atributosAtuais = null;
+        let periciasAtuais = null;
+        let periciasCalculadasAtuais = {};
+        let periciaSelecionada = "";
+
+        function voltarPagina() {
+            window.location.href = "personagens.html";
+        }
+
+        function abrirModal(id) {
+            document.getElementById(id).classList.add("ativo");
+        }
+
+        function fecharModal(id) {
+            document.getElementById(id).classList.remove("ativo");
+        }
+
+        function abrirModalInformacoes() {
+            if (!personagemAtual) return;
+
+            document.getElementById("infoNome").value = personagemAtual.personagemNome ?? "";
+            document.getElementById("infoClasse").value = personagemAtual.personagemClasse ?? "";
+            document.getElementById("infoNivel").value = personagemAtual.personagemNivel ?? 1;
+            document.getElementById("infoRaca").value = personagemAtual.personagemRaca ?? "";
+            document.getElementById("infoOrigem").value = personagemAtual.personagemOrigem ?? "";
+
+            abrirModal("modalInformacoes");
+        }
+
+        function abrirModalStatus() {
+            if (!statusAtual) return;
+
+            document.getElementById("statusVidaBase").value = statusAtual.statusVidaBase ?? 0;
+            document.getElementById("statusVidaAtual").value = statusAtual.statusVidaAtual ?? 0;
+            document.getElementById("statusManaBase").value = statusAtual.statusManaBase ?? 0;
+            document.getElementById("statusManaAtual").value = statusAtual.statusManaAtual ?? 0;
+            document.getElementById("statusDefesa").value = statusAtual.statusDefesa ?? 0;
+            document.getElementById("statusDinheiro").value = statusAtual.statusDinheiro ?? 0;
+            document.getElementById("statusEspacoBase").value = statusAtual.statusEspacoBase ?? 0;
+
+            abrirModal("modalStatus");
+        }
+
+        function abrirModalAtributos() {
+            if (!atributosAtuais) return;
+
+            document.getElementById("atributoForca").value = atributosAtuais.atributoForca ?? 0;
+            document.getElementById("atributoDestreza").value = atributosAtuais.atributoDestreza ?? 0;
+            document.getElementById("atributoConstituicao").value = atributosAtuais.atributoConstituicao ?? 0;
+            document.getElementById("atributoInteligencia").value = atributosAtuais.atributoInteligencia ?? 0;
+            document.getElementById("atributoSabedoria").value = atributosAtuais.atributoSabedoria ?? 0;
+            document.getElementById("atributoCarisma").value = atributosAtuais.atributoCarisma ?? 0;
+
+            abrirModal("modalAtributos");
+        }
+
+        function abrirModalPericias() {
+            document.getElementById("selectPericia").value = "";
+            document.getElementById("periciaTreinamento").value = 0;
+            document.getElementById("periciaOutros").value = 0;
+            periciaSelecionada = "";
+
+            abrirModal("modalPericias");
+        }
+
+        function gerenciarInventario() {
+            window.location.href = `personagem-inventario.html?id=${personagemId}`;
+        }
+
+        function gerenciarHabilidades() {
+            window.location.href = `personagem-habilidades.html?id=${personagemId}`;
+        }
+
+        async function carregarFicha() {
+            if (!personagemId) return;
+
+            try {
+                const [
+                    personagensRes,
+                    statusRes,
+                    atributoRes,
+                    periciaBrutaRes,
+                    periciaCalculadaRes,
+                    inventarioRes
+                ] = await Promise.all([
+                    fetch(`${API_BASE}/personagem`),
+                    fetch(`${API_BASE}/status/personagem/${personagemId}`),
+                    fetch(`${API_BASE}/atributo/personagem/${personagemId}`),
+                    fetch(`${API_BASE}/pericia/personagem/${personagemId}`),
+                    fetch(`${API_BASE}/personagem/${personagemId}/pericias`),
+                    fetch(`${API_BASE}/inventario/personagem/${personagemId}`)
+                ]);
+
+                const personagens = personagensRes.ok ? await personagensRes.json() : [];
+                const personagem = Array.isArray(personagens)
+                    ? personagens.find(p => Number(p.id) === personagemId)
+                    : null;
+
+                const status = statusRes.ok ? await statusRes.json() : null;
+                const atributos = atributoRes.ok ? await atributoRes.json() : null;
+                const periciaBruta = periciaBrutaRes.ok ? await periciaBrutaRes.json() : null;
+                const periciasCalculadas = periciaCalculadaRes.ok ? await periciaCalculadaRes.json() : {};
+                const inventario = inventarioRes.ok ? await inventarioRes.json() : [];
+
+                let habilidades = [];
+                try {
+                    const habilidadesRes = await fetch(`${API_BASE}/personagem/${personagemId}/habilidades`);
+                    habilidades = habilidadesRes.ok ? await habilidadesRes.json() : [];
+                } catch {
+                    habilidades = [];
+                }
+
+                preencherInformacoes(personagem);
+                preencherStatus(status);
+                preencherAtributos(atributos);
+                preencherPericias(periciasCalculadas);
+                preencherInventario(inventario);
+                preencherHabilidades(habilidades);
+
+                personagemAtual = personagem;
+                statusAtual = status;
+                atributosAtuais = atributos;
+                periciasAtuais = periciaBruta;
+                periciasCalculadasAtuais = periciasCalculadas || {};
+
+            } catch (erro) {
+                console.error("Erro ao carregar ficha:", erro);
+            }
+        }
+
+        function preencherInformacoes(personagem) {
+            const bloco = document.getElementById("blocoInformacoes");
+
+            if (!personagem) {
+                bloco.innerHTML = `
+                    <div class="linha-info"><strong>Nome:</strong> -</div>
+                    <div class="linha-info"><strong>Classe:</strong> -</div>
+                    <div class="linha-info"><strong>Nível:</strong> -</div>
+                    <div class="linha-info"><strong>Raça:</strong> -</div>
+                    <div class="linha-info"><strong>Origem:</strong> -</div>
+                    <div class="linha-info"><strong>Em combate:</strong> -</div>
+                `;
+                return;
+            }
+
+            bloco.innerHTML = `
+                <div class="linha-info"><strong>Nome:</strong> ${personagem.personagemNome ?? "-"}</div>
+                <div class="linha-info"><strong>Classe:</strong> ${personagem.personagemClasse ?? "-"}</div>
+                <div class="linha-info"><strong>Nível:</strong> ${personagem.personagemNivel ?? "-"}</div>
+                <div class="linha-info"><strong>Raça:</strong> ${personagem.personagemRaca ?? "-"}</div>
+                <div class="linha-info"><strong>Origem:</strong> ${personagem.personagemOrigem ?? "-"}</div>
+                <div class="linha-info"><strong>Em combate:</strong> ${personagem.personagemEmCombate ? "Sim" : "Não"}</div>
+            `;
+        }
+
+        function preencherStatus(status) {
+            const bloco = document.getElementById("blocoStatus");
+            if (!status) return;
+
+            bloco.innerHTML = `
+                <div class="linha-info"><strong>Vida:</strong> ${status.statusVidaAtual ?? 0} / ${status.statusVidaBase ?? 0}</div>
+                <div class="linha-info"><strong>Mana:</strong> ${status.statusManaAtual ?? 0} / ${status.statusManaBase ?? 0}</div>
+                <div class="linha-info"><strong>Defesa:</strong> ${status.statusDefesa ?? 0}</div>
+                <div class="linha-info"><strong>Dinheiro:</strong> ${status.statusDinheiro ?? 0}</div>
+                <div class="linha-info"><strong>Espaço:</strong> ${status.statusEspacoAtual ?? 0} / ${status.statusEspacoBase ?? 0}</div>
+            `;
+        }
+
+        function preencherAtributos(atributos) {
+            const bloco = document.getElementById("blocoAtributos");
+            if (!atributos) return;
+
+            bloco.innerHTML = `
+                <div class="linha-info"><strong>Força:</strong> ${atributos.atributoForca ?? 0}</div>
+                <div class="linha-info"><strong>Destreza:</strong> ${atributos.atributoDestreza ?? 0}</div>
+                <div class="linha-info"><strong>Constituição:</strong> ${atributos.atributoConstituicao ?? 0}</div>
+                <div class="linha-info"><strong>Inteligência:</strong> ${atributos.atributoInteligencia ?? 0}</div>
+                <div class="linha-info"><strong>Sabedoria:</strong> ${atributos.atributoSabedoria ?? 0}</div>
+                <div class="linha-info"><strong>Carisma:</strong> ${atributos.atributoCarisma ?? 0}</div>
+            `;
+        }
+
+        function preencherPericias(periciasCalculadas) {
+            const bloco = document.getElementById("blocoPericias");
+
+            const nomesBonitos = {
+                Acrobacia: "Acrobacia",
+                Adestramento: "Adestramento",
+                Atletismo: "Atletismo",
+                Atuacao: "Atuação",
+                Cavalgar: "Cavalgar",
+                Conhecimento: "Conhecimento",
+                Cura: "Cura",
+                Diplomacia: "Diplomacia",
+                Enganacao: "Enganação",
+                Fortitude: "Fortitude",
+                Furtividade: "Furtividade",
+                Guerra: "Guerra",
+                Iniciativa: "Iniciativa",
+                Intimidacao: "Intimidação",
+                Intuicao: "Intuição",
+                Investigacao: "Investigação",
+                Ladinagem: "Ladinagem",
+                Luta: "Luta",
+                Misticismo: "Misticismo",
+                Nobreza: "Nobreza",
+                Oficio: "Ofício",
+                Percepcao: "Percepção",
+                Pontaria: "Pontaria",
+                Reflexo: "Reflexo",
+                Religiao: "Religião",
+                Sobrevivencia: "Sobrevivência",
+                Vontade: "Vontade"
+            };
+
+            if (
+                !periciasCalculadas ||
+                typeof periciasCalculadas !== "object" ||
+                Array.isArray(periciasCalculadas) ||
+                Object.keys(periciasCalculadas).length === 0
+            ) {
+                bloco.innerHTML = `<div class="linha-info">Nenhuma perícia treinada.</div>`;
+                return;
+            }
+
+            bloco.innerHTML = Object.entries(periciasCalculadas)
+                .map(([nome, valor]) => `
+            <div class="linha-info">
+                <strong>${nomesBonitos[nome] ?? nome}:</strong> ${valor ?? 0}
+            </div>
+        `)
+                .join("");
+        }
+
+        function preencherInventario(inventario) {
+            const bloco = document.getElementById("blocoInventario");
+
+            if (!inventario || inventario.length === 0) {
+                bloco.innerHTML = `<div class="item-simples vazio">Nenhum item encontrado.</div>`;
+                return;
+            }
+
+            bloco.innerHTML = inventario.map(item => `
+                <div class="item-simples">
+                    ${item.item?.itemNome ?? "Item"} (qtd: ${item.inventarioQuantidade ?? 0})
+                </div>
+            `).join("");
+        }
+
+        function preencherHabilidades(habilidades) {
+            const bloco = document.getElementById("blocoHabilidades");
+
+            if (!habilidades || habilidades.length === 0) {
+                bloco.innerHTML = `<div class="item-simples vazio">Nenhuma habilidade encontrada.</div>`;
+                return;
+            }
+
+            bloco.innerHTML = habilidades.map(habilidade => `
+                <div class="item-simples">
+                    ${habilidade.habilidadeNome ?? "Habilidade"}
+                </div>
+            `).join("");
+        }
+
+        async function salvarInformacoes() {
+            const payload = {
+                personagemNome: document.getElementById("infoNome").value.trim(),
+                personagemClasse: document.getElementById("infoClasse").value.trim(),
+                personagemNivel: Number(document.getElementById("infoNivel").value),
+                personagemRaca: document.getElementById("infoRaca").value.trim(),
+                personagemOrigem: document.getElementById("infoOrigem").value.trim()
+            };
+
+            const resposta = await fetch(`${API_BASE}/personagem/${personagemId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (!resposta.ok) {
+                alert("Erro ao salvar informações.");
+                return;
+            }
+
+            fecharModal("modalInformacoes");
+            await carregarFicha();
+        }
+
+        async function salvarStatus() {
+            const payload = {
+                statusVidaBase: Number(document.getElementById("statusVidaBase").value),
+                statusVidaAtual: Number(document.getElementById("statusVidaAtual").value),
+                statusManaBase: Number(document.getElementById("statusManaBase").value),
+                statusManaAtual: Number(document.getElementById("statusManaAtual").value),
+                statusDefesa: Number(document.getElementById("statusDefesa").value),
+                statusDinheiro: Number(document.getElementById("statusDinheiro").value),
+                statusEspacoBase: Number(document.getElementById("statusEspacoBase").value)
+            };
+
+            const resposta = await fetch(`${API_BASE}/status/personagem/${personagemId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (!resposta.ok) {
+                alert("Erro ao salvar status.");
+                return;
+            }
+
+            fecharModal("modalStatus");
+            await carregarFicha();
+        }
+
+        async function salvarAtributos() {
+            const payload = {
+                atributoForca: Number(document.getElementById("atributoForca").value),
+                atributoDestreza: Number(document.getElementById("atributoDestreza").value),
+                atributoConstituicao: Number(document.getElementById("atributoConstituicao").value),
+                atributoInteligencia: Number(document.getElementById("atributoInteligencia").value),
+                atributoSabedoria: Number(document.getElementById("atributoSabedoria").value),
+                atributoCarisma: Number(document.getElementById("atributoCarisma").value)
+            };
+
+            const resposta = await fetch(`${API_BASE}/atributo/personagem/${personagemId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (!resposta.ok) {
+                alert("Erro ao salvar atributos.");
+                return;
+            }
+
+            fecharModal("modalAtributos");
+            await carregarFicha();
+        }
+
+        async function salvarPericiaSelecionada() {
+            if (!periciaSelecionada) {
+                alert("Selecione uma perícia.");
+                return;
+            }
+
+            const treinamento = Number(document.getElementById("periciaTreinamento").value);
+            const outros = Number(document.getElementById("periciaOutros").value);
+
+            const campoTreinamento = "pericia" + periciaSelecionada;
+            const campoOutros = "outros" + periciaSelecionada;
+
+            // 🔥 CLONE COMPLETO DAS PERÍCIAS ATUAIS
+            let payload = { ...(periciasAtuais || {}) };
+
+            // 🔥 ATUALIZA SÓ A PERÍCIA SELECIONADA
+            payload[campoTreinamento] = treinamento;
+            payload[campoOutros] = outros;
+
+            try {
+                const resposta = await fetch(`${API_BASE}/pericia/personagem/${personagemId}`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!resposta.ok) {
+                    alert("Erro ao salvar perícia.");
+                    return;
+                }
+
+                // Atualiza local também
+                periciasAtuais = payload;
+
+                fecharModal("modalPericias");
+                await carregarFicha();
+
+            } catch (erro) {
+                console.error("Erro ao salvar perícia:", erro);
+                alert("Erro ao salvar perícia.");
+            }
+        }
+
+        function carregarPericiaSelecionada() {
+            const select = document.getElementById("selectPericia");
+            const nome = select.value;
+
+            periciaSelecionada = nome;
+
+            if (!nome) {
+                document.getElementById("periciaTreinamento").value = 0;
+                document.getElementById("periciaOutros").value = 0;
+                return;
+            }
+
+            const campoTreinamento = "pericia" + nome;
+            const campoOutros = "outros" + nome;
+
+            document.getElementById("periciaTreinamento").value = periciasAtuais?.[campoTreinamento] ?? 0;
+            document.getElementById("periciaOutros").value = periciasAtuais?.[campoOutros] ?? 0;
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll(".modal-overlay").forEach(overlay => {
+                overlay.addEventListener("click", (event) => {
+                    if (event.target === overlay) {
+                        overlay.classList.remove("ativo");
+                    }
+                });
+            });
+
+            carregarFicha();
+        });
+    </script>
+
+    <!-- MODAL INFORMAÇÕES -->
+    <div class="modal-overlay" id="modalInformacoes">
+        <div class="modal">
+            <div class="modal-cabecalho">
+                <h3>Alterar Informações</h3>
+                <button class="modal-botao-secundario" type="button"
+                    onclick="fecharModal('modalInformacoes')">Fechar</button>
+            </div>
+
+            <div class="modal-grid">
+                <div class="modal-campo">
+                    <label for="infoNome">Nome</label>
+                    <input id="infoNome" type="text">
+                </div>
+
+                <div class="modal-campo">
+                    <label for="infoClasse">Classe</label>
+                    <input id="infoClasse" type="text">
+                </div>
+
+                <div class="modal-campo">
+                    <label for="infoNivel">Nível</label>
+                    <input id="infoNivel" type="number" min="1">
+                </div>
+
+                <div class="modal-campo">
+                    <label for="infoRaca">Raça</label>
+                    <input id="infoRaca" type="text">
+                </div>
+
+                <div class="modal-campo">
+                    <label for="infoOrigem">Origem</label>
+                    <input id="infoOrigem" type="text">
+                </div>
+            </div>
+
+            <div class="modal-acoes">
+                <button class="modal-botao-secundario" type="button"
+                    onclick="fecharModal('modalInformacoes')">Cancelar</button>
+                <button class="modal-botao-principal" type="button" onclick="salvarInformacoes()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL STATUS -->
+    <div class="modal-overlay" id="modalStatus">
+        <div class="modal">
+            <div class="modal-cabecalho">
+                <h3>Alterar Status</h3>
+                <button class="modal-botao-secundario" type="button"
+                    onclick="fecharModal('modalStatus')">Fechar</button>
+            </div>
+
+            <div class="modal-grid">
+                <div class="modal-campo">
+                    <label for="statusVidaBase">Vida base</label>
+                    <input id="statusVidaBase" type="number" min="0">
+                </div>
+
+                <div class="modal-campo">
+                    <label for="statusVidaAtual">Vida atual</label>
+                    <input id="statusVidaAtual" type="number" min="0">
+                </div>
+
+                <div class="modal-campo">
+                    <label for="statusManaBase">Mana base</label>
+                    <input id="statusManaBase" type="number" min="0">
+                </div>
+
+                <div class="modal-campo">
+                    <label for="statusManaAtual">Mana atual</label>
+                    <input id="statusManaAtual" type="number" min="0">
+                </div>
+
+                <div class="modal-campo">
+                    <label for="statusDefesa">Defesa</label>
+                    <input id="statusDefesa" type="number" min="0">
+                </div>
+
+                <div class="modal-campo">
+                    <label for="statusDinheiro">Dinheiro</label>
+                    <input id="statusDinheiro" type="number" min="0">
+                </div>
+
+                <div class="modal-campo">
+                    <label for="statusEspacoBase">Espaço base</label>
+                    <input id="statusEspacoBase" type="number" min="0">
+                </div>
+            </div>
+
+            <div class="modal-acoes">
+                <button class="modal-botao-secundario" type="button"
+                    onclick="fecharModal('modalStatus')">Cancelar</button>
+                <button class="modal-botao-principal" type="button" onclick="salvarStatus()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ATRIBUTOS -->
+    <div class="modal-overlay" id="modalAtributos">
+        <div class="modal">
+            <div class="modal-cabecalho">
+                <h3>Alterar Atributos</h3>
+                <button class="modal-botao-secundario" type="button"
+                    onclick="fecharModal('modalAtributos')">Fechar</button>
+            </div>
+
+            <div class="modal-grid">
+                <div class="modal-campo">
+                    <label>Força</label>
+                    <input id="atributoForca" type="number">
+                </div>
+
+                <div class="modal-campo">
+                    <label>Destreza</label>
+                    <input id="atributoDestreza" type="number">
+                </div>
+
+                <div class="modal-campo">
+                    <label>Constituição</label>
+                    <input id="atributoConstituicao" type="number">
+                </div>
+
+                <div class="modal-campo">
+                    <label>Inteligência</label>
+                    <input id="atributoInteligencia" type="number">
+                </div>
+
+                <div class="modal-campo">
+                    <label>Sabedoria</label>
+                    <input id="atributoSabedoria" type="number">
+                </div>
+
+                <div class="modal-campo">
+                    <label>Carisma</label>
+                    <input id="atributoCarisma" type="number">
+                </div>
+            </div>
+
+            <div class="modal-acoes">
+                <button class="modal-botao-secundario" type="button"
+                    onclick="fecharModal('modalAtributos')">Cancelar</button>
+                <button class="modal-botao-principal" type="button" onclick="salvarAtributos()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PERÍCIAS -->
+    <div class="modal-overlay" id="modalPericias">
+        <div class="modal">
+            <div class="modal-cabecalho">
+                <h3>Alterar Perícias</h3>
+                <button class="modal-botao-secundario" type="button"
+                    onclick="fecharModal('modalPericias')">Fechar</button>
+            </div>
+
+            <div class="modal-grid">
+                <div class="modal-campo">
+                    <label>Perícia</label>
+                    <select id="selectPericia" onchange="carregarPericiaSelecionada()"></select>
+                </div>
+
+                <div class="modal-campo">
+                    <label>Treinamento</label>
+                    <input id="periciaTreinamento" type="number">
+                </div>
+
+                <div class="modal-campo">
+                    <label>Outros</label>
+                    <input id="periciaOutros" type="number">
+                </div>
+            </div>
+
+            <div class="modal-acoes">
+                <button class="modal-botao-secundario" type="button"
+                    onclick="fecharModal('modalPericias')">Cancelar</button>
+                <button class="modal-botao-principal" type="button" onclick="salvarPericiaSelecionada()">Salvar</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -15,7 +15,13 @@ public class AtributoService {
         this.personagemRepository = personagemRepository;
     }
 
-    public Atributo criarAtributo(Atributo atributo) {
+    public Atributo criarAtributo(Long personagemId, Atributo atributo) {
+
+        Personagem personagem = personagemRepository.findById(personagemId)
+                .orElseThrow(() -> new RuntimeException("Personagem não encontrado"));
+
+        atributo.setPersonagem(personagem);
+
         return atributoRepository.save(atributo);
     }
 
@@ -23,10 +29,28 @@ public class AtributoService {
         return atributoRepository.findAll();
     }
 
-    public Atributo atualizarAtributo(Long id, Atributo dadosAtualizados) {
+    public Atributo buscarAtributoPorPersonagemId(Long personagemId) {
+        Personagem personagem = personagemRepository.findById(personagemId)
+                .orElseThrow(() -> new RuntimeException("Personagem não encontrado"));
 
-        Atributo atributo = atributoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Atributo não encontrado"));
+        Atributo atributo = personagem.getAtributo();
+
+        if (atributo == null) {
+            throw new RuntimeException("Atributo não encontrado para o personagem");
+        }
+
+        return atributo;
+    }
+
+    public Atributo atualizarAtributoPorPersonagemId(Long personagemId, Atributo dadosAtualizados) {
+        Personagem personagem = personagemRepository.findById(personagemId)
+                .orElseThrow(() -> new RuntimeException("Personagem não encontrado"));
+
+        Atributo atributo = personagem.getAtributo();
+
+        if (atributo == null) {
+            throw new RuntimeException("Atributo não encontrado para o personagem");
+        }
 
         if (dadosAtualizados.getAtributoForca() != null) {
             atributo.setAtributoForca(dadosAtualizados.getAtributoForca());
@@ -55,17 +79,18 @@ public class AtributoService {
         return atributoRepository.save(atributo);
     }
 
-    public void deletarAtributo(Long id) {
+    public void deletarAtributoPorPersonagemId(Long personagemId) {
+        Personagem personagem = personagemRepository.findById(personagemId)
+                .orElseThrow(() -> new RuntimeException("Personagem não encontrado"));
 
-        Atributo atributo = atributoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Atributo não encontrado"));
+        Atributo atributo = personagem.getAtributo();
 
-        Personagem personagem = atributo.getPersonagem();
-
-        if (personagem != null) {
-            personagem.setAtributo(null);
-            personagemRepository.save(personagem);
+        if (atributo == null) {
+            throw new RuntimeException("Atributo não encontrado para o personagem");
         }
+
+        personagem.setAtributo(null);
+        personagemRepository.save(personagem);
 
         atributoRepository.delete(atributo);
     }

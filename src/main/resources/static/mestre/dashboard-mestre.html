@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard do Mestre</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        .topo-admin {
+            background: #111827;
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .logo-admin {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .menu-admin {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .menu-admin a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: #1f2937;
+        }
+
+        .menu-admin a:hover {
+            background: #374151;
+        }
+
+        .conteudo {
+            padding: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .titulo-pagina {
+            margin-bottom: 24px;
+        }
+
+        .titulo-pagina h1 {
+            margin: 0 0 8px 0;
+            font-size: 30px;
+        }
+
+        .titulo-pagina p {
+            margin: 0;
+            color: #4b5563;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .card p {
+            margin-bottom: 16px;
+            color: #4b5563;
+            line-height: 1.5;
+        }
+
+        .card button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .card button:hover {
+            background: #1d4ed8;
+        }
+
+        .card button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .bloco-tabela {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        }
+
+        .bloco-tabela h2 {
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background: #111827;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f9fafb;
+        }
+
+        .botao-ficha {
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        .botao-ficha:hover {
+            background: #1d4ed8;
+        }
+
+        .mensagem-vazia {
+            text-align: center;
+            color: #6b7280;
+            padding: 18px;
+        }
+
+        .topo-admin {
+            background: #0f172a;
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .logo-admin {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .menu-admin {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .menu-admin a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: #1e293b;
+        }
+
+        .menu-admin a:hover,
+        .menu-admin a.ativo {
+            background: #334155;
+        }
+    </style>
+    <link rel="stylesheet" href="../css/mestre-theme.css">
+</head>
+
+<body>
+
+    <header class="topo-admin">
+        <div class="logo-admin">Painel do Mestre</div>
+        <nav class="menu-admin">
+            <a href="dashboard-mestre.html" class="ativo">Dashboard</a>
+            <a href="personagens.html">Personagens</a>
+            <a href="biblioteca.html">Biblioteca</a>
+            <a href="loja-mestre.html">Loja</a>
+            <a href="efeitos.html">Efeitos</a>
+            <a href="combate.html">Combate</a>
+        </nav>
+    </header>
+
+    <div class="conteudo">
+        <section class="titulo-pagina">
+            <h1>Dashboard do Mestre</h1>
+            <p>Resumo geral e atalhos principais do painel.</p>
+        </section>
+
+        <section class="cards">
+            <div class="card">
+                <h2>Personagens</h2>
+                <p>Visualize e acesse as fichas cadastradas.</p>
+                <button onclick="window.location.href='personagens.html'">Abrir personagens</button>
+            </div>
+
+            <div class="card">
+                <h2>Biblioteca</h2>
+                <p>Gerencie habilidades, armas, armaduras e itens.</p>
+                <button onclick="window.location.href='biblioteca.html'">Abrir biblioteca</button>
+            </div>
+
+            <div class="card">
+                <h2>Loja</h2>
+                <p>Administre a loja ativa e seus produtos.</p>
+                <button onclick="window.location.href='loja-mestre.html'">Abrir loja</button>
+            </div>
+
+            <div class="card">
+                <h2>Combate</h2>
+                <p>Controle o modo de combate dos personagens.</p>
+                <button onclick="window.location.href='combate.html'">Abrir combate</button>
+            </div>
+        </section>
+
+        <section class="bloco-tabela">
+            <h2>Personagens do sistema</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Classe</th>
+                        <th>Nível</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaPersonagens"></tbody>
+            </table>
+        </section>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8080"
+
+        async function carregarPersonagens() {
+
+            try {
+
+                const resposta = await fetch(`${API_BASE}/personagem`)
+
+                if (!resposta.ok) {
+                    throw new Error("Erro na requisição")
+                }
+
+                const personagens = await resposta.json()
+
+                const tabela = document.getElementById("tabelaPersonagens")
+
+                if (!personagens || personagens.length === 0) {
+                    tabela.innerHTML = `
+                <tr>
+                    <td colspan="5">Nenhum personagem encontrado</td>
+                </tr>
+            `
+                    return
+                }
+
+                let html = ""
+
+                personagens.forEach(p => {
+
+                    html += `
+                <tr>
+                    <td>${p.id}</td>
+                    <td>${p.personagemNome}</td>
+                    <td>${p.personagemClasse}</td>
+                    <td>${p.personagemNivel}</td>
+                    <td>
+                        <button class="botao-ficha" onclick="abrirFicha(${p.id})">
+    Abrir ficha
+</button>
+                    </td>
+                </tr>
+            `
+
+                })
+
+                tabela.innerHTML = html
+
+            } catch (erro) {
+
+                console.error("Erro ao carregar personagens:", erro)
+
+                const tabela = document.getElementById("tabela-personagens")
+
+                tabela.innerHTML = `
+            <tr>
+                <td colspan="5">Erro ao carregar personagens</td>
+            </tr>
+        `
+            }
+        }
+
+        function abrirFicha(id) {
+            window.location.href = `personagem-ficha.html?id=${id}`
+        }
+
+        carregarPersonagens()
+    </script>
+
+</body>
+
+</html>

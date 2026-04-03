@@ -46,36 +46,67 @@ public class ItemService {
             item.setItemNome(dadosAtualizados.getItemNome());
         }
 
+        if (dadosAtualizados.getItemTipo() != null) {
+            item.setItemTipo(dadosAtualizados.getItemTipo());
+        }
+
         if (dadosAtualizados.getItemPreco() != null) {
             item.setItemPreco(dadosAtualizados.getItemPreco());
         }
 
-        if (dadosAtualizados.getItemBonusDano() != null) {
-            item.setItemBonusDano(dadosAtualizados.getItemBonusDano());
+        if (dadosAtualizados.getItemDuracaoTurno() != null) {
+            item.setItemDuracaoTurno(dadosAtualizados.getItemDuracaoTurno());
+        }
+
+        if (dadosAtualizados.getItemEspaco() != null) {
+            item.setItemEspaco(dadosAtualizados.getItemEspaco());
         }
 
         if (dadosAtualizados.getItemBonusAtaque() != null) {
             item.setItemBonusAtaque(dadosAtualizados.getItemBonusAtaque());
         }
 
+        if (dadosAtualizados.getItemPenalidadeAtaque() != null) {
+            item.setItemPenalidadeAtaque(dadosAtualizados.getItemPenalidadeAtaque());
+        }
+
+        if (dadosAtualizados.getItemBonusDano() != null) {
+            item.setItemBonusDano(dadosAtualizados.getItemBonusDano());
+        }
+
+        if (dadosAtualizados.getItemPenalidadeDano() != null) {
+            item.setItemPenalidadeDano(dadosAtualizados.getItemPenalidadeDano());
+        }
+
         if (dadosAtualizados.getItemBonusPv() != null) {
             item.setItemBonusPv(dadosAtualizados.getItemBonusPv());
+        }
+
+        if (dadosAtualizados.getItemPenalidadePv() != null) {
+            item.setItemPenalidadePv(dadosAtualizados.getItemPenalidadePv());
         }
 
         if (dadosAtualizados.getItemBonusPm() != null) {
             item.setItemBonusPm(dadosAtualizados.getItemBonusPm());
         }
 
+        if (dadosAtualizados.getItemPenalidadePm() != null) {
+            item.setItemPenalidadePm(dadosAtualizados.getItemPenalidadePm());
+        }
+
         return itemRepository.save(item);
     }
 
     public void deletarItem(Long id) {
-
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Item não encontrado"));
 
         if (lojaItemRepository.existsByItemId(id)) {
             throw new RuntimeException("Não é possível deletar o item. Remova ele da loja primeiro.");
+        }
+
+        if (inventarioRepository.existsByItemId(id)) {
+            throw new RuntimeException("Não é possível deletar o item. Remova ele do inventário primeiro.");
         }
 
         itemRepository.delete(item);
@@ -121,5 +152,10 @@ public class ItemService {
         }
 
         return "Item vendido com sucesso.";
+    }
+
+    public Item buscarPorId(Long itemId) {
+        return itemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Item não encontrado"));
     }
 }

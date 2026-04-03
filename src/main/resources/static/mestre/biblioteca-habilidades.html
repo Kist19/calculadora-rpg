@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca de Habilidades</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/mestre-theme.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            min-height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topo-admin {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .logo-admin {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .menu-admin {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .menu-admin a {
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .conteudo {
+            width: 100%;
+            max-width: 1680px;
+            margin: 0 auto;
+            padding: 18px 18px 10px;
+        }
+
+        .cabecalho {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 18px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .cabecalho-texto {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .cabecalho h1 {
+            margin: 0 0 6px 0;
+            font-size: 34px;
+        }
+
+        .cabecalho p {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .voltar {
+            margin-left: auto;
+            margin-top: 6px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-end;
+        }
+
+        .mensagem {
+            position: fixed;
+            top: 22px;
+            right: 22px;
+            z-index: 9999;
+            min-width: 280px;
+            max-width: 420px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-weight: bold;
+            opacity: 0;
+            transform: translateY(-20px);
+            pointer-events: none;
+            transition: opacity 0.28s ease, transform 0.28s ease;
+            display: block;
+        }
+
+        .mensagem.sucesso,
+        .mensagem.erro {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .mensagem.sucesso {
+            background: rgba(16, 185, 129, 0.16);
+            color: #d1fae5;
+            border: 1px solid rgba(16, 185, 129, 0.34);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+        }
+
+        .mensagem.erro {
+            background: rgba(239, 68, 68, 0.16);
+            color: #fecaca;
+            border: 1px solid rgba(239, 68, 68, 0.34);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 470px 1fr;
+            gap: 16px;
+            align-items: stretch;
+            min-height: 630px;
+        }
+
+        .bloco {
+            border-radius: 16px;
+            padding: 18px;
+            min-width: 0;
+        }
+
+        .bloco h2 {
+            margin: 0 0 8px 0;
+            font-size: 22px;
+        }
+
+        .bloco-form {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 6px;
+        }
+
+        .bloco-lista {
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .campo {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .campo.full {
+            grid-column: 1 / -1;
+        }
+
+        .campo label {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .campo input,
+        .campo select {
+            width: 100%;
+            padding: 11px 12px;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .acoes-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .botao {
+            border-radius: 10px;
+            padding: 11px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .botao-primario {
+            color: white;
+        }
+
+        .botao-secundario {
+            border: 1px solid rgba(148, 163, 184, 0.24);
+        }
+
+        .botao-secundario:hover {
+            border-color: rgba(148, 163, 184, 0.34);
+        }
+
+        .botao-perigo {
+            border: 1px solid rgba(239, 68, 68, 0.30);
+        }
+
+        .botao-perigo:hover {
+            border-color: rgba(239, 68, 68, 0.44);
+        }
+
+        .botao-sucesso {
+            background: rgba(16, 185, 129, 0.14);
+            color: #d1fae5;
+            border: 1px solid rgba(16, 185, 129, 0.34);
+        }
+
+        .botao-sucesso:hover {
+            background: rgba(16, 185, 129, 0.22);
+            color: #ecfdf5;
+            border-color: rgba(16, 185, 129, 0.46);
+        }
+
+        .barra-topo-lista {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .barra-topo-lista h2 {
+            margin: 0;
+        }
+
+        .busca {
+            min-width: 260px;
+            flex: 1;
+            max-width: 360px;
+        }
+
+        .busca input {
+            width: 100%;
+            padding: 11px 12px;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .lista-habilidades {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow-y: auto;
+            padding-right: 4px;
+            min-height: 0;
+            max-height: 700px;
+        }
+
+        .card-item {
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .card-topo {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .card-topo h3 {
+            margin: 0 0 6px 0;
+            font-size: 20px;
+        }
+
+        .tag {
+            display: inline-block;
+            border-radius: 999px;
+            padding: 5px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 0.02em;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .info-box {
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        .info-box strong {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .info-box span {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .subsecao {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .subsecao h4 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+        }
+
+        .subsecao-bonus h4 {
+            color: #93c5fd;
+        }
+
+        .subsecao-penalidades h4 {
+            color: #fca5a5;
+        }
+
+        .subsecao-dado h4 {
+            color: #86efac;
+        }
+
+        .subsecao-vinculo h4 {
+            color: #cbd5e1;
+        }
+
+        .linha-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .acoes-card {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .linha-vinculo {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .linha-vinculo select,
+        .linha-vinculo input {
+            width: 100%;
+            padding: 11px 12px;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .vazio {
+            text-align: center;
+            padding: 50px 20px;
+            border-radius: 12px;
+        }
+
+        @media (max-width: 1200px) {
+            .layout {
+                grid-template-columns: 430px 1fr;
+            }
+
+            .linha-vinculo {
+                grid-template-columns: 1fr;
+            }
+
+            .linha-vinculo .botao {
+                width: 100%;
+            }
+
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 980px) {
+            .layout {
+                grid-template-columns: 1fr;
+                min-height: unset;
+            }
+
+            .lista-habilidades {
+                max-height: 420px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .conteudo {
+                padding: 16px;
+            }
+
+            .cabecalho {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .cabecalho h1 {
+                font-size: 28px;
+            }
+
+            .voltar {
+                margin-left: 0;
+                justify-content: flex-start;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .campo.full {
+                grid-column: auto;
+            }
+
+            .barra-topo-lista {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .busca {
+                min-width: unset;
+            }
+
+            .lista-habilidades {
+                max-height: 380px;
+            }
+
+            .linha-vinculo {
+                grid-template-columns: 1fr;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .mensagem {
+                top: 16px;
+                right: 16px;
+                left: 16px;
+                min-width: unset;
+                max-width: unset;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="topo-admin">
+        <div class="logo-admin">Painel do Mestre</div>
+        <nav class="menu-admin">
+            <a href="dashboard-mestre.html">Dashboard</a>
+            <a href="personagens.html">Personagens</a>
+            <a href="biblioteca.html" class="ativo">Biblioteca</a>
+            <a href="loja-mestre.html">Loja</a>
+            <a href="efeitos.html">Efeitos</a>
+            <a href="combate.html">Combate</a>
+        </nav>
+    </header>
+
+    <div class="conteudo">
+        <section class="cabecalho">
+            <div class="cabecalho-texto">
+                <h1>Biblioteca de Habilidades</h1>
+                <p>Cadastre, edite, exclua e vincule habilidades aos personagens.</p>
+            </div>
+
+            <div class="voltar">
+                <button class="botao botao-secundario" onclick="window.location.href='biblioteca.html'">
+                    Voltar para bibliotecas
+                </button>
+            </div>
+        </section>
+
+        <div id="mensagem" class="mensagem"></div>
+
+        <section class="layout">
+            <div class="bloco bloco-form">
+                <h2 id="tituloFormulario">Nova habilidade</h2>
+
+                <form id="formHabilidade">
+                    <input type="hidden" id="habilidadeId">
+
+                    <div class="form-grid">
+                        <div class="campo full">
+                            <label for="habilidadeNome">Nome</label>
+                            <input type="text" id="habilidadeNome" required />
+                        </div>
+
+                        <div class="campo">
+                            <label for="habilidadeCustoPm">Custo PM</label>
+                            <input type="number" id="habilidadeCustoPm" min="0" step="1" />
+                        </div>
+
+                        <div class="campo">
+                            <label for="habilidadeDuracaoTurno">Duração em turnos</label>
+                            <input type="number" id="habilidadeDuracaoTurno" min="0" step="1" />
+                        </div>
+
+                        <div class="campo">
+                            <label for="habilidadeBonusAtaque">Bônus ataque</label>
+                            <input type="number" id="habilidadeBonusAtaque" />
+                        </div>
+
+                        <div class="campo">
+                            <label for="habilidadePenalidadeAtaque">Penalidade ataque</label>
+                            <input type="number" id="habilidadePenalidadeAtaque" />
+                        </div>
+
+                        <div class="campo">
+                            <label for="habilidadeBonusDano">Bônus dano</label>
+                            <input type="number" id="habilidadeBonusDano" />
+                        </div>
+
+                        <div class="campo">
+                            <label for="habilidadePenalidadeDano">Penalidade dano</label>
+                            <input type="number" id="habilidadePenalidadeDano" />
+                        </div>
+
+                        <div class="campo">
+                            <label for="habilidadeBonusPv">Bônus PV</label>
+                            <input type="number" id="habilidadeBonusPv" />
+                        </div>
+
+                        <div class="campo">
+                            <label for="habilidadeBonusPm">Bônus PM</label>
+                            <input type="number" id="habilidadeBonusPm" />
+                        </div>
+
+                        <div class="campo">
+                            <label for="habilidadeQuantidadeDado">Quantidade de dado</label>
+                            <input type="number" id="habilidadeQuantidadeDado" min="1" step="1" />
+                        </div>
+
+                        <div class="campo">
+                            <label for="habilidadeTipoDado">Tipo de dado</label>
+                            <select id="habilidadeTipoDado">
+                                <option value="">Selecione</option>
+                                <option value="D4">D4</option>
+                                <option value="D6">D6</option>
+                                <option value="D8">D8</option>
+                                <option value="D10">D10</option>
+                                <option value="D12">D12</option>
+                                <option value="D20">D20</option>
+                            </select>
+                        </div>
+
+                        <div class="campo">
+                            <label for="habilidadeDadoTipoAcao">Tipo de ação do dado</label>
+                            <select id="habilidadeDadoTipoAcao">
+                                <option value="">Selecione</option>
+                                <option value="DANO">DANO</option>
+                                <option value="CURA">CURA</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="acoes-form">
+                        <button type="submit" class="botao botao-primario" id="botaoSalvar">Salvar habilidade</button>
+                        <button type="button" class="botao botao-secundario" onclick="limparFormulario()">
+                            Cancelar edição
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="bloco bloco-lista">
+                <div class="barra-topo-lista">
+                    <h2>Habilidades cadastradas</h2>
+                    <div class="busca">
+                        <input type="text" id="buscaHabilidade" placeholder="Buscar habilidade por nome"
+                            oninput="renderizarHabilidades()">
+                    </div>
+                </div>
+
+                <div id="listaHabilidades" class="lista-habilidades"></div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8080";
+        const params = new URLSearchParams(window.location.search);
+        const personagemIdPreSelecionado = params.get("personagemId");
+
+        let habilidades = [];
+        let personagens = [];
+
+        async function inicializarTela() {
+            try {
+                await Promise.all([
+                    carregarHabilidades(),
+                    carregarPersonagens()
+                ]);
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem("Erro ao inicializar a biblioteca de habilidades.", true);
+            }
+        }
+
+        async function carregarHabilidades() {
+            const resposta = await fetch(`${API_BASE}/habilidades`);
+            if (!resposta.ok) {
+                throw new Error("Erro ao carregar habilidades.");
+            }
+
+            const dados = await resposta.json();
+            habilidades = Array.isArray(dados) ? dados : [];
+            renderizarHabilidades();
+        }
+
+        async function carregarPersonagens() {
+            const resposta = await fetch(`${API_BASE}/personagem`);
+            if (!resposta.ok) {
+                throw new Error("Erro ao carregar personagens.");
+            }
+
+            const dados = await resposta.json();
+            personagens = Array.isArray(dados) ? dados : [];
+            renderizarHabilidades();
+        }
+
+        function renderizarHabilidades() {
+            const lista = document.getElementById("listaHabilidades");
+            const termo = document.getElementById("buscaHabilidade").value.trim().toLowerCase();
+
+            let filtradas = habilidades;
+
+            if (termo) {
+                filtradas = habilidades.filter(habilidade =>
+                    String(habilidade.habilidadeNome || "").toLowerCase().includes(termo)
+                );
+            }
+
+            if (!filtradas.length) {
+                lista.innerHTML = `<div class="vazio">Nenhuma habilidade encontrada.</div>`;
+                return;
+            }
+
+            lista.innerHTML = filtradas.map(habilidade => {
+                const id = habilidade.id;
+                const nome = habilidade.habilidadeNome || "Sem nome";
+                const custoPm = habilidade.habilidadeCustoPm ?? 0;
+                const duracao = habilidade.habilidadeDuracaoTurno ?? 0;
+                const bonusAtaque = habilidade.habilidadeBonusAtaque ?? 0;
+                const bonusDano = habilidade.habilidadeBonusDano ?? 0;
+                const bonusPv = habilidade.habilidadeBonusPv ?? 0;
+                const bonusPm = habilidade.habilidadeBonusPm ?? 0;
+                const penalidadeAtaque = habilidade.habilidadePenalidadeAtaque ?? 0;
+                const penalidadeDano = habilidade.habilidadePenalidadeDano ?? 0;
+                const quantidadeDado = habilidade.habilidadeQuantidadeDado ?? "-";
+                const tipoDado = habilidade.habilidadeTipoDado ?? "-";
+                const dadoTipoAcao = habilidade.habilidadeDadoTipoAcao ?? "-";
+
+                return `
+                    <div class="card-item">
+                        <div class="card-topo">
+                            <div>
+                                <h3>${nome}</h3>
+                                <span class="tag">HABILIDADE</span>
+                            </div>
+                        </div>
+
+                        <div class="info-grid">
+                            <div class="info-box">
+                                <strong>Custo PM</strong>
+                                <span>${custoPm}</span>
+                            </div>
+                            <div class="info-box">
+                                <strong>Duração</strong>
+                                <span>${duracao}</span>
+                            </div>
+                            <div class="info-box">
+                                <strong>Dado</strong>
+                                <span>${quantidadeDado !== "-" && tipoDado !== "-" ? `${quantidadeDado}${tipoDado}` : "-"}</span>
+                            </div>
+                            <div class="info-box">
+                                <strong>Ação do dado</strong>
+                                <span>${dadoTipoAcao}</span>
+                            </div>
+                        </div>
+
+                        <div class="subsecao subsecao-bonus">
+                            <h4>Bônus</h4>
+                            <div class="linha-badges">
+                                <span class="badge azul">Ataque: ${bonusAtaque}</span>
+                                <span class="badge azul">Dano: ${bonusDano}</span>
+                                <span class="badge azul">PV: ${bonusPv}</span>
+                                <span class="badge azul">PM: ${bonusPm}</span>
+                            </div>
+                        </div>
+
+                        <div class="subsecao subsecao-penalidades">
+                            <h4>Penalidades</h4>
+                            <div class="linha-badges">
+                                <span class="badge vermelho">Ataque: ${penalidadeAtaque}</span>
+                                <span class="badge vermelho">Dano: ${penalidadeDano}</span>
+                            </div>
+                        </div>
+
+                        <div class="subsecao subsecao-dado">
+                            <h4>Dado extra</h4>
+                            <div class="linha-badges">
+                                <span class="badge verde">Quantidade: ${quantidadeDado}</span>
+                                <span class="badge verde">Tipo: ${tipoDado}</span>
+                                <span class="badge verde">Ação: ${dadoTipoAcao}</span>
+                            </div>
+                        </div>
+
+                        <div class="subsecao subsecao-vinculo">
+                            <h4>Vincular ao personagem</h4>
+                            <div class="linha-vinculo">
+                                <select id="personagem-habilidade-${id}">
+                                    <option value="">Selecione o personagem</option>
+                                    ${personagens.map(personagem => `
+    <option value="${personagem.id}" ${String(personagem.id) === String(personagemIdPreSelecionado || "") ? "selected" : ""}>
+        ${personagem.personagemNome} (ID ${personagem.id})
+    </option>
+`).join("")}
+                                </select>
+
+                                <button class="botao botao-sucesso" onclick="vincularHabilidade(${id})">
+                                    Vincular
+                                </button>
+
+                                <button class="botao botao-secundario" onclick="desvincularHabilidade(${id})">
+                                    Desvincular
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="acoes-card">
+                            <button class="botao botao-secundario" onclick="editarHabilidade(${id})">Editar</button>
+                            <button class="botao botao-perigo" onclick="excluirHabilidade(${id})">Excluir</button>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        document.getElementById("formHabilidade").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const habilidadeId = document.getElementById("habilidadeId").value.trim();
+
+            const payload = {
+                habilidadeNome: document.getElementById("habilidadeNome").value.trim(),
+                habilidadeCustoPm: parseInt(document.getElementById("habilidadeCustoPm").value) || 0,
+                habilidadeBonusAtaque: parseInt(document.getElementById("habilidadeBonusAtaque").value) || 0,
+                habilidadeBonusDano: parseInt(document.getElementById("habilidadeBonusDano").value) || 0,
+                habilidadeBonusPv: parseInt(document.getElementById("habilidadeBonusPv").value) || 0,
+                habilidadeBonusPm: parseInt(document.getElementById("habilidadeBonusPm").value) || 0,
+                habilidadePenalidadeAtaque: parseInt(document.getElementById("habilidadePenalidadeAtaque").value) || 0,
+                habilidadePenalidadeDano: parseInt(document.getElementById("habilidadePenalidadeDano").value) || 0,
+                habilidadeDuracaoTurno: document.getElementById("habilidadeDuracaoTurno").value
+                    ? parseInt(document.getElementById("habilidadeDuracaoTurno").value)
+                    : 0,
+                habilidadeQuantidadeDado: document.getElementById("habilidadeQuantidadeDado").value
+                    ? parseInt(document.getElementById("habilidadeQuantidadeDado").value)
+                    : null,
+                habilidadeTipoDado: document.getElementById("habilidadeTipoDado").value || null,
+                habilidadeDadoTipoAcao: document.getElementById("habilidadeDadoTipoAcao").value || null
+            };
+
+            if (!payload.habilidadeNome) {
+                mostrarMensagem("Informe o nome da habilidade.", true);
+                return;
+            }
+
+            try {
+                const metodo = habilidadeId ? "PATCH" : "POST";
+                const url = habilidadeId
+                    ? `${API_BASE}/habilidades/${habilidadeId}`
+                    : `${API_BASE}/habilidades`;
+
+                const resposta = await fetch(url, {
+                    method: metodo,
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!resposta.ok) {
+                    const erroTexto = await resposta.text();
+                    throw new Error(erroTexto || "Erro ao salvar habilidade.");
+                }
+
+                mostrarMensagem(habilidadeId ? "Habilidade atualizada com sucesso." : "Habilidade criada com sucesso.");
+                limparFormulario();
+                await carregarHabilidades();
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem("Erro ao salvar habilidade.", true);
+            }
+        });
+
+        function editarHabilidade(id) {
+            const habilidade = habilidades.find(h => String(h.id) === String(id));
+            if (!habilidade) {
+                mostrarMensagem("Habilidade não encontrada para edição.", true);
+                return;
+            }
+
+            document.getElementById("habilidadeId").value = habilidade.id ?? "";
+            document.getElementById("habilidadeNome").value = habilidade.habilidadeNome ?? "";
+            document.getElementById("habilidadeCustoPm").value = habilidade.habilidadeCustoPm ?? "";
+            document.getElementById("habilidadeBonusAtaque").value = habilidade.habilidadeBonusAtaque ?? "";
+            document.getElementById("habilidadeBonusDano").value = habilidade.habilidadeBonusDano ?? "";
+            document.getElementById("habilidadeBonusPv").value = habilidade.habilidadeBonusPv ?? "";
+            document.getElementById("habilidadeBonusPm").value = habilidade.habilidadeBonusPm ?? "";
+            document.getElementById("habilidadePenalidadeAtaque").value = habilidade.habilidadePenalidadeAtaque ?? "";
+            document.getElementById("habilidadePenalidadeDano").value = habilidade.habilidadePenalidadeDano ?? "";
+            document.getElementById("habilidadeDuracaoTurno").value = habilidade.habilidadeDuracaoTurno ?? "";
+            document.getElementById("habilidadeQuantidadeDado").value = habilidade.habilidadeQuantidadeDado ?? "";
+            document.getElementById("habilidadeTipoDado").value = habilidade.habilidadeTipoDado ?? "";
+            document.getElementById("habilidadeDadoTipoAcao").value = habilidade.habilidadeDadoTipoAcao ?? "";
+
+            document.getElementById("tituloFormulario").textContent = "Editar habilidade";
+            document.getElementById("botaoSalvar").textContent = "Salvar alterações";
+
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        function limparFormulario() {
+            document.getElementById("formHabilidade").reset();
+            document.getElementById("habilidadeId").value = "";
+            document.getElementById("tituloFormulario").textContent = "Nova habilidade";
+            document.getElementById("botaoSalvar").textContent = "Salvar habilidade";
+        }
+
+        async function excluirHabilidade(id) {
+            const confirmar = confirm("Deseja realmente excluir esta habilidade?");
+            if (!confirmar) {
+                return;
+            }
+
+            try {
+                const resposta = await fetch(`${API_BASE}/habilidades/${id}`, {
+                    method: "DELETE"
+                });
+
+                if (!resposta.ok) {
+                    throw new Error("Erro ao excluir habilidade.");
+                }
+
+                mostrarMensagem("Habilidade excluída com sucesso.");
+                if (String(document.getElementById("habilidadeId").value) === String(id)) {
+                    limparFormulario();
+                }
+                await carregarHabilidades();
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem("Erro ao excluir habilidade.", true);
+            }
+        }
+
+        async function vincularHabilidade(habilidadeId) {
+            const select = document.getElementById(`personagem-habilidade-${habilidadeId}`);
+            const personagemId = select.value;
+
+            if (!personagemId) {
+                mostrarMensagem("Selecione um personagem para vincular a habilidade.", true);
+                return;
+            }
+
+            try {
+                const resposta = await fetch(`${API_BASE}/habilidades/${habilidadeId}/personagem/${personagemId}`, {
+                    method: "POST"
+                });
+
+                const texto = await resposta.text();
+
+                if (!resposta.ok) {
+                    if (
+                        texto.toLowerCase().includes("já") ||
+                        texto.toLowerCase().includes("pertence") ||
+                        texto.toLowerCase().includes("possui")
+                    ) {
+                        throw new Error("Esse personagem já possui essa habilidade.");
+                    }
+
+                    throw new Error(texto || "Erro ao vincular habilidade.");
+                }
+
+                mostrarMensagem("Habilidade vinculada com sucesso.");
+
+                // 🔥 melhoria UX
+                select.value = "";
+
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem(erro.message || "Erro ao vincular habilidade.", true);
+            }
+        }
+
+        async function desvincularHabilidade(habilidadeId) {
+            const select = document.getElementById(`personagem-habilidade-${habilidadeId}`);
+            const personagemId = select.value;
+
+            if (!personagemId) {
+                mostrarMensagem("Selecione um personagem para desvincular a habilidade.", true);
+                return;
+            }
+
+            try {
+                const resposta = await fetch(
+                    `${API_BASE}/habilidades/${habilidadeId}/personagem/${personagemId}`,
+                    {
+                        method: "DELETE"
+                    }
+                );
+
+                const mensagem = await resposta.text();
+
+                if (!resposta.ok) {
+                    throw new Error(mensagem || "Erro ao desvincular habilidade.");
+                }
+
+                mostrarMensagem(mensagem || "Habilidade desvinculada com sucesso.");
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem(erro.message || "Erro ao desvincular habilidade.", true);
+            }
+        }
+
+        function mostrarMensagem(texto, erro = false) {
+            const mensagem = document.getElementById("mensagem");
+
+            clearTimeout(mensagem._showTimeout);
+            clearTimeout(mensagem._hideTimeout);
+
+            mensagem.textContent = texto;
+            mensagem.className = erro ? "mensagem erro" : "mensagem sucesso";
+
+            // força reflow pra animação funcionar sempre
+            mensagem.offsetHeight;
+
+            // tempo visível (igual padrão toast moderno)
+            mensagem._hideTimeout = setTimeout(() => {
+                mensagem.className = "mensagem";
+            }, 2500);
+
+            // limpa texto depois que sumir
+            mensagem._showTimeout = setTimeout(() => {
+                mensagem.textContent = "";
+            }, 3000);
+        }
+
+        inicializarTela();
+    </script>
+</body>
+
+</html>

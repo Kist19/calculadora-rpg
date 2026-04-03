@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personagens</title>
+    <link rel="stylesheet" href="../css/global.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        .topo-admin {
+            background: #0f172a;
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .logo-admin {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .menu-admin {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .menu-admin a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: #1e293b;
+        }
+
+        .menu-admin a:hover,
+        .menu-admin a.ativo {
+            background: #334155;
+        }
+
+        .conteudo {
+            padding: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .titulo-pagina {
+            margin-bottom: 24px;
+        }
+
+        .titulo-pagina h1 {
+            margin: 0 0 8px 0;
+            font-size: 30px;
+        }
+
+        .titulo-pagina p {
+            margin: 0;
+            color: #4b5563;
+        }
+
+        .bloco-lista {
+            background: white;
+            border-radius: 12px;
+            padding: 10px 22px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        }
+
+        #lista {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .linha-personagem {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 0;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .linha-personagem+.linha-personagem {
+            border-top: 1px solid #d1d5db;
+        }
+
+        .info-personagem {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .nome-personagem {
+            font-size: 18px;
+            font-weight: bold;
+            word-break: break-word;
+        }
+
+        .detalhes-personagem {
+            color: #4b5563;
+            word-break: break-word;
+        }
+
+        .acoes-personagem .botao-ficha {
+            padding: 10px 16px;
+            cursor: pointer;
+        }
+
+        .mensagem-vazia {
+            padding: 16px 0;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .acoes-personagem {
+                width: 100%;
+            }
+
+            .acoes-personagem button {
+                width: 100%;
+            }
+        }
+
+        .bloco-lista .linha-personagem {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+        }
+    </style>
+
+    <link rel="stylesheet" href="../css/mestre-theme.css">
+</head>
+
+<body>
+
+    <header class="topo-admin">
+        <div class="logo-admin">Painel do Mestre</div>
+        <nav class="menu-admin">
+            <a href="dashboard-mestre.html">Dashboard</a>
+            <a href="personagens.html" class="ativo">Personagens</a>
+            <a href="biblioteca.html">Biblioteca</a>
+            <a href="loja-mestre.html">Loja</a>
+            <a href="efeitos.html">Efeitos</a>
+            <a href="combate.html">Combate</a>
+        </nav>
+    </header>
+
+    <div class="conteudo">
+        <section class="titulo-pagina">
+            <h1>Lista de Personagens</h1>
+            <p>Acesse rapidamente as fichas cadastradas.</p>
+        </section>
+
+        <section class="bloco-lista">
+            <div id="lista"></div>
+        </section>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8080";
+
+        fetch(`${API_BASE}/personagem`)
+            .then(res => res.json())
+            .then(data => {
+
+                const lista = document.getElementById("lista");
+
+                if (!data || data.length === 0) {
+                    lista.innerHTML = `<div class="mensagem-vazia">Nenhum personagem cadastrado.</div>`;
+                    return;
+                }
+
+                let html = "";
+
+                data.forEach(p => {
+                    html += `
+                        <div class="linha-personagem">
+                            <div class="info-personagem">
+                                <div class="nome-personagem">${p.personagemNome}</div>
+                                <div class="detalhes-personagem">
+                                    Classe: ${p.personagemClasse} | Nível: ${p.personagemNivel} | ID: ${p.id}
+                                </div>
+                            </div>
+
+                            <div class="acoes-personagem">
+                                <button class="botao-ficha" onclick="ficha(${p.id})">Abrir ficha</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                lista.innerHTML = html;
+            });
+
+        function ficha(id) {
+            window.location.href = `personagem-ficha.html?id=${id}`;
+        }
+    </script>
+
+</body>
+
+</html>

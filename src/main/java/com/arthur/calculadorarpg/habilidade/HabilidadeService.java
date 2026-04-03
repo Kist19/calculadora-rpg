@@ -43,7 +43,15 @@ public class HabilidadeService {
 
         status.setStatusManaAtual(manaAtual - custo);
 
+        Integer duracao = habilidade.getHabilidadeDuracaoTurno() != null
+                ? habilidade.getHabilidadeDuracaoTurno()
+                : 0;
+
+        personagem.getHabilidadesTurnosRestantesNaCena()
+                .put(habilidade.getHabilidadeNome(), duracao);
+
         statusRepository.save(status);
+        personagemRepository.save(personagem);
 
         return "Habilidade usada com sucesso.";
     }
@@ -85,6 +93,22 @@ public class HabilidadeService {
             habilidade.setHabilidadePenalidadeDano(dadosAtualizados.getHabilidadePenalidadeDano());
         }
 
+        if (dadosAtualizados.getHabilidadeDuracaoTurno() != null) {
+            habilidade.setHabilidadeDuracaoTurno(dadosAtualizados.getHabilidadeDuracaoTurno());
+        }
+
+        if (dadosAtualizados.getHabilidadeQuantidadeDado() != null) {
+            habilidade.setHabilidadeQuantidadeDado(dadosAtualizados.getHabilidadeQuantidadeDado());
+        }
+
+        if (dadosAtualizados.getHabilidadeTipoDado() != null) {
+            habilidade.setHabilidadeTipoDado(dadosAtualizados.getHabilidadeTipoDado());
+        }
+
+        if (dadosAtualizados.getHabilidadeDadoTipoAcao() != null) {
+            habilidade.setHabilidadeDadoTipoAcao(dadosAtualizados.getHabilidadeDadoTipoAcao());
+        }
+
         return habilidadeRepository.save(habilidade);
     }
 
@@ -96,4 +120,40 @@ public class HabilidadeService {
         habilidadeRepository.delete(habilidade);
     }
 
+    public Personagem vincularHabilidadeAoPersonagem(Long personagemId, Long habilidadeId) {
+        Personagem personagem = personagemRepository.findById(personagemId)
+                .orElseThrow(() -> new RuntimeException("Personagem não encontrado"));
+
+        Habilidade habilidade = habilidadeRepository.findById(habilidadeId)
+                .orElseThrow(() -> new RuntimeException("Habilidade não encontrada"));
+
+        boolean jaExiste = personagem.getHabilidades().stream()
+                .anyMatch(h -> h.getId().equals(habilidadeId));
+
+        if (!jaExiste) {
+            personagem.getHabilidades().add(habilidade);
+        }
+
+        return personagemRepository.save(personagem);
+    }
+
+    public Habilidade buscarPorId(Long habilidadeId) {
+        return habilidadeRepository.findById(habilidadeId)
+                .orElseThrow(() -> new RuntimeException("Habilidade não encontrada"));
+    }
+
+    public void desvincularHabilidadeDoPersonagem(Long habilidadeId, Long personagemId) {
+
+        Personagem personagem = personagemRepository.findById(personagemId)
+                .orElseThrow(() -> new RuntimeException("Personagem não encontrado"));
+
+        boolean removida = personagem.getHabilidades()
+                .removeIf(h -> h.getId().equals(habilidadeId));
+
+        if (!removida) {
+            throw new RuntimeException("Habilidade não está vinculada ao personagem");
+        }
+
+        personagemRepository.save(personagem);
+    }
 }

@@ -30,13 +30,27 @@ public class PericiaController {
         return periciaService.listarPericias();
     }
 
-    @PatchMapping("/{id}")
-    public Pericia atualizarPericia(@PathVariable Long id, @RequestBody Pericia dadosAtualizados) {
-        return periciaService.atualizarPericia(id, dadosAtualizados);
+    @PostMapping("/personagem/{personagemId}")
+    public Pericia criarPericiaPorPersonagemId(
+            @PathVariable Long personagemId,
+            @RequestBody Pericia pericia) {
+        return periciaService.criarPericiaPorPersonagemId(personagemId, pericia);
     }
 
-    @DeleteMapping("/{id}")
-    public void deletarPericia(@PathVariable Long id) {
-        periciaService.deletarPericia(id);
+    @GetMapping("/personagem/{personagemId}")
+    public Pericia buscarPericiaPorPersonagemId(@PathVariable Long personagemId) {
+        return periciaService.buscarPericiaPorPersonagemId(personagemId);
+    }
+
+    @PatchMapping("/personagem/{personagemId}")
+    public Pericia atualizarPericiaPorPersonagemId(
+            @PathVariable Long personagemId,
+            @RequestBody Pericia dadosAtualizados) {
+        return periciaService.atualizarPericiaPorPersonagemId(personagemId, dadosAtualizados);
+    }
+
+    @DeleteMapping("/personagem/{personagemId}")
+    public void deletarPericiaPorPersonagemId(@PathVariable Long personagemId) {
+        periciaService.deletarPericiaPorPersonagemId(personagemId);
     }
 }

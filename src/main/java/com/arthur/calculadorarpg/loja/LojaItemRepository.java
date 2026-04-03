@@ -10,4 +10,7 @@ public interface LojaItemRepository extends JpaRepository<LojaItem, Long> {
 
     boolean existsByItemId(Long itemId);
 
+    boolean existsByArmaId(Long armaId);
+
+    boolean existsByArmaduraId(Long armaduraId);
 }

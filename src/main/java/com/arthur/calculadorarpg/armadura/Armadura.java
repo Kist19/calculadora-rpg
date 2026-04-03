@@ -32,7 +32,7 @@ public class Armadura {
     private Integer armaduraPenalidadeArmadura = 0;
 
     @Column(nullable = false)
-    private Integer armaduraEspaco;
+    private double armaduraEspaco = 0.0;
 
     @Column(length = 10, nullable = false)
     @Enumerated(EnumType.STRING)
@@ -85,14 +85,6 @@ public class Armadura {
         this.armaduraPenalidadeArmadura = armaduraPenalidadeArmadura;
     }
 
-    public Integer getArmaduraEspaco() {
-        return armaduraEspaco;
-    }
-
-    public void setArmaduraEspaco(Integer armaduraEspaco) {
-        this.armaduraEspaco = armaduraEspaco;
-    }
-
     public ArmaduraTipo getArmaduraTipo() {
         return armaduraTipo;
     }
@@ -100,6 +92,13 @@ public class Armadura {
     public void setArmaduraTipo(ArmaduraTipo armaduraTipo) {
         this.armaduraTipo = armaduraTipo;
     }
-    
 
+    public double getArmaduraEspaco() {
+        return armaduraEspaco;
+    }
+
+    public void setArmaduraEspaco(double armaduraEspaco) {
+        this.armaduraEspaco = armaduraEspaco;
+    }
+    
 }

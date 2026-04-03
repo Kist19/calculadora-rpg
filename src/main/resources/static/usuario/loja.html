@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loja</title>
+
+    <style>
+    * { box-sizing: border-box; }
+    :root {
+      --bg:#05101d; --panel:#112033; --panel-soft:#17283d; --line:#243b5a; --line-strong:#2f4a70;
+      --text:#f4f7fb; --muted:#aac0dd; --accent:#e0c27a; --accent-strong:#f0d595; --accent-text:#111827;
+      --success:#79d7a4; --danger:#f08b8b; --tag:rgba(224,194,122,.12); --tag-text:#f0d595; --shadow:0 14px 38px rgba(0,0,0,.28);
+    }
+    html, body {
+      margin:0; padding:0; height:100%; font-family:Arial,sans-serif;
+      background: radial-gradient(circle at top, #0a1a2c 0%, var(--bg) 58%);
+      color:var(--text); overflow:hidden;
+    }
+    body { display:flex; justify-content:center; }
+    .app {
+      width:100%; max-width:430px; height:100vh; display:flex; flex-direction:column;
+      background:linear-gradient(180deg, rgba(5,16,29,.98) 0%, rgba(4,13,24,.98) 100%);
+      border-left:1px solid rgba(47,74,112,.32); border-right:1px solid rgba(47,74,112,.32);
+    }
+    .conteudo { flex:1; min-height:0; overflow:hidden; padding:10px; display:flex; flex-direction:column; gap:8px; }
+    .mensagem {
+      position: fixed; top: 14px; left:50%; transform:translateX(-50%) translateY(-12px);
+      width:min(92vw,390px); padding:10px 14px; border-radius:12px; font-size:13px; font-weight:700; border:1px solid transparent; opacity:0; pointer-events:none; z-index:1000; transition:.22s ease;
+    }
+    .mensagem.sucesso, .mensagem.erro { opacity:1; transform:translateX(-50%) translateY(0); }
+    .mensagem.sucesso { background: rgba(31,77,56,.95); color:#e8fff1; border-color: rgba(121,215,164,.4); }
+    .mensagem.erro { background: rgba(103,31,31,.95); color:#fff0f0; border-color: rgba(240,139,139,.38); }
+    .card { background:linear-gradient(180deg, rgba(18,32,51,.98) 0%, rgba(21,36,56,.98) 100%); border:1px solid var(--line); border-radius:16px; padding:12px; min-width:0; box-shadow:var(--shadow); }
+    .identidade { display:flex; flex-direction:column; gap:6px; min-height:80px; justify-content:center; }
+    .titulo-secao { font-size:18px; font-weight:800; line-height:1.2; color:var(--accent-strong); word-break:break-word; text-transform:uppercase; letter-spacing:.04em; }
+    .subtexto { font-size:13px; color:var(--muted); line-height:1.4; word-break:break-word; }
+    .linha-resumo { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .resumo-box { background:linear-gradient(180deg, rgba(18,32,51,.98) 0%, rgba(21,36,56,.98) 100%); border:1px solid var(--line); border-radius:16px; padding:12px; box-shadow:var(--shadow); }
+    .resumo-box strong, .topo-lista strong { display:block; font-size:11px; color:var(--accent-strong); text-transform:uppercase; letter-spacing:.05em; margin-bottom:5px; font-weight:800; }
+    .resumo-box span { display:block; font-size:16px; font-weight:800; color:var(--text); }
+    .lista-card { flex:1; min-height:0; overflow:hidden; display:flex; flex-direction:column; }
+    .topo-lista { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:8px; }
+    .contador { font-size:12px; color:var(--muted); font-weight:700; }
+    .lista { flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:8px; padding-right:2px; }
+    .lista::-webkit-scrollbar { width:6px; } .lista::-webkit-scrollbar-thumb { background:rgba(170,192,221,.22); border-radius:999px; }
+    .item-loja { border:1px solid var(--line); border-radius:12px; background:rgba(255,255,255,.04); padding:10px; display:flex; flex-direction:column; gap:8px; }
+    .item-topo { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+    .item-info { min-width:0; flex:1; }
+    .item-nome { font-size:15px; font-weight:800; line-height:1.3; color:var(--text); margin-bottom:4px; word-break:break-word; }
+    .item-tipo { display:inline-flex; align-items:center; width:fit-content; padding:4px 8px; border-radius:999px; background:var(--tag); color:var(--tag-text); border:1px solid rgba(224,194,122,.22); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
+    .item-preco { font-size:15px; font-weight:800; color:var(--accent-strong); white-space:nowrap; }
+    .item-detalhes { display:grid; grid-template-columns:1fr 1fr; gap:6px 10px; font-size:12px; color:var(--muted); }
+    .item-detalhes span strong { color:var(--text); font-weight:700; }
+    .item-acoes { display:flex; justify-content:flex-end; }
+    .item-acoes button, .botao-fixo {
+      border:none; border-radius:16px; min-height:50px; padding:12px 14px; background:linear-gradient(180deg, var(--accent-strong) 0%, var(--accent) 100%); color:var(--accent-text); font-size:14px; font-weight:800; cursor:pointer;
+    }
+    .item-acoes button:disabled { opacity:.48; cursor:not-allowed; }
+    .vazio {
+      flex:1; display:flex; align-items:center; justify-content:center; text-align:center; color:var(--muted); font-size:14px; line-height:1.5; padding:16px;
+    }
+    .barra-acoes { padding:4px 10px 8px; flex-shrink:0; }
+    .botao-fixo { width:100%; }
+    .menu-inferior { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; padding:8px 10px 12px; flex-shrink:0; }
+    .menu-inferior button {
+      width:100%; min-width:0; min-height:48px; border-radius:15px; border:1px solid var(--line); background:var(--panel-soft); color:var(--text); padding:10px 4px; font-size:13px; font-weight:800; cursor:pointer;
+    }
+    .menu-inferior .ativo { background:linear-gradient(180deg, var(--accent-strong) 0%, var(--accent) 100%); color:var(--accent-text); }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <main class="conteudo">
+      <div id="mensagem" class="mensagem"></div>
+
+      <section class="card identidade">
+        <div class="titulo-secao">Loja</div>
+        <div id="nomeLoja" class="subtexto">Loja não carregada</div>
+      </section>
+
+      <section class="linha-resumo">
+        <div class="resumo-box">
+          <strong>Dinheiro</strong>
+          <span id="dinheiroPersonagem">-</span>
+        </div>
+
+        <div class="resumo-box">
+          <strong>Itens na loja</strong>
+          <span id="quantidadeItens">-</span>
+        </div>
+      </section>
+
+      <section class="card lista-card">
+        <div class="topo-lista">
+          <strong>Itens disponíveis</strong>
+          <span id="infoLoja" class="contador">Carregando...</span>
+        </div>
+
+        <div id="listaItens" class="lista">
+          <div class="vazio">Carregando itens da loja...</div>
+        </div>
+      </section>
+    </main>
+
+    <section class="barra-acoes">
+      <button class="botao-fixo" onclick="carregarLoja()">Atualizar loja</button>
+    </section>
+
+    <div class="menu-inferior">
+      <button class="ativo">Loja</button>
+      <button onclick="irPara('inventario')">Inventário</button>
+      <button onclick="irPara('dados')">Dados</button>
+      <button onclick="irPara('personagem')">Personagem</button>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:8080';
+    const params = new URLSearchParams(window.location.search);
+    const personagemId = params.get('id');
+
+    let lojaAtual = null;
+    let statusAtual = null;
+    let personagemAtual = null;
+
+    async function carregarLoja() {
+      if (!personagemId) {
+        mostrarMensagem('Nenhum personagem foi informado na URL.', true);
+        document.getElementById('listaItens').innerHTML = '<div class="vazio">Nenhum personagem informado.</div>';
+        return;
+      }
+
+      try {
+        limparMensagem();
+        document.getElementById('listaItens').innerHTML = '<div class="vazio">Carregando itens da loja...</div>';
+        document.getElementById('quantidadeItens').textContent = '-';
+        document.getElementById('infoLoja').textContent = 'Carregando...';
+
+        await Promise.all([
+          carregarPersonagem(),
+          carregarStatus()
+        ]);
+
+        const lojasResponse = await fetch(`${API_BASE}/lojas/ativas`);
+        if (!lojasResponse.ok) {
+          throw new Error('Não foi possível carregar as lojas ativas.');
+        }
+
+        const lojasAtivas = await lojasResponse.json();
+
+        if (!Array.isArray(lojasAtivas) || lojasAtivas.length === 0) {
+          lojaAtual = null;
+          preencherCabecalhoLoja(null);
+          renderizarItens([]);
+          return;
+        }
+
+        lojaAtual = lojasAtivas[0];
+        preencherCabecalhoLoja(lojaAtual);
+
+        const itensResponse = await fetch(`${API_BASE}/lojas/${lojaAtual.id}/itens`);
+        if (!itensResponse.ok) {
+          throw new Error('Não foi possível carregar os itens da loja.');
+        }
+
+        const itensDaLoja = await itensResponse.json();
+        renderizarItens(itensDaLoja);
+      } catch (erro) {
+        console.error('Erro ao carregar loja:', erro);
+        mostrarMensagem('Erro ao carregar a loja.', true);
+        document.getElementById('listaItens').innerHTML = '<div class="vazio">Erro ao carregar os itens da loja.</div>';
+        document.getElementById('quantidadeItens').textContent = '0';
+        document.getElementById('infoLoja').textContent = 'Erro';
+      }
+    }
+
+    async function carregarPersonagem() {
+      const response = await fetch(`${API_BASE}/personagem`);
+      if (!response.ok) {
+        throw new Error('Erro ao carregar lista de personagens.');
+      }
+
+      const personagens = await response.json();
+      personagemAtual = Array.isArray(personagens)
+        ? personagens.find(p => String(p.id) === String(personagemId))
+        : null;
+    }
+
+    async function carregarStatus() {
+      const response = await fetch(`${API_BASE}/status/personagem/${personagemId}`);
+      if (!response.ok) {
+        throw new Error('Erro ao carregar status do personagem.');
+      }
+
+      statusAtual = await response.json();
+
+      const dinheiro =
+        statusAtual?.statusDinheiro ??
+        statusAtual?.dinheiro ??
+        0;
+
+      document.getElementById('dinheiroPersonagem').textContent = `${dinheiro} PP`;
+    }
+
+    function preencherCabecalhoLoja(loja) {
+      const nomeLoja = document.getElementById('nomeLoja');
+      const infoLoja = document.getElementById('infoLoja');
+
+      if (!loja) {
+        nomeLoja.textContent = 'Nenhuma loja disponível no momento.';
+        infoLoja.textContent = 'Mercado fechado';
+        return;
+      }
+
+      const nome = loja.lojaNome || 'Loja';
+      const tipo = formatarTexto(loja.lojaTipo || 'geral');
+
+      nomeLoja.textContent = nome;
+      infoLoja.textContent = tipo;
+    }
+
+    function renderizarItens(itens) {
+      const lista = document.getElementById('listaItens');
+      const quantidadeItens = document.getElementById('quantidadeItens');
+
+      lista.innerHTML = '';
+
+      if (!lojaAtual) {
+        quantidadeItens.textContent = '0';
+        lista.innerHTML = '<div class="vazio">O comerciante baixou as portas. Volte mais tarde.</div>';
+        return;
+      }
+
+      if (!Array.isArray(itens) || itens.length === 0) {
+        quantidadeItens.textContent = '0';
+        lista.innerHTML = '<div class="vazio">Nenhum item disponível nesta loja.</div>';
+        return;
+      }
+
+      quantidadeItens.textContent = itens.length;
+
+      itens.forEach(lojaItem => {
+        const produto = extrairProduto(lojaItem);
+
+        const nome = produto.nome;
+        const tipo = produto.tipo;
+        const preco = lojaItem.lojaPreco ?? produto.precoBase ?? 0;
+        const quantidade = lojaItem.lojaQuantidade ?? 0;
+        const espaco = produto.espaco ?? 0;
+        const disponivel = lojaItem.disponivel === true && quantidade > 0;
+        const descricao = montarResumoProduto(lojaItem);
+
+        const card = document.createElement('div');
+        card.className = 'item-loja';
+        card.innerHTML = `
+          <div class="item-topo">
+            <div class="item-info">
+              <div class="item-nome">${escapeHtml(nome)}</div>
+              <div class="item-tipo">${escapeHtml(tipo)}</div>
+            </div>
+            <div class="item-preco">${formatarNumero(preco)} PP</div>
+          </div>
+
+          <div class="item-detalhes">
+            <div class="detalhe">
+              <strong>Quantidade</strong>
+              <span>${formatarNumero(quantidade)}</span>
+            </div>
+            <div class="detalhe">
+              <strong>Espaço</strong>
+              <span>${formatarNumero(espaco)}</span>
+            </div>
+          </div>
+
+          <div class="item-descricao">${escapeHtml(descricao)}</div>
+
+          <div class="item-acoes">
+            <button class="botao-comprar" ${disponivel ? '' : 'disabled'} onclick="comprarItem(${lojaItem.id})">
+              ${disponivel ? 'Comprar' : 'Indisponível'}
+            </button>
+          </div>
+        `;
+
+        lista.appendChild(card);
+      });
+    }
+
+    function extrairProduto(lojaItem) {
+      if (lojaItem.item) {
+        return {
+          categoria: 'item',
+          nome: lojaItem.item.itemNome || 'Item sem nome',
+          tipo: formatarTexto(lojaItem.item.itemTipo || 'item'),
+          precoBase: lojaItem.item.itemPreco ?? 0,
+          espaco: lojaItem.item.itemEspaco ?? 0,
+          dados: lojaItem.item
+        };
+      }
+
+      if (lojaItem.arma) {
+        return {
+          categoria: 'arma',
+          nome: lojaItem.arma.armaNome || 'Arma sem nome',
+          tipo: `Arma • ${formatarTexto(lojaItem.arma.armaTipo || 'arma')}`,
+          precoBase: lojaItem.arma.armaPreco ?? 0,
+          espaco: lojaItem.arma.armaEspaco ?? 0,
+          dados: lojaItem.arma
+        };
+      }
+
+      if (lojaItem.armadura) {
+        return {
+          categoria: 'armadura',
+          nome: lojaItem.armadura.armaduraNome || 'Armadura sem nome',
+          tipo: `Armadura • ${formatarTexto(lojaItem.armadura.armaduraTipo || 'armadura')}`,
+          precoBase: lojaItem.armadura.armaduraPreco ?? 0,
+          espaco: lojaItem.armadura.armaduraEspaco ?? 0,
+          dados: lojaItem.armadura
+        };
+      }
+
+      return {
+        categoria: 'desconhecido',
+        nome: 'Produto sem nome',
+        tipo: 'Produto',
+        precoBase: 0,
+        espaco: 0,
+        dados: {}
+      };
+    }
+
+    function montarResumoProduto(lojaItem) {
+      if (lojaItem.item) {
+        return montarResumoItem(lojaItem.item);
+      }
+
+      if (lojaItem.arma) {
+        return montarResumoArma(lojaItem.arma);
+      }
+
+      if (lojaItem.armadura) {
+        return montarResumoArmadura(lojaItem.armadura);
+      }
+
+      return 'Sem descrição adicional cadastrada.';
+    }
+
+    function montarResumoItem(item) {
+      const partes = [];
+
+      if ((item.itemBonusPv ?? 0) !== 0 || (item.itemPenalidadePv ?? 0) !== 0) {
+        partes.push(`PV +${item.itemBonusPv ?? 0} / -${item.itemPenalidadePv ?? 0}`);
+      }
+
+      if ((item.itemBonusPm ?? 0) !== 0 || (item.itemPenalidadePm ?? 0) !== 0) {
+        partes.push(`PM +${item.itemBonusPm ?? 0} / -${item.itemPenalidadePm ?? 0}`);
+      }
+
+      if ((item.itemBonusAtaque ?? 0) !== 0 || (item.itemPenalidadeAtaque ?? 0) !== 0) {
+        partes.push(`Ataque +${item.itemBonusAtaque ?? 0} / -${item.itemPenalidadeAtaque ?? 0}`);
+      }
+
+      if ((item.itemBonusDano ?? 0) !== 0 || (item.itemPenalidadeDano ?? 0) !== 0) {
+        partes.push(`Dano +${item.itemBonusDano ?? 0} / -${item.itemPenalidadeDano ?? 0}`);
+      }
+
+      if (item.itemDuracaoTurno != null) {
+        partes.push(`Duração ${item.itemDuracaoTurno} turno(s)`);
+      }
+
+      if (item.efeito?.efeitoNome) {
+        partes.push(`Efeito: ${item.efeito.efeitoNome}`);
+      }
+
+      if (partes.length === 0) {
+        return 'Sem descrição adicional cadastrada.';
+      }
+
+      return partes.join(' • ');
+    }
+
+    function montarResumoArma(arma) {
+      const partes = [];
+
+      if (arma.armaQuantidadeDado != null && arma.armaTipoDado) {
+        partes.push(`Dano ${arma.armaQuantidadeDado}${String(arma.armaTipoDado).toLowerCase()}`);
+      }
+
+      if (arma.armaTipoPericia) {
+        partes.push(`Perícia ${formatarTexto(arma.armaTipoPericia)}`);
+      }
+
+      if (arma.armaAlcance != null) {
+        partes.push(`Alcance ${arma.armaAlcance}`);
+      }
+
+      if (arma.armaCriticoMinimo != null && arma.armaCriticoMultiplicador != null) {
+        partes.push(`Crítico ${arma.armaCriticoMinimo}/x${arma.armaCriticoMultiplicador}`);
+      }
+
+      if ((arma.armaBonusDano ?? 0) !== 0 || (arma.armaPenalidadeDano ?? 0) !== 0) {
+        partes.push(`Bônus de dano +${arma.armaBonusDano ?? 0} / -${arma.armaPenalidadeDano ?? 0}`);
+      }
+
+      if (partes.length === 0) {
+        return 'Arma sem descrição adicional cadastrada.';
+      }
+
+      return partes.join(' • ');
+    }
+
+    function montarResumoArmadura(armadura) {
+      const partes = [];
+
+      if (armadura.armaduraBonusDefesa != null) {
+        partes.push(`Defesa +${armadura.armaduraBonusDefesa}`);
+      }
+
+      if (armadura.armaduraPenalidadeArmadura != null) {
+        partes.push(`Penalidade ${armadura.armaduraPenalidadeArmadura}`);
+      }
+
+      if (armadura.armaduraTipo) {
+        partes.push(`Tipo ${formatarTexto(armadura.armaduraTipo)}`);
+      }
+
+      if (partes.length === 0) {
+        return 'Armadura sem descrição adicional cadastrada.';
+      }
+
+      return partes.join(' • ');
+    }
+
+    async function comprarItem(lojaItemId) {
+      if (!personagemId) {
+        mostrarMensagem('Nenhum personagem informado.', true);
+        return;
+      }
+
+      try {
+        limparMensagem();
+
+        const response = await fetch(
+          `${API_BASE}/lojas/comprar?personagemId=${personagemId}&lojaItemId=${lojaItemId}`,
+          { method: 'POST' }
+        );
+
+        const texto = await response.text();
+
+        if (!response.ok) {
+          throw new Error(texto || 'Erro ao comprar item.');
+        }
+
+        mostrarMensagem(texto || 'Compra realizada com sucesso.', false);
+        await carregarLoja();
+      } catch (erro) {
+        console.error('Erro ao comprar item:', erro);
+        mostrarMensagem(erro.message || 'Erro ao comprar item.', true);
+      }
+    }
+
+    function formatarTexto(valor) {
+      return String(valor)
+        .replaceAll('_', ' ')
+        .toLowerCase()
+        .replace(/(^|\s)\S/g, letra => letra.toUpperCase());
+    }
+
+    function formatarNumero(valor) {
+      const numero = Number(valor ?? 0);
+      if (Number.isNaN(numero)) {
+        return '0';
+      }
+
+      if (Number.isInteger(numero)) {
+        return String(numero);
+      }
+
+      return numero.toFixed(1).replace('.', ',');
+    }
+
+    function escapeHtml(valor) {
+      return String(valor ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function mostrarMensagem(texto, erro) {
+      const mensagem = document.getElementById('mensagem');
+      mensagem.textContent = texto;
+      mensagem.className = erro ? 'mensagem erro' : 'mensagem sucesso';
+    }
+
+    function limparMensagem() {
+      const mensagem = document.getElementById('mensagem');
+      mensagem.textContent = '';
+      mensagem.className = 'mensagem';
+    }
+
+    function irPara(tela) {
+      if (!personagemId) {
+        alert('ID do personagem não encontrado na URL.');
+        return;
+      }
+
+      window.location.href = `${tela}.html?id=${personagemId}`;
+    }
+
+    carregarLoja();
+  </script>
+</body>
+
+</html>

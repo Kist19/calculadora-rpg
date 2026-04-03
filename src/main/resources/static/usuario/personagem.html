@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personagem</title>
+        <style>
+        * { box-sizing: border-box; }
+        :root {
+            --bg:#05101d; --panel:#112033; --panel-soft:#17283d; --line:#243b5a; --line-strong:#2f4a70;
+            --text:#f4f7fb; --muted:#aac0dd; --accent:#e0c27a; --accent-strong:#f0d595; --accent-text:#111827;
+            --shadow:0 14px 38px rgba(0,0,0,.28);
+        }
+        html, body {
+            margin:0; padding:0; height:100%; font-family:Arial,sans-serif; background: radial-gradient(circle at top, #0a1a2c 0%, var(--bg) 58%); color:var(--text); overflow:hidden;
+        }
+        body { display:flex; justify-content:center; }
+        .app {
+            width:100%; max-width:430px; height:100vh; display:flex; flex-direction:column;
+            background:linear-gradient(180deg, rgba(5,16,29,.98) 0%, rgba(4,13,24,.98) 100%);
+            border-left:1px solid rgba(47,74,112,.32); border-right:1px solid rgba(47,74,112,.32);
+        }
+        .conteudo { flex:1; min-height:0; overflow:hidden; padding:10px; display:flex; flex-direction:column; gap:8px; }
+        .scroll-area { flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:8px; }
+        .scroll-area::-webkit-scrollbar { width:6px; } .scroll-area::-webkit-scrollbar-thumb { background:rgba(170,192,221,.22); border-radius:999px; }
+        .mensagem {
+            position: fixed; top: 14px; left:50%; transform:translateX(-50%) translateY(-12px);
+            width:min(92vw,390px); padding:10px 14px; border-radius:12px; font-size:13px; font-weight:700; border:1px solid transparent; opacity:0; pointer-events:none; z-index:1000; transition:.22s ease;
+        }
+        .mensagem.sucesso, .mensagem.erro { opacity:1; transform:translateX(-50%) translateY(0); }
+        .mensagem.sucesso { background: rgba(31,77,56,.95); color:#e8fff1; border-color: rgba(121,215,164,.4); }
+        .mensagem.erro { background: rgba(103,31,31,.95); color:#fff0f0; border-color: rgba(240,139,139,.38); }
+        .card { background:linear-gradient(180deg, rgba(18,32,51,.98) 0%, rgba(21,36,56,.98) 100%); border:1px solid var(--line); border-radius:16px; padding:12px; min-width:0; box-shadow:var(--shadow); }
+        .identidade { min-height:92px; display:flex; flex-direction:column; justify-content:center; text-align:center; gap:6px; }
+        .nome-personagem { font-size:20px; font-weight:800; line-height:1.15; color:var(--accent-strong); word-break:break-word; }
+        .descricao-personagem { font-size:13px; color:var(--muted); line-height:1.45; }
+        .linha-dupla { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+        .titulo-bloco { font-size:11px; color:var(--accent-strong); text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px; font-weight:800; text-align:center; }
+        .grid-atributos { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+        .item-mini, .equipamento-item, .modal-item {
+            background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:12px;
+        }
+        .item-mini { padding:8px 10px; min-height:70px; display:flex; flex-direction:column; justify-content:center; text-align:center; }
+        .item-mini strong, .equipamento-item strong { display:block; font-size:11px; color:var(--muted); margin-bottom:6px; font-weight:400; }
+        .item-mini span, .equipamento-item span { font-size:13px; font-weight:800; color:var(--text); }
+        .item-mini span { font-size:18px; line-height:1; }
+        .equipamentos-card { display:flex; flex-direction:column; justify-content:flex-start; }
+        .equipamentos-lista { display:flex; flex-direction:column; gap:8px; }
+        .equipamento-item { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:10px 12px; }
+        .equipamento-item span { text-align:right; }
+        .linha-listas { align-items:stretch; }
+        .card-lista { min-height:124px; display:flex; flex-direction:column; justify-content:space-between; }
+        .resumo-lista { display:flex; flex-direction:column; gap:12px; height:100%; justify-content:space-between; align-items:center; text-align:center; }
+        .resumo-texto, .vazio, .modal-item p { font-size:13px; color:var(--muted); line-height:1.45; }
+        .botao-abrir, .botao-atualizar {
+            border:none; border-radius:16px; min-height:50px; padding:10px 14px; background:linear-gradient(180deg, var(--accent-strong) 0%, var(--accent) 100%); color:var(--accent-text); font-weight:800; font-size:14px; cursor:pointer;
+        }
+        .botao-abrir { align-self:center; min-height:46px; min-width:170px; }
+        .barra-acoes { padding:4px 10px 8px; flex-shrink:0; }
+        .botao-atualizar { width:100%; }
+        .menu-inferior { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; padding:8px 10px 12px; flex-shrink:0; }
+        .menu-inferior button {
+            width:100%; min-width:0; min-height:48px; border-radius:15px; border:1px solid var(--line); background:var(--panel-soft); color:var(--text); font-size:13px; font-weight:800; padding:10px 4px; cursor:pointer;
+        }
+        .menu-inferior button.ativo { background:linear-gradient(180deg, var(--accent-strong) 0%, var(--accent) 100%); color:var(--accent-text); }
+        .modal { position:fixed; inset:0; background:rgba(3,9,17,.78); display:flex; align-items:center; justify-content:center; padding:16px; z-index:500; }
+        .modal.hidden { display:none; }
+        .modal-box { width:100%; max-width:430px; max-height:80vh; background:linear-gradient(180deg, #132237 0%, #18283e 100%); border:1px solid var(--line); border-radius:18px; overflow:hidden; display:flex; flex-direction:column; box-shadow:var(--shadow); }
+        .modal-topo { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid var(--line); }
+        .modal-topo h2 { margin:0; font-size:18px; }
+        .modal-fechar { border:none; background:rgba(255,255,255,.06); width:34px; height:34px; border-radius:10px; font-size:20px; color:var(--text); cursor:pointer; flex-shrink:0; }
+        .modal-conteudo { padding:14px 16px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; }
+        .modal-item { padding:14px; border:1px solid var(--line); border-radius:16px; background:rgba(255,255,255,.03); }
+        .modal-item-topo { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:10px; }
+        .modal-item strong { font-size:16px; word-break:break-word; color:var(--text); }
+        .modal-item span { font-size:13px; font-weight:800; color:var(--accent-strong); white-space:nowrap; }
+        .habilidade-subinfo { margin-top:4px; font-size:12px; color:var(--muted); font-weight:700; }
+        .habilidade-badge { padding:6px 10px; border-radius:999px; font-size:12px; font-weight:800; white-space:nowrap; border:1px solid transparent; }
+        .habilidade-badge.sucesso { background:rgba(121,215,164,.14); color:#9aebbd; border-color:rgba(121,215,164,.22); }
+        .habilidade-badge.erro { background:rgba(240,139,139,.14); color:#ffb4b4; border-color:rgba(240,139,139,.22); }
+        .habilidade-detalhes { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px; margin-top:10px; }
+        .habilidade-detalhe { background:rgba(255,255,255,.04); border:1px solid rgba(47,74,112,.55); border-radius:12px; padding:8px 10px; }
+        .habilidade-detalhe strong { display:block; margin:0 0 4px; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+        .habilidade-detalhe span { display:block; font-size:14px; font-weight:800; color:var(--text); white-space:normal; }
+        .habilidade-detalhe .positivo { color:#79d7a4; }
+        .habilidade-detalhe .negativo { color:#f08b8b; }
+        .habilidade-acoes { display:flex; justify-content:center; margin-top:14px; }
+        .habilidade-acoes .botao-abrir { min-width:180px; }
+        @media (max-width:360px) {
+            .linha-dupla { grid-template-columns:1fr; }
+            .nome-personagem { font-size:18px; }
+            .card-lista { min-height:106px; }
+            .habilidade-detalhes { grid-template-columns:1fr; }
+            .habilidade-acoes .botao-abrir { min-width:100%; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <main class="conteudo">
+            <div id="mensagem" class="mensagem"></div>
+
+            <div class="scroll-area">
+                <section class="card identidade">
+                    <div id="nomePersonagem" class="nome-personagem">Carregando...</div>
+                    <div id="descricaoPersonagem" class="descricao-personagem">
+                        Carregando informações do personagem...
+                    </div>
+                </section>
+
+                <section class="linha-dupla">
+                    <div class="card">
+                        <div class="titulo-bloco">Atributos</div>
+                        <div id="atributosGrid" class="grid-atributos"></div>
+                    </div>
+
+                    <div class="card equipamentos-card">
+                        <div class="titulo-bloco">Equipamentos</div>
+                        <div id="equipamentosLista" class="equipamentos-lista"></div>
+                    </div>
+                </section>
+
+                <section class="linha-dupla linha-listas">
+                    <section class="card card-lista" onclick="abrirModalPericias()">
+                        <div class="titulo-bloco">Perícias</div>
+                        <div class="resumo-lista">
+                            <div id="resumoPericias" class="resumo-texto">Nenhuma perícia.</div>
+                            <button class="botao-abrir" type="button"
+                                onclick="event.stopPropagation(); abrirModalPericias();">
+                                Abrir perícias
+                            </button>
+                        </div>
+                    </section>
+
+                    <section class="card card-lista" onclick="abrirModalHabilidades()">
+                        <div class="titulo-bloco">Habilidades</div>
+                        <div class="resumo-lista">
+                            <div id="resumoHabilidades" class="resumo-texto">Nenhuma habilidade.
+                            </div>
+                            <button class="botao-abrir" type="button"
+                                onclick="event.stopPropagation(); abrirModalHabilidades();">
+                                Abrir habilidades
+                            </button>
+                        </div>
+                    </section>
+                </section>
+            </div>
+        </main>
+
+        <section class="barra-acoes">
+            <button class="botao-atualizar" onclick="carregarTela()">Atualizar página</button>
+        </section>
+
+        <nav class="menu-inferior">
+            <button onclick="irPara('loja')">Loja</button>
+            <button onclick="irPara('inventario')">Inventário</button>
+            <button onclick="irPara('dados')">Dados</button>
+            <button class="ativo" onclick="irPara('personagem')">Personagem</button>
+        </nav>
+    </div>
+
+    <div id="modalPericias" class="modal hidden">
+        <div class="modal-box">
+            <div class="modal-topo">
+                <h2>Perícias</h2>
+                <button class="modal-fechar" onclick="fecharModalPericias()">×</button>
+            </div>
+            <div id="modalPericiasConteudo" class="modal-conteudo"></div>
+        </div>
+    </div>
+
+    <div id="modalHabilidades" class="modal hidden">
+        <div class="modal-box">
+            <div class="modal-topo">
+                <h2>Habilidades</h2>
+                <button class="modal-fechar" onclick="fecharModalHabilidades()">×</button>
+            </div>
+            <div id="modalHabilidadesConteudo" class="modal-conteudo"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8080";
+        const params = new URLSearchParams(window.location.search);
+        const personagemId = params.get("id");
+
+        let personagemAtual = null;
+        let atributosAtuais = null;
+        let statusAtual = null;
+        let periciasAtuais = [];
+        let habilidadesAtuais = [];
+
+        async function carregarTela() {
+            if (!personagemId) {
+                mostrarMensagem("ID do personagem não encontrado na URL.", true);
+                return;
+            }
+
+            try {
+                limparMensagem();
+
+                await Promise.all([
+                    carregarPersonagem(),
+                    carregarAtributos(),
+                    carregarStatus(),
+                    carregarPericias()
+                ]);
+
+                carregarHabilidades();
+
+                preencherIdentidade();
+                preencherAtributos();
+                preencherEquipamentos();
+                preencherResumoPericias();
+                preencherResumoHabilidades();
+            } catch (erro) {
+                console.error("Erro ao carregar personagem:", erro);
+                mostrarMensagem("Erro ao carregar a ficha do personagem.", true);
+            }
+        }
+
+        async function carregarPersonagem() {
+            const response = await fetch(`${API_BASE}/personagem`);
+            if (!response.ok) {
+                throw new Error("Não foi possível carregar a lista de personagens.");
+            }
+
+            const personagens = await response.json();
+            personagemAtual = Array.isArray(personagens)
+                ? personagens.find(p => String(p.id) === String(personagemId))
+                : null;
+
+            if (!personagemAtual) {
+                throw new Error("Personagem não encontrado.");
+            }
+        }
+
+        async function carregarAtributos() {
+            const response = await fetch(`${API_BASE}/atributo/personagem/${personagemId}`);
+            if (!response.ok) {
+                atributosAtuais = null;
+                return;
+            }
+
+            atributosAtuais = await response.json();
+        }
+
+        async function carregarStatus() {
+            const response = await fetch(`${API_BASE}/status/personagem/${personagemId}`);
+            if (!response.ok) {
+                statusAtual = null;
+                return;
+            }
+
+            statusAtual = await response.json();
+        }
+
+        async function carregarPericias() {
+            const response = await fetch(`${API_BASE}/personagem/${personagemId}/pericias`);
+            if (!response.ok) {
+                periciasAtuais = [];
+                return;
+            }
+
+            const dados = await response.json();
+
+            if (!dados || Array.isArray(dados) || typeof dados !== "object") {
+                periciasAtuais = [];
+                return;
+            }
+
+            periciasAtuais = Object.entries(dados).map(([nome, valor]) => ({
+                periciaNome: formatarNomePericia(nome),
+                periciaValorCalculado: valor
+            }));
+        }
+
+        function carregarHabilidades() {
+            const habilidadesDoPersonagem = personagemAtual?.habilidades;
+
+            habilidadesAtuais = Array.isArray(habilidadesDoPersonagem)
+                ? habilidadesDoPersonagem
+                : [];
+        }
+
+        function preencherIdentidade() {
+            const nome = personagemAtual?.personagemNome || "Personagem";
+            const classe = personagemAtual?.personagemClasse || "Classe não informada";
+            const raca = personagemAtual?.personagemRaca || "Raça não informada";
+            const origem = personagemAtual?.personagemOrigem || "Origem não informada";
+            const nivel = personagemAtual?.personagemNivel ?? "Nível não informado";
+
+            document.getElementById("nomePersonagem").textContent = nome;
+            document.getElementById("descricaoPersonagem").innerHTML =
+                `${classe} • ${raca} • ${origem} • Nível ${nivel}`;
+        }
+
+        function preencherAtributos() {
+            const container = document.getElementById("atributosGrid");
+
+            const base = {
+                "Força": "-",
+                "Destreza": "-",
+                "Constituição": "-",
+                "Inteligência": "-",
+                "Sabedoria": "-",
+                "Carisma": "-"
+            };
+
+            if (atributosAtuais && !Array.isArray(atributosAtuais) && typeof atributosAtuais === "object") {
+                base["Força"] = atributosAtuais.atributoForca ?? "-";
+                base["Destreza"] = atributosAtuais.atributoDestreza ?? "-";
+                base["Constituição"] = atributosAtuais.atributoConstituicao ?? "-";
+                base["Inteligência"] = atributosAtuais.atributoInteligencia ?? "-";
+                base["Sabedoria"] = atributosAtuais.atributoSabedoria ?? "-";
+                base["Carisma"] = atributosAtuais.atributoCarisma ?? "-";
+            }
+
+            container.innerHTML = Object.entries(base).map(([nome, valor]) => `
+            <div class="item-mini">
+                <strong>${nome}</strong>
+                <span>${valor}</span>
+            </div>
+        `).join("");
+        }
+
+        function preencherEquipamentos() {
+            const container = document.getElementById("equipamentosLista");
+
+            const arma =
+                personagemAtual?.armaEquipada?.armaNome ||
+                personagemAtual?.armaEquipada?.itemNome ||
+                personagemAtual?.armaEquipada?.nome ||
+                personagemAtual?.personagemArmaEquipada ||
+                "Nenhuma";
+
+            const armadura =
+                personagemAtual?.armaduraEquipada?.armaduraNome ||
+                personagemAtual?.armaduraEquipada?.itemNome ||
+                personagemAtual?.armaduraEquipada?.nome ||
+                personagemAtual?.personagemArmaduraEquipada ||
+                "Nenhuma";
+
+            const escudo =
+                personagemAtual?.escudoEquipado?.armaduraNome ||
+                personagemAtual?.escudoEquipado?.itemNome ||
+                personagemAtual?.escudoEquipado?.nome ||
+                personagemAtual?.personagemEscudoEquipado ||
+                "Nenhum";
+
+            container.innerHTML = `
+            <div class="equipamento-item">
+                <strong>Arma</strong>
+                <span>${arma}</span>
+            </div>
+            <div class="equipamento-item">
+                <strong>Armadura</strong>
+                <span>${armadura}</span>
+            </div>
+            <div class="equipamento-item">
+                <strong>Escudo</strong>
+                <span>${escudo}</span>
+            </div>
+        `;
+        }
+
+        function preencherResumoPericias() {
+            const resumo = document.getElementById("resumoPericias");
+
+            if (!Array.isArray(periciasAtuais) || periciasAtuais.length === 0) {
+                resumo.textContent = "Nenhuma perícia.";
+                return;
+            }
+
+            resumo.textContent = `${periciasAtuais.length} perícia(s) disponível(is).`;
+        }
+
+        function preencherResumoHabilidades() {
+            const resumo = document.getElementById("resumoHabilidades");
+
+            if (!Array.isArray(habilidadesAtuais) || habilidadesAtuais.length === 0) {
+                resumo.textContent = "Nenhuma habilidade.";
+                return;
+            }
+
+            const manaAtual = statusAtual?.statusManaAtual ?? 0;
+            resumo.textContent = `${habilidadesAtuais.length} habilidade(s) vinculada(s) • PM atual: ${manaAtual}`;
+        }
+
+        function abrirModalPericias() {
+            const modal = document.getElementById("modalPericias");
+            const conteudo = document.getElementById("modalPericiasConteudo");
+            conteudo.innerHTML = "";
+
+            if (!Array.isArray(periciasAtuais) || periciasAtuais.length === 0) {
+                conteudo.innerHTML = `<div class="vazio">Nenhuma perícia.</div>`;
+            } else {
+                periciasAtuais.forEach(pericia => {
+                    const nome = pericia?.periciaNome || "Perícia";
+                    const valor = pericia?.periciaValorCalculado ?? "-";
+
+                    const item = document.createElement("div");
+                    item.className = "modal-item";
+                    item.innerHTML = `
+                    <div class="modal-item-topo">
+                        <strong>${nome}</strong>
+                        <span>${valor}</span>
+                    </div>
+                `;
+                    conteudo.appendChild(item);
+                });
+            }
+
+            modal.classList.remove("hidden");
+        }
+
+        function fecharModalPericias() {
+            document.getElementById("modalPericias").classList.add("hidden");
+        }
+
+        function abrirModalHabilidades() {
+            const modal = document.getElementById("modalHabilidades");
+            const conteudo = document.getElementById("modalHabilidadesConteudo");
+            conteudo.innerHTML = "";
+
+            if (!Array.isArray(habilidadesAtuais) || habilidadesAtuais.length === 0) {
+                conteudo.innerHTML = `<div class="vazio">Nenhuma habilidade.</div>`;
+                modal.classList.remove("hidden");
+                return;
+            }
+
+            const manaAtual = statusAtual?.statusManaAtual ?? 0;
+
+            habilidadesAtuais.forEach(habilidade => {
+                const id = habilidade?.id;
+                const nome = habilidade?.habilidadeNome || "Habilidade";
+                const custoPm = Number(habilidade?.habilidadeCustoPm ?? 0);
+                const bonusAtaque = Number(habilidade?.habilidadeBonusAtaque ?? 0);
+                const penalidadeAtaque = Number(habilidade?.habilidadePenalidadeAtaque ?? 0);
+                const bonusDano = Number(habilidade?.habilidadeBonusDano ?? 0);
+                const penalidadeDano = Number(habilidade?.habilidadePenalidadeDano ?? 0);
+                const bonusPv = Number(habilidade?.habilidadeBonusPv ?? 0);
+                const bonusPm = Number(habilidade?.habilidadeBonusPm ?? 0);
+                const duracao = Number(habilidade?.habilidadeDuracaoTurno ?? 0);
+                const quantidadeDado = Number(habilidade?.habilidadeQuantidadeDado ?? 0);
+                const tipoDado = habilidade?.habilidadeTipoDado || null;
+                const dadoTipoAcao = habilidade?.habilidadeDadoTipoAcao || null;
+
+                const semMana = manaAtual < custoPm;
+                const ataqueLiquido = bonusAtaque - penalidadeAtaque;
+                const danoLiquido = bonusDano - penalidadeDano;
+
+                const detalhes = [];
+
+                detalhes.push(`
+                    <div class="habilidade-detalhe">
+                        <strong>Custo</strong>
+                        <span>${custoPm} PM</span>
+                    </div>
+                `);
+
+                if (duracao > 0) {
+                    detalhes.push(`
+                        <div class="habilidade-detalhe">
+                            <strong>Duração</strong>
+                            <span>${duracao} turno(s)</span>
+                        </div>
+                    `);
+                }
+
+                if (ataqueLiquido !== 0) {
+                    detalhes.push(`
+                        <div class="habilidade-detalhe">
+                            <strong>Ataque</strong>
+                            <span class="${ataqueLiquido > 0 ? "positivo" : "negativo"}">${ataqueLiquido > 0 ? "+" : ""}${ataqueLiquido}</span>
+                        </div>
+                    `);
+                }
+
+                if (danoLiquido !== 0) {
+                    detalhes.push(`
+                        <div class="habilidade-detalhe">
+                            <strong>Dano</strong>
+                            <span class="${danoLiquido > 0 ? "positivo" : "negativo"}">${danoLiquido > 0 ? "+" : ""}${danoLiquido}</span>
+                        </div>
+                    `);
+                }
+
+                if (bonusPv !== 0) {
+                    detalhes.push(`
+                        <div class="habilidade-detalhe">
+                            <strong>PV</strong>
+                            <span class="${bonusPv > 0 ? "positivo" : "negativo"}">${bonusPv > 0 ? "+" : ""}${bonusPv}</span>
+                        </div>
+                    `);
+                }
+
+                if (bonusPm !== 0) {
+                    detalhes.push(`
+                        <div class="habilidade-detalhe">
+                            <strong>PM</strong>
+                            <span class="${bonusPm > 0 ? "positivo" : "negativo"}">${bonusPm > 0 ? "+" : ""}${bonusPm}</span>
+                        </div>
+                    `);
+                }
+
+                if (quantidadeDado > 0 && tipoDado && dadoTipoAcao) {
+                    detalhes.push(`
+                        <div class="habilidade-detalhe">
+                            <strong>${dadoTipoAcao === "CURA" ? "Cura" : "Dado"}</strong>
+                            <span class="${dadoTipoAcao === "CURA" ? "positivo" : "negativo"}">${quantidadeDado}${String(tipoDado).replace(/^D/i, "d")}</span>
+                        </div>
+                    `);
+                }
+
+                const item = document.createElement("div");
+                item.className = "modal-item";
+                item.innerHTML = `
+            <div class="modal-item-topo">
+                <div>
+                    <strong>${nome}</strong>
+                    <div class="habilidade-subinfo">PM atual: ${manaAtual}</div>
+                </div>
+                <span class="habilidade-badge ${semMana ? "erro" : "sucesso"}">
+                    ${semMana ? "PM insuficiente" : `Custo ${custoPm} PM`}
+                </span>
+            </div>
+
+            <div class="habilidade-detalhes">
+                ${detalhes.join("")}
+            </div>
+
+            <div class="habilidade-acoes">
+                <button
+                    class="botao-abrir"
+                    ${semMana ? "disabled style='opacity:0.65;cursor:not-allowed;'" : ""}
+                    onclick="usarHabilidade(${id}, '${escapeAspas(nome)}')">
+                    ${semMana ? "PM insuficiente" : "Usar habilidade"}
+                </button>
+            </div>
+        `;
+
+                conteudo.appendChild(item);
+            });
+
+            modal.classList.remove("hidden");
+        }
+
+        function fecharModalHabilidades() {
+            document.getElementById("modalHabilidades").classList.add("hidden");
+        }
+
+        async function usarHabilidade(habilidadeId, nomeHabilidade) {
+            try {
+                limparMensagem();
+
+                const response = await fetch(
+                    `${API_BASE}/habilidades/usar?personagemId=${personagemId}&habilidadeId=${habilidadeId}`,
+                    { method: "POST" }
+                );
+
+                const texto = await response.text();
+
+                if (!response.ok) {
+                    throw new Error(texto || "Erro ao usar habilidade.");
+                }
+
+                await carregarStatus();
+                preencherResumoHabilidades();
+                abrirModalHabilidades();
+
+                mostrarMensagem(texto || `Habilidade "${nomeHabilidade}" usada com sucesso.`, false);
+            } catch (erro) {
+                console.error("Erro ao usar habilidade:", erro);
+                mostrarMensagem(erro.message || `Erro ao usar a habilidade "${nomeHabilidade}".`, true);
+            }
+        }
+
+        function formatarNomePericia(nome) {
+            return String(nome)
+                .replace(/^pericia/i, "")
+                .replace(/([A-Z])/g, " $1")
+                .trim()
+                .replace(/^./, letra => letra.toUpperCase());
+        }
+
+        function escapeAspas(texto) {
+            return String(texto).replace(/'/g, "\\'");
+        }
+
+        function irPara(tela) {
+            if (!personagemId) {
+                alert("ID do personagem não encontrado na URL.");
+                return;
+            }
+
+            window.location.href = `${tela}.html?id=${personagemId}`;
+        }
+
+        function mostrarMensagem(texto, erro) {
+            const mensagem = document.getElementById("mensagem");
+            mensagem.textContent = texto;
+            mensagem.className = erro ? "mensagem erro" : "mensagem sucesso";
+        }
+
+        function limparMensagem() {
+            const mensagem = document.getElementById("mensagem");
+            mensagem.textContent = "";
+            mensagem.className = "mensagem";
+        }
+
+        document.getElementById("modalPericias").addEventListener("click", function (e) {
+            if (e.target === this) fecharModalPericias();
+        });
+
+        document.getElementById("modalHabilidades").addEventListener("click", function (e) {
+            if (e.target === this) fecharModalHabilidades();
+        });
+
+        carregarTela();
+    </script>
+</body>
+
+</html>

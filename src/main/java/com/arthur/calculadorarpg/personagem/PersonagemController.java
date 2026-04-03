@@ -1,5 +1,6 @@
 package com.arthur.calculadorarpg.personagem;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,12 +43,32 @@ public class PersonagemController {
         return periciaService.calcularPericias(personagem);
     }
 
+    @GetMapping("/{personagemId}/dados-cena")
+    public ResponseEntity<DadosCenaResponse> buscarDadosCena(@PathVariable Long personagemId) {
+        return ResponseEntity.ok(personagemService.buscarDadosCena(personagemId));
+    }
+
     @PatchMapping("/{id}")
     public Personagem atualizarPersonagem(
             @PathVariable Long id,
             @RequestBody Personagem dadosAtualizados) {
 
         return personagemService.atualizarPersonagem(id, dadosAtualizados);
+    }
+
+    @PatchMapping("/{id}/modo-combate/ativar")
+    public Personagem ativarModoCombate(@PathVariable Long id) {
+        return personagemService.ativarModoCombate(id);
+    }
+
+    @PatchMapping("/{id}/modo-combate/desativar")
+    public Personagem desativarModoCombate(@PathVariable Long id) {
+        return personagemService.desativarModoCombate(id);
+    }
+
+    @PatchMapping("/{id}/modo-combate/alternar")
+    public Personagem alternarModoCombate(@PathVariable Long id) {
+        return personagemService.alternarModoCombate(id);
     }
 
     @DeleteMapping("/{id}")

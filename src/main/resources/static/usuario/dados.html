@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dados</title>
+        <style>
+        * { box-sizing: border-box; }
+
+        :root {
+            --bg: #05101d;
+            --bg-soft: #091727;
+            --panel: #112033;
+            --panel-soft: #17283d;
+            --panel-elevated: #1b2d44;
+            --line: #243b5a;
+            --line-strong: #2f4a70;
+            --text: #f4f7fb;
+            --muted: #aac0dd;
+            --accent: #e0c27a;
+            --accent-strong: #f0d595;
+            --accent-text: #111827;
+            --success: #79d7a4;
+            --danger: #f08b8b;
+            --shadow: 0 14px 38px rgba(0, 0, 0, 0.28);
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            background: radial-gradient(circle at top, #0a1a2c 0%, var(--bg) 58%);
+            color: var(--text);
+            overflow: hidden;
+        }
+
+        body { display: flex; justify-content: center; }
+
+        .app {
+            width: 100%;
+            max-width: 430px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(180deg, rgba(5,16,29,.98) 0%, rgba(4,13,24,.98) 100%);
+            border-left: 1px solid rgba(47, 74, 112, 0.32);
+            border-right: 1px solid rgba(47, 74, 112, 0.32);
+        }
+
+        .conteudo {
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .mensagem {
+            position: fixed;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-12px);
+            width: min(92vw, 390px);
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            border: 1px solid transparent;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1000;
+            transition: .22s ease;
+        }
+        .mensagem.sucesso, .mensagem.erro { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .mensagem.sucesso { background: rgba(31,77,56,.95); color: #e8fff1; border-color: rgba(121,215,164,.4); }
+        .mensagem.erro { background: rgba(103,31,31,.95); color: #fff0f0; border-color: rgba(240,139,139,.38); }
+
+        .linha-topo, .linha-meio { display: grid; gap: 8px; }
+        .linha-topo { grid-template-columns: 1fr 1fr; }
+        .linha-meio { grid-template-columns: .85fr 1.15fr; }
+
+        .card {
+            background: linear-gradient(180deg, rgba(18,32,51,.98) 0%, rgba(21,36,56,.98) 100%);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 12px;
+            min-width: 0;
+            box-shadow: var(--shadow);
+        }
+
+        .identidade {
+            min-height: 88px;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: center;
+            gap: 4px 8px;
+        }
+        .nome-personagem {
+            width: 100%;
+            margin: 0 0 2px;
+            font-size: 20px;
+            font-weight: 800;
+            line-height: 1.15;
+            color: var(--accent-strong);
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+        .info-secundaria {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.2;
+        }
+        .info-secundaria:not(:last-child)::after {
+            content: '•';
+            margin-left: 8px;
+            color: rgba(170,192,221,.5);
+        }
+
+        .status-card.clicavel {
+            cursor: pointer;
+            transition: transform .15s ease, border-color .15s ease;
+            min-height: 88px;
+        }
+        .status-card.clicavel:hover { transform: translateY(-1px); border-color: var(--line-strong); }
+        .status-topo {
+            display: flex;
+            justify-content: flex-end;
+            min-height: 14px;
+            margin-bottom: 8px;
+        }
+        .status-dica {
+            font-size: 11px;
+            color: var(--muted);
+            opacity: .86;
+            font-weight: 600;
+        }
+        .status-lista { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; }
+        .status-item strong,
+        .teste-linha strong,
+        .bloco-acao strong {
+            display: block;
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            font-weight: 700;
+        }
+        .status-item span { font-size: 15px; font-weight: 800; color: var(--text); }
+
+        .combate-card, .efeitos-card { min-height: 70px; display: flex; justify-content: center; }
+        .combate-card { align-items: center; text-align: center; }
+        .combate-texto { font-size: 16px; font-weight: 800; }
+        .combate-ativo { color: var(--danger); }
+        .combate-inativo { color: var(--success); }
+        .combate-sub { margin-top: 4px; font-size: 12px; color: var(--muted); }
+        .efeitos-lista {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+            justify-content: center;
+            min-height: 100%;
+            text-align: center;
+        }
+        .efeito-box {
+            min-width: 28px;
+            height: 28px;
+            padding: 0 8px;
+            border-radius: 8px;
+            background: rgba(224,194,122,.12);
+            border: 1px solid rgba(224,194,122,.24);
+            color: var(--accent-strong);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .efeitos-vazio { font-size: 12px; color: var(--muted); }
+
+        .teste-card {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+            overflow: hidden;
+        }
+        .painel-combate-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 6px 4px 10px; }
+        .painel-combate-scroll::-webkit-scrollbar { width: 6px; }
+        .painel-combate-scroll::-webkit-scrollbar-thumb { background: rgba(170,192,221,.22); border-radius: 999px; }
+
+        .lista-turno::-webkit-scrollbar,
+        .lista-fontes-ativas::-webkit-scrollbar { width: 6px; }
+        .lista-turno::-webkit-scrollbar-thumb,
+        .lista-fontes-ativas::-webkit-scrollbar-thumb { background: rgba(170,192,221,.22); border-radius: 999px; }
+
+        .teste-linha strong,
+        .bloco-acao strong {
+            margin-bottom: 8px;
+        }
+        .teste-linha span,
+        .bloco-acao span {
+            margin-top: 2px;
+        }
+
+        .teste-linha { text-align: center; margin-bottom: 24px; }
+        .teste-linha:last-child { margin-bottom: 0; }
+        .teste-linha span, .bloco-acao span {
+            display: block;
+            font-size: 17px;
+            font-weight: 800;
+            line-height: 1.25;
+            color: var(--text);
+            word-break: break-word;
+        }
+        .bloco-acao {
+            text-align: center;
+        }
+        .dupla-acao, .dupla-info-combate { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 26px; }
+        .teste-linha-menor span { font-size: 15px; }
+        .bloco-turno { margin-bottom: 26px; }
+        .lista-turno { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; text-align: left; min-height: 74px; max-height: 112px; overflow-y: auto; padding-right: 4px; }
+        .item-turno,
+        .lista-fontes-ativas,
+        .item-fonte-ativa {
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(47,74,112,.55);
+            border-radius: 12px;
+        }
+        .item-turno { padding: 8px 10px; }
+        .item-turno span, .item-fonte-ativa span { display:block; font-size:11px; color: var(--muted); line-height:1.4; font-weight:400; }
+        .item-turno strong, .item-fonte-ativa strong {
+            display:block; margin-bottom:3px; font-size:12px; color: var(--text); font-weight:700; text-transform:none; letter-spacing:0;
+        }
+        .fontes-ativas-bloco { margin-bottom: 6px; }
+        .lista-fontes-ativas { padding: 12px; min-height: 92px; max-height: 176px; overflow-y:auto; margin-top: 12px; text-align:left; }
+        .item-fonte-ativa { padding: 8px 10px; margin-bottom: 8px; }
+        .item-fonte-ativa:last-child { margin-bottom: 0; }
+        .texto-vazio { margin: 0; text-align: center; font-size: 12px; color: var(--muted); }
+
+        .barra-acoes {
+            padding: 4px 10px 8px;
+            flex-shrink: 0;
+        }
+        .acoes-duplas { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .botao,
+        .modal-acoes button {
+            border: 1px solid transparent;
+            border-radius: 16px;
+            min-height: 50px;
+            padding: 12px 12px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: .15s ease;
+        }
+        .botao-atualizar, .botao-primario {
+            background: linear-gradient(180deg, var(--accent-strong) 0%, var(--accent) 100%);
+            color: var(--accent-text);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
+        }
+        .botao-atualizar:hover, .botao-primario:hover { filter: brightness(1.03); transform: translateY(-1px); }
+        .botao-turno, .botao-secundario {
+            background: var(--panel-soft);
+            color: var(--text);
+            border-color: var(--line);
+        }
+        .botao-turno:hover, .botao-secundario:hover { border-color: var(--line-strong); }
+
+        .menu-inferior {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0,1fr));
+            gap: 8px;
+            padding: 8px 10px 12px;
+            flex-shrink: 0;
+        }
+        .menu-inferior button {
+            width: 100%;
+            min-width: 0;
+            min-height: 48px;
+            border-radius: 15px;
+            border: 1px solid var(--line);
+            background: var(--panel-soft);
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            padding: 10px 4px;
+        }
+        .menu-inferior button.ativo {
+            background: linear-gradient(180deg, var(--accent-strong) 0%, var(--accent) 100%);
+            color: var(--accent-text);
+            border-color: rgba(255,255,255,.06);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(3, 9, 17, .78);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 9999;
+        }
+        .modal-status {
+            width: 100%;
+            max-width: 420px;
+            background: linear-gradient(180deg, #132237 0%, #18283e 100%);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: var(--shadow);
+        }
+        .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+        .modal-header h3 { margin:0; font-size:20px; color: var(--text); }
+        .modal-fechar {
+            border:none; background: rgba(255,255,255,.06); color: var(--text); width:34px; height:34px; border-radius:10px; font-size:28px; cursor:pointer;
+        }
+        .modal-bloco { border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:14px; background: rgba(255,255,255,.03); }
+        .modal-bloco-titulo { font-weight:800; font-size:15px; margin-bottom:12px; }
+        .controle-linha { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+        .controle-btn {
+            width: 52px; height: 52px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel-soft); color: var(--accent-strong); font-size: 24px; font-weight: 800; cursor: pointer;
+        }
+        .controle-btn:disabled { opacity:.45; cursor:not-allowed; }
+        .controle-valor { flex:1; text-align:center; font-size:28px; font-weight:800; }
+        .controle-info { margin-top:10px; text-align:center; color: var(--muted); font-size:13px; }
+        .modal-acoes { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:18px; }
+        .modal-acoes button { min-width: 96px; }
+        .modal-acoes .botao-secundario { margin-right: auto; }
+        .modal-acoes .botao-primario { margin-left: auto; }
+
+        @media (max-width: 380px) {
+            .linha-topo, .linha-meio, .acoes-duplas { grid-template-columns: 1fr; }
+            .identidade, .status-card.clicavel { min-height: auto; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <div class="conteudo">
+            <div id="mensagem" class="mensagem"></div>
+
+            <div class="linha-topo">
+                <div class="card identidade">
+                    <div id="nomePersonagem" class="nome-personagem">Carregando...</div>
+                    <div id="racaPersonagem" class="info-secundaria">-</div>
+                    <div id="classePersonagem" class="info-secundaria">-</div>
+                    <div id="origemPersonagem" class="info-secundaria">-</div>
+                </div>
+
+                <div class="card status-card clicavel" onclick="abrirModalStatus()">
+                    <div class="status-topo">
+                        <span class="status-dica">toque para ajustar</span>
+                    </div>
+
+                    <div class="status-lista">
+                        <div class="status-item">
+                            <strong>Vida</strong>
+                            <span id="vidaAtual">0 / 0</span>
+                        </div>
+                        <div class="status-item">
+                            <strong>Mana</strong>
+                            <span id="manaAtual">0 / 0</span>
+                        </div>
+                        <div class="status-item">
+                            <strong>Defesa</strong>
+                            <span id="defesaAtual">0</span>
+                        </div>
+                        <div class="status-item">
+                            <strong>Dinheiro</strong>
+                            <span id="dinheiroAtual">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="linha-meio">
+                <div class="card combate-card">
+                    <div id="estadoCombate" class="combate-texto combate-inativo">Fora de combate</div>
+                    
+                </div>
+
+                <div class="card efeitos-card">
+                    <div id="listaEfeitos" class="efeitos-lista">
+                        <span class="efeitos-vazio">Nenhum efeito</span>
+                    </div>
+                </div>
+            </div>
+
+            <section class="card teste-card" id="painelCombate">
+                <div class="painel-combate-scroll">
+                    <div class="teste-linha">
+                        <strong>Teste de Ataque</strong>
+                        <span id="textoTesteAtaque">--</span>
+                    </div>
+
+                    <div class="dupla-acao">
+                        <div class="bloco-acao">
+                            <strong>Dano</strong>
+                            <span id="textoDano">--</span>
+                        </div>
+
+                        <div class="bloco-acao">
+                            <strong>Cura</strong>
+                            <span id="textoCura">--</span>
+                        </div>
+                    </div>
+
+                    <div class="teste-linha bloco-turno">
+                        <strong>Efeitos por turno</strong>
+                        <div id="listaTurno" class="lista-turno">
+                            <p class="texto-vazio">Nenhum efeito por turno.</p>
+                        </div>
+                    </div>
+
+                    <div class="dupla-info-combate">
+                        <div class="teste-linha teste-linha-menor">
+                            <strong>Crítico</strong>
+                            <span id="textoCritico">--</span>
+                        </div>
+
+                        <div class="teste-linha teste-linha-menor">
+                            <strong>Alcance</strong>
+                            <span id="textoAlcance">--</span>
+                        </div>
+                    </div>
+
+                    <div class="teste-linha fontes-ativas-bloco">
+                        <strong>Fontes ativas do turno</strong>
+                        <div id="listaFontesAtivas" class="lista-fontes-ativas">
+                            <p class="texto-vazio">Nenhuma fonte ativa no momento.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="barra-acoes">
+            <div class="acoes-duplas">
+                <button class="botao botao-atualizar" onclick="carregarTela()">Atualizar</button>
+                <button class="botao botao-turno" onclick="passarTurno()">Passar turno</button>
+            </div>
+        </div>
+
+        <div class="menu-inferior">
+            <button onclick="irPara('loja')">Loja</button>
+            <button onclick="irPara('inventario')">Inventário</button>
+            <button class="ativo">Dados</button>
+            <button onclick="irPara('personagem')">Personagem</button>
+        </div>
+    </div>
+
+    <div id="modalStatusOverlay" class="modal-overlay" onclick="fecharModalStatusAoClicarFora(event)">
+        <div class="modal-status">
+            <div class="modal-header">
+                <h3>Ajustar status</h3>
+                <button class="modal-fechar" onclick="fecharModalStatus()">×</button>
+            </div>
+
+            <div class="modal-bloco">
+                <div class="modal-bloco-titulo">Vida</div>
+
+                <div class="controle-linha">
+                    <button class="controle-btn" id="botaoVidaMenos" onclick="alterarVidaModal(-1)">−</button>
+                    <div class="controle-valor" id="modalVidaValor">0</div>
+                    <button class="controle-btn" id="botaoVidaMais" onclick="alterarVidaModal(1)">+</button>
+                </div>
+
+                <div class="controle-info">
+                    Redução: <strong id="modalVidaReducao">0</strong>
+                </div>
+            </div>
+
+            <div class="modal-bloco">
+                <div class="modal-bloco-titulo">Mana</div>
+
+                <div class="controle-linha">
+                    <button class="controle-btn" id="botaoManaMenos" onclick="alterarManaModal(-1)">−</button>
+                    <div class="controle-valor" id="modalManaValor">0</div>
+                    <button class="controle-btn" id="botaoManaMais" onclick="alterarManaModal(1)">+</button>
+                </div>
+
+                <div class="controle-info">
+                    Redução: <strong id="modalManaReducao">0</strong>
+                </div>
+            </div>
+
+            <div class="modal-acoes">
+                <button class="botao-secundario" onclick="fecharModalStatus()">Cancelar</button>
+                <button class="botao-primario" onclick="salvarStatusModal()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8080";
+        const params = new URLSearchParams(window.location.search);
+        const personagemId = params.get("id");
+
+        let personagemAtual = null;
+        let statusAtual = null;
+        let dadosCenaAtual = null;
+        let efeitosAtivosAtual = [];
+        let dadosCombateAtual = null;
+        let itensCatalogo = [];
+        let habilidadesCatalogo = [];
+
+        let vidaAtualOriginal = 0;
+        let manaAtualOriginal = 0;
+        let vidaAtualModal = 0;
+        let manaAtualModal = 0;
+        let vidaBaseAtual = 0;
+        let manaBaseAtual = 0;
+
+        async function carregarTela() {
+            if (!personagemId) {
+                mostrarMensagem("ID do personagem não encontrado na URL.", true);
+                return;
+            }
+
+            try {
+                limparMensagem();
+
+                await Promise.all([
+                    carregarPersonagemBasico(),
+                    carregarStatus(),
+                    carregarDadosCena(),
+                    carregarEfeitos(),
+                    carregarCatalogos()
+                ]);
+
+                const emCombate =
+                    dadosCenaAtual?.personagemEmCombate === true ||
+                    personagemAtual?.personagemEmCombate === true;
+
+                dadosCombateAtual = null;
+
+                if (emCombate) {
+                    try {
+                        await carregarDadosCombate();
+                    } catch (erroCombate) {
+                        console.error("Erro ao carregar dados de combate:", erroCombate);
+                        dadosCombateAtual = null;
+                    }
+                }
+
+                preencherInfoBasica();
+                preencherStatus();
+                preencherCombate();
+                preencherEfeitos();
+                preencherTesteAtual();
+
+                if (emCombate && !dadosCombateAtual) {
+                    mostrarMensagem("Personagem em combate, mas os dados de combate não puderam ser carregados.", true);
+                }
+
+            } catch (erro) {
+                console.error("Erro ao carregar tela:", erro);
+                mostrarMensagem("Erro ao carregar os dados do personagem.", true);
+            }
+        }
+
+        async function carregarPersonagemBasico() {
+            const response = await fetch(`${API_BASE}/personagem`);
+
+            if (!response.ok) {
+                throw new Error("Não foi possível carregar a lista de personagens.");
+            }
+
+            const personagens = await response.json();
+
+            personagemAtual = Array.isArray(personagens)
+                ? personagens.find(p => String(p.id) === String(personagemId))
+                : null;
+
+            if (!personagemAtual) {
+                throw new Error("Personagem não encontrado.");
+            }
+        }
+
+        async function carregarStatus() {
+            const response = await fetch(`${API_BASE}/status/personagem/${personagemId}`);
+
+            if (!response.ok) {
+                throw new Error("Não foi possível carregar o status do personagem.");
+            }
+
+            statusAtual = await response.json();
+        }
+
+        async function carregarDadosCena() {
+            const response = await fetch(`${API_BASE}/personagem/${personagemId}/dados-cena`);
+
+            if (!response.ok) {
+                throw new Error("Não foi possível carregar os dados da cena.");
+            }
+
+            dadosCenaAtual = await response.json();
+        }
+
+        async function carregarEfeitos() {
+            const response = await fetch(`${API_BASE}/efeito/personagem/${personagemId}`);
+
+            if (!response.ok) {
+                throw new Error("Não foi possível carregar os efeitos ativos.");
+            }
+
+            efeitosAtivosAtual = await response.json();
+        }
+
+        async function carregarDadosCombate() {
+            const response = await fetch(`${API_BASE}/personagens/${personagemId}/dados-combate`);
+
+            if (!response.ok) {
+                throw new Error("Não foi possível carregar os dados de combate.");
+            }
+
+            dadosCombateAtual = await response.json();
+        }
+
+        async function carregarCatalogos() {
+            const [respItens, respHabilidades] = await Promise.all([
+                fetch(`${API_BASE}/item`),
+                fetch(`${API_BASE}/habilidades`)
+            ]);
+
+            if (!respItens.ok) {
+                throw new Error("Não foi possível carregar os itens.");
+            }
+
+            if (!respHabilidades.ok) {
+                throw new Error("Não foi possível carregar as habilidades.");
+            }
+
+            itensCatalogo = await respItens.json();
+            habilidadesCatalogo = await respHabilidades.json();
+        }
+
+        function preencherInfoBasica() {
+            document.getElementById("nomePersonagem").textContent =
+                personagemAtual?.personagemNome || "Personagem";
+
+            document.getElementById("racaPersonagem").textContent =
+                personagemAtual?.personagemRaca || "Raça não informada";
+
+            document.getElementById("classePersonagem").textContent =
+                personagemAtual?.personagemClasse || "Classe não informada";
+
+            document.getElementById("origemPersonagem").textContent =
+                personagemAtual?.personagemOrigem || "Origem não informada";
+        }
+
+        function preencherStatus() {
+            const vidaAtual = statusAtual?.statusVidaAtual ?? "-";
+            const vidaBase = statusAtual?.statusVidaBase ?? "-";
+            const manaAtual = statusAtual?.statusManaAtual ?? "-";
+            const manaBase = statusAtual?.statusManaBase ?? "-";
+            const dinheiro = statusAtual?.statusDinheiro ?? 0;
+
+            const defesaFinal = calcularDefesaFinal();
+
+            document.getElementById("vidaAtual").textContent = `${vidaAtual} / ${vidaBase}`;
+            document.getElementById("manaAtual").textContent = `${manaAtual} / ${manaBase}`;
+            document.getElementById("defesaAtual").textContent = formatarNumero(defesaFinal);
+            document.getElementById("dinheiroAtual").textContent = formatarMoeda(dinheiro);
+        }
+
+        function preencherCombate() {
+            const emCombate =
+                dadosCenaAtual?.personagemEmCombate === true ||
+                personagemAtual?.personagemEmCombate === true;
+
+            atualizarEstadoCombate(emCombate);
+        }
+
+        function preencherEfeitos() {
+            renderizarEfeitos(efeitosAtivosAtual || []);
+        }
+
+        function preencherTesteAtual() {
+            const emCombate =
+                dadosCenaAtual?.personagemEmCombate === true ||
+                personagemAtual?.personagemEmCombate === true;
+
+            const fontes = [];
+
+            const itensAtivos = dadosCenaAtual?.itensTurnosRestantesNaCena || {};
+            const habilidadesAtivas = dadosCenaAtual?.habilidadesTurnosRestantesNaCena || {};
+
+            for (const [nome, turnos] of Object.entries(itensAtivos)) {
+                fontes.push({
+                    titulo: nome || "Item usado",
+                    descricao: `Item ativo na cena • turnos restantes: ${turnos}`
+                });
+            }
+
+            for (const [nome, turnos] of Object.entries(habilidadesAtivas)) {
+                fontes.push({
+                    titulo: nome || "Habilidade usada",
+                    descricao: `Habilidade ativa na cena • turnos restantes: ${turnos}`
+                });
+            }
+
+            if (Array.isArray(efeitosAtivosAtual)) {
+                for (const efeitoAtivo of efeitosAtivosAtual) {
+                    const nome = efeitoAtivo?.efeito?.efeitoNome || "Efeito ativo";
+                    const turnos = efeitoAtivo?.efeitoAtivoTurnoRestante;
+
+                    fontes.push({
+                        titulo: nome,
+                        descricao: turnos !== null && turnos !== undefined
+                            ? `Turnos restantes: ${turnos}`
+                            : "Efeito ativo"
+                    });
+                }
+            }
+
+            if (emCombate && dadosCombateAtual) {
+                atualizarPainelCombate({
+                    testeAtaque: montarTextoAtaqueCombate(),
+                    dano: montarTextoDanoCombate(),
+                    cura: montarTextoCuraCombate(),
+                    critico: dadosCombateAtual?.combateCritico || "Sem arma equipada",
+                    alcance: dadosCombateAtual?.combateAlcance || "Sem arma equipada"
+                });
+
+                renderizarTurno(dadosCombateAtual?.combateTurno);
+                renderizarFontesAtivas(fontes);
+                return;
+            }
+
+            const acaoAtual = resolverAcaoAtualForaDeCombate();
+
+            if (acaoAtual) {
+                atualizarPainelCombate(acaoAtual);
+                renderizarTurno(null);
+                renderizarFontesAtivas(fontes);
+                return;
+            }
+
+            atualizarPainelCombate({
+                testeAtaque: "--",
+                dano: "--",
+                cura: "--",
+                critico: "--",
+                alcance: "--"
+            });
+
+            renderizarTurno(null);
+            renderizarFontesAtivas(fontes);
+        }
+
+        function extrairEfeitosDoPersonagem(personagem) {
+            if (!personagem) return [];
+
+            if (Array.isArray(personagem.efeitosAtivos)) {
+                return personagem.efeitosAtivos.map(efeito =>
+                    efeito?.efeitoNome || efeito?.nome || "Efeito ativo"
+                );
+            }
+
+            if (Array.isArray(personagem.efeitos)) {
+                return personagem.efeitos.map(efeito =>
+                    efeito?.efeitoNome || efeito?.nome || "Efeito ativo"
+                );
+            }
+
+            return [];
+        }
+
+        function irPara(tela) {
+            if (!personagemId) {
+                alert("ID do personagem não encontrado na URL.");
+                return;
+            }
+
+            window.location.href = `${tela}.html?id=${personagemId}`;
+        }
+
+        function mostrarMensagem(texto, erro) {
+            const mensagem = document.getElementById("mensagem");
+            mensagem.textContent = texto;
+            mensagem.className = erro ? "mensagem erro" : "mensagem sucesso";
+        }
+
+        function limparMensagem() {
+            const mensagem = document.getElementById("mensagem");
+            mensagem.textContent = "";
+            mensagem.className = "mensagem";
+        }
+
+        function atualizarPainelCombate({
+            testeAtaque = "Aguardando teste",
+            dano = "--",
+            cura = "--",
+            critico = "--",
+            alcance = "--"
+        } = {}) {
+            document.getElementById("textoTesteAtaque").textContent = testeAtaque;
+            document.getElementById("textoDano").textContent = dano;
+            document.getElementById("textoCura").textContent = cura;
+            document.getElementById("textoCritico").textContent = critico;
+            document.getElementById("textoAlcance").textContent = alcance;
+        }
+
+        function renderizarFontesAtivas(fontes = []) {
+            const container = document.getElementById("listaFontesAtivas");
+
+            if (!fontes.length) {
+                container.innerHTML = `<p class="texto-vazio">Nenhuma fonte ativa no momento.</p>`;
+                return;
+            }
+
+            container.innerHTML = fontes.map(fonte => `
+                <div class="item-fonte-ativa">
+                    <strong>${escapeHtml(fonte.titulo || "Sem título")}</strong>
+                    <span>${escapeHtml(fonte.descricao || "Sem descrição.")}</span>
+                </div>
+            `).join("");
+        }
+
+        function renderizarTurno(turno) {
+            const container = document.getElementById("listaTurno");
+
+            if (!turno) {
+                container.innerHTML = `<p class="texto-vazio">Nenhum efeito por turno.</p>`;
+                return;
+            }
+
+            const danos = Array.isArray(turno.combateDanosPorTurno) ? turno.combateDanosPorTurno : [];
+            const curas = Array.isArray(turno.combateCurasPorTurno) ? turno.combateCurasPorTurno : [];
+
+            const itens = [];
+
+            danos.forEach(valor => {
+                itens.push(`
+                    <div class="item-turno">
+                        <strong>Dano por turno</strong>
+                        <span>${escapeHtml(valor)}</span>
+                    </div>
+                `);
+            });
+
+            curas.forEach(valor => {
+                itens.push(`
+                    <div class="item-turno">
+                        <strong>Cura por turno</strong>
+                        <span>${escapeHtml(valor)}</span>
+                    </div>
+                `);
+            });
+
+            if (!itens.length) {
+                container.innerHTML = `<p class="texto-vazio">Nenhum efeito por turno.</p>`;
+                return;
+            }
+
+            container.innerHTML = itens.join("");
+        }
+
+        function renderizarEfeitos(efeitos = []) {
+            const container = document.getElementById("listaEfeitos");
+
+            if (!efeitos.length) {
+                container.innerHTML = `<span class="efeitos-vazio">Nenhum efeito</span>`;
+                return;
+            }
+
+            container.innerHTML = efeitos.map(efeitoAtivo => {
+                const nome = efeitoAtivo?.efeito?.efeitoNome || "Efeito";
+                const turnos = efeitoAtivo?.efeitoAtivoTurnoRestante;
+
+                return `
+                    <div class="efeito-box" title="${escapeHtml(nome)}">
+                        ${escapeHtml(nome)}
+                        ${turnos !== null && turnos !== undefined ? ` (${turnos})` : ""}
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function escapeHtml(valor) {
+            return String(valor ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function atualizarEstadoCombate(emCombate) {
+            const estado = document.getElementById("estadoCombate");
+
+            if (emCombate) {
+                estado.textContent = "Em combate";
+                estado.classList.remove("combate-inativo");
+                estado.classList.add("combate-ativo");
+            } else {
+                estado.textContent = "Fora de combate";
+                estado.classList.remove("combate-ativo");
+                estado.classList.add("combate-inativo");
+            }
+        }
+
+        function formatarNumero(valor) {
+            if (valor === null || valor === undefined || valor === "") return "0";
+            const numero = Number(valor);
+            if (Number.isNaN(numero)) return String(valor);
+            return Number.isInteger(numero) ? String(numero) : numero.toFixed(1).replace(".", ",");
+        }
+
+        function formatarMoeda(valor) {
+            return `${formatarNumero(valor)} PP`;
+        }
+
+        function calcularDefesaFinal() {
+            const defesaBase = Number(statusAtual?.statusDefesa ?? 0);
+            const bonusArmadura = Number(personagemAtual?.armaduraEquipada?.armaduraBonusDefesa ?? 0);
+            const bonusEscudo = Number(personagemAtual?.escudoEquipado?.armaduraBonusDefesa ?? 0);
+
+            return defesaBase + bonusArmadura + bonusEscudo;
+        }
+
+        async function passarTurno() {
+            try {
+                limparMensagem();
+
+                const resposta = await fetch(`${API_BASE}/efeito/personagem/${personagemId}/passar-turno`, {
+                    method: "POST"
+                });
+
+                if (!resposta.ok) {
+                    let mensagem = "Erro ao passar turno.";
+                    try {
+                        mensagem = await resposta.text() || mensagem;
+                    } catch (_) { }
+                    throw new Error(mensagem);
+                }
+
+                const resultado = await resposta.json();
+                mostrarMensagem(resultado.mensagem || "Turno avançado com sucesso.", false);
+
+                await carregarTela();
+            } catch (erro) {
+                console.error("Erro ao passar turno:", erro);
+                mostrarMensagem(erro.message || "Erro ao passar turno.", true);
+            }
+        }
+
+        function normalizarNome(valor) {
+            return (valor || "")
+                .toString()
+                .trim()
+                .toLowerCase();
+        }
+
+        function buscarItemPorNome(nome) {
+            return itensCatalogo.find(item =>
+                normalizarNome(item.itemNome) === normalizarNome(nome)
+            ) || null;
+        }
+
+        function buscarHabilidadePorNome(nome) {
+            return habilidadesCatalogo.find(habilidade =>
+                normalizarNome(habilidade.habilidadeNome) === normalizarNome(nome)
+            ) || null;
+        }
+
+        function formatarTipoDado(tipoDado) {
+            if (!tipoDado) return "";
+            return String(tipoDado).replace(/^D/i, "d");
+        }
+
+        function formatarNumeroComSinal(valor) {
+            const numero = Number(valor || 0);
+            if (numero === 0) return null;
+            return numero > 0 ? `${numero}` : `-${Math.abs(numero)}`;
+        }
+
+        function montarExpressaoComPartes(partes = []) {
+            const validas = partes
+                .map(parte => String(parte ?? "").trim())
+                .filter(Boolean);
+
+            if (!validas.length) return null;
+
+            let resultado = validas[0];
+
+            for (let i = 1; i < validas.length; i++) {
+                const atual = validas[i];
+
+                if (atual.startsWith("-")) {
+                    resultado += ` - ${atual.substring(1)}`;
+                } else if (atual.startsWith("+")) {
+                    resultado += ` + ${atual.substring(1)}`;
+                } else {
+                    resultado += ` + ${atual}`;
+                }
+            }
+
+            return resultado;
+        }
+
+        function montarExpressao(quantidade, tipoDado, valorFixo) {
+            const partes = [];
+
+            const qtd = Number(quantidade || 0);
+            const fixo = Number(valorFixo || 0);
+            const tipo = formatarTipoDado(tipoDado);
+
+            if (qtd > 0 && tipo) {
+                partes.push(`${qtd}${tipo}`);
+            }
+
+            const fixoFormatado = formatarNumeroComSinal(fixo);
+            if (fixoFormatado) {
+                partes.push(fixoFormatado);
+            }
+
+            return montarExpressaoComPartes(partes);
+        }
+
+        function resolverAcaoAtualForaDeCombate() {
+            const itensAtivos = dadosCenaAtual?.itensTurnosRestantesNaCena || {};
+            const habilidadesAtivas = dadosCenaAtual?.habilidadesTurnosRestantesNaCena || {};
+
+            let bonusAtaqueTotal = 0;
+
+            const partesDano = [];
+            const partesCura = [];
+            const fontesDano = [];
+            const fontesCura = [];
+
+            for (const nomeItem of Object.keys(itensAtivos)) {
+                const item = buscarItemPorNome(nomeItem);
+                if (!item) continue;
+
+                bonusAtaqueTotal += (item.itemBonusAtaque || 0) - (item.itemPenalidadeAtaque || 0);
+
+                const quantidadeDado = Number(item.itemQuantidadeDado || 0);
+                const tipoDado = item.itemTipoDado;
+                const tipoAcao = item.itemDadoTipoAcao;
+                const danoLiquido = (item.itemBonusDano || 0) - (item.itemPenalidadeDano || 0);
+                const curaLiquida = (item.itemBonusPv || 0) - (item.itemPenalidadePv || 0);
+
+                if (tipoAcao === "DANO") {
+                    if (quantidadeDado > 0 && tipoDado) {
+                        partesDano.push(`${quantidadeDado}${formatarTipoDado(tipoDado)}`);
+                    }
+
+                    const danoFormatado = formatarNumeroComSinal(danoLiquido);
+                    if (danoFormatado) {
+                        partesDano.push(danoFormatado);
+                    }
+
+                    if (quantidadeDado > 0 || danoLiquido !== 0) {
+                        fontesDano.push(item.itemNome || nomeItem);
+                    }
+                }
+
+                if (tipoAcao === "CURA") {
+                    if (quantidadeDado > 0 && tipoDado) {
+                        partesCura.push(`${quantidadeDado}${formatarTipoDado(tipoDado)}`);
+                    }
+
+                    const curaFormatada = formatarNumeroComSinal(curaLiquida);
+                    if (curaFormatada) {
+                        partesCura.push(curaFormatada);
+                    }
+
+                    if (quantidadeDado > 0 || curaLiquida !== 0) {
+                        fontesCura.push(item.itemNome || nomeItem);
+                    }
+                }
+            }
+
+            for (const nomeHabilidade of Object.keys(habilidadesAtivas)) {
+                const habilidade = buscarHabilidadePorNome(nomeHabilidade);
+                if (!habilidade) continue;
+
+                bonusAtaqueTotal += (habilidade.habilidadeBonusAtaque || 0) - (habilidade.habilidadePenalidadeAtaque || 0);
+
+                const quantidadeDado = Number(habilidade.habilidadeQuantidadeDado || 0);
+                const tipoDado = habilidade.habilidadeTipoDado;
+                const tipoAcao = habilidade.habilidadeDadoTipoAcao;
+                const danoLiquido = (habilidade.habilidadeBonusDano || 0) - (habilidade.habilidadePenalidadeDano || 0);
+                const curaLiquida = (habilidade.habilidadeBonusPv || 0);
+
+                if (tipoAcao === "DANO") {
+                    if (quantidadeDado > 0 && tipoDado) {
+                        partesDano.push(`${quantidadeDado}${formatarTipoDado(tipoDado)}`);
+                    }
+
+                    const danoFormatado = formatarNumeroComSinal(danoLiquido);
+                    if (danoFormatado) {
+                        partesDano.push(danoFormatado);
+                    }
+
+                    if (quantidadeDado > 0 || danoLiquido !== 0) {
+                        fontesDano.push(habilidade.habilidadeNome || nomeHabilidade);
+                    }
+                }
+
+                if (tipoAcao === "CURA") {
+                    if (quantidadeDado > 0 && tipoDado) {
+                        partesCura.push(`${quantidadeDado}${formatarTipoDado(tipoDado)}`);
+                    }
+
+                    const curaFormatada = formatarNumeroComSinal(curaLiquida);
+                    if (curaFormatada) {
+                        partesCura.push(curaFormatada);
+                    }
+
+                    if (quantidadeDado > 0 || curaLiquida !== 0) {
+                        fontesCura.push(habilidade.habilidadeNome || nomeHabilidade);
+                    }
+                }
+            }
+
+            const expressaoDano = montarExpressaoComPartes(partesDano);
+            const expressaoCura = montarExpressaoComPartes(partesCura);
+
+            if (!expressaoDano && !expressaoCura) {
+                return null;
+            }
+
+            let testeAtaque = "1d20";
+            const bonusAtaqueFormatado = formatarNumeroComSinal(bonusAtaqueTotal);
+
+            if (expressaoDano && bonusAtaqueFormatado) {
+                testeAtaque = montarExpressaoComPartes(["1d20", bonusAtaqueFormatado]);
+            }
+
+            if (expressaoDano && expressaoCura) {
+                return {
+                    testeAtaque,
+                    dano: expressaoDano,
+                    cura: expressaoCura,
+                    critico: "--",
+                    alcance: "--"
+                };
+            }
+
+            if (expressaoDano) {
+                return {
+                    testeAtaque,
+                    dano: expressaoDano,
+                    cura: "--",
+                    critico: "--",
+                    alcance: "--"
+                };
+            }
+
+            return {
+                testeAtaque: fontesCura[0] || "Ação de cura",
+                dano: "Sem dano",
+                cura: expressaoCura,
+                critico: "--",
+                alcance: "--"
+            };
+        }
+
+        function calcularBonusCena() {
+            let bonusAtaqueTotal = 0;
+            let bonusDanoTotal = 0;
+
+            const bonusDadosAtaque = [];
+            const bonusDadosDano = [];
+
+            const itensAtivos = dadosCenaAtual?.itensTurnosRestantesNaCena || {};
+            const habilidadesAtivas = dadosCenaAtual?.habilidadesTurnosRestantesNaCena || {};
+
+            for (const nomeItem of Object.keys(itensAtivos)) {
+                const item = buscarItemPorNome(nomeItem);
+                if (!item) continue;
+
+                bonusAtaqueTotal += (item.itemBonusAtaque || 0) - (item.itemPenalidadeAtaque || 0);
+                bonusDanoTotal += (item.itemBonusDano || 0) - (item.itemPenalidadeDano || 0);
+
+                if (
+                    item.itemQuantidadeDado &&
+                    item.itemTipoDado &&
+                    item.itemDadoTipoAcao === "DANO"
+                ) {
+                    bonusDadosDano.push(`${item.itemQuantidadeDado}${formatarTipoDado(item.itemTipoDado)}`);
+                }
+            }
+
+            for (const nomeHabilidade of Object.keys(habilidadesAtivas)) {
+                const habilidade = buscarHabilidadePorNome(nomeHabilidade);
+                if (!habilidade) continue;
+
+                bonusAtaqueTotal += (habilidade.habilidadeBonusAtaque || 0) - (habilidade.habilidadePenalidadeAtaque || 0);
+                bonusDanoTotal += (habilidade.habilidadeBonusDano || 0) - (habilidade.habilidadePenalidadeDano || 0);
+
+                if (
+                    habilidade.habilidadeQuantidadeDado &&
+                    habilidade.habilidadeTipoDado &&
+                    habilidade.habilidadeDadoTipoAcao === "DANO"
+                ) {
+                    bonusDadosDano.push(`${habilidade.habilidadeQuantidadeDado}${formatarTipoDado(habilidade.habilidadeTipoDado)}`);
+                }
+            }
+
+            return {
+                bonusAtaqueTotal,
+                bonusDanoTotal,
+                bonusDadosAtaque,
+                bonusDadosDano
+            };
+        }
+
+        function montarTextoAtaqueCombate() {
+            const dadoBase = dadosCombateAtual?.combateTesteAtaque?.combateDadoBase || "1d20";
+            const modificadorBase = Number(dadosCombateAtual?.combateTesteAtaque?.combateModificadorFinal || 0);
+
+            const { bonusAtaqueTotal, bonusDadosAtaque } = calcularBonusCena();
+
+            const partes = [dadoBase];
+
+            const totalMod = modificadorBase + bonusAtaqueTotal;
+            const modFormatado = formatarNumeroComSinal(totalMod);
+            if (modFormatado) {
+                partes.push(modFormatado);
+            }
+
+            for (const dadoExtra of bonusDadosAtaque) {
+                partes.push(dadoExtra);
+            }
+
+            return montarExpressaoComPartes(partes) || "1d20";
+        }
+
+        function montarTextoDanoCombate() {
+            const dadosBase = dadosCombateAtual?.combateDano?.combateDadosBase || [];
+            const modificadorBase = Number(dadosCombateAtual?.combateDano?.combateModificadorFinal || 0);
+
+            const { bonusDanoTotal, bonusDadosDano } = calcularBonusCena();
+
+            const partes = [...dadosBase];
+
+            const modBaseFormatado = formatarNumeroComSinal(modificadorBase);
+            if (modBaseFormatado) {
+                partes.push(modBaseFormatado);
+            }
+
+            const bonusDanoFormatado = formatarNumeroComSinal(bonusDanoTotal);
+            if (bonusDanoFormatado) {
+                partes.push(bonusDanoFormatado);
+            }
+
+            for (const dadoExtra of bonusDadosDano) {
+                partes.push(dadoExtra);
+            }
+
+            return montarExpressaoComPartes(partes) || "Sem dano";
+        }
+
+        function montarTextoCuraCombate() {
+            const dadosBase = dadosCombateAtual?.combateCura?.combateDadosBase || [];
+            const dadosExtras = dadosCombateAtual?.combateCura?.combateDadosExtras || [];
+
+            const partes = [...dadosBase, ...dadosExtras];
+
+            return montarExpressaoComPartes(partes) || "--";
+        }
+
+        function abrirModalStatus() {
+            if (!statusAtual) {
+                mostrarMensagem("Status do personagem ainda não foi carregado.", true);
+                return;
+            }
+
+            vidaAtualOriginal = Number(statusAtual?.statusVidaAtual ?? 0);
+            manaAtualOriginal = Number(statusAtual?.statusManaAtual ?? 0);
+
+            vidaBaseAtual = Number(statusAtual?.statusVidaBase ?? 0);
+            manaBaseAtual = Number(statusAtual?.statusManaBase ?? 0);
+
+            vidaAtualModal = vidaAtualOriginal;
+            manaAtualModal = manaAtualOriginal;
+
+            atualizarModalStatus();
+            document.getElementById("modalStatusOverlay").style.display = "flex";
+        }
+
+        function fecharModalStatus() {
+            document.getElementById("modalStatusOverlay").style.display = "none";
+        }
+
+        function fecharModalStatusAoClicarFora(event) {
+            if (event.target.id === "modalStatusOverlay") {
+                fecharModalStatus();
+            }
+        }
+
+        function alterarVidaModal(direcao) {
+            if (direcao === -1 && vidaAtualModal > 0) {
+                vidaAtualModal--;
+            }
+
+            if (direcao === 1 && vidaAtualModal < vidaAtualOriginal) {
+                vidaAtualModal++;
+            }
+
+            atualizarModalStatus();
+        }
+
+        function alterarManaModal(direcao) {
+            if (direcao === -1 && manaAtualModal > 0) {
+                manaAtualModal--;
+            }
+
+            if (direcao === 1 && manaAtualModal < manaAtualOriginal) {
+                manaAtualModal++;
+            }
+
+            atualizarModalStatus();
+        }
+
+        function atualizarModalStatus() {
+            document.getElementById("modalVidaValor").textContent = vidaAtualModal;
+            document.getElementById("modalManaValor").textContent = manaAtualModal;
+
+            document.getElementById("modalVidaReducao").textContent = vidaAtualOriginal - vidaAtualModal;
+            document.getElementById("modalManaReducao").textContent = manaAtualOriginal - manaAtualModal;
+
+            document.getElementById("botaoVidaMenos").disabled = vidaAtualModal <= 0;
+            document.getElementById("botaoVidaMais").disabled = vidaAtualModal >= vidaAtualOriginal;
+
+            document.getElementById("botaoManaMenos").disabled = manaAtualModal <= 0;
+            document.getElementById("botaoManaMais").disabled = manaAtualModal >= manaAtualOriginal;
+        }
+
+        async function salvarStatusModal() {
+            try {
+                limparMensagem();
+
+                const payload = {
+                    statusVidaAtual: vidaAtualModal,
+                    statusManaAtual: manaAtualModal
+                };
+
+                const resposta = await fetch(`${API_BASE}/status/personagem/${personagemId}`, {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!resposta.ok) {
+                    let mensagem = "Erro ao atualizar status.";
+                    try {
+                        mensagem = await resposta.text() || mensagem;
+                    } catch (_) { }
+                    throw new Error(mensagem);
+                }
+
+                statusAtual.statusVidaAtual = vidaAtualModal;
+                statusAtual.statusManaAtual = manaAtualModal;
+
+                preencherStatus();
+                fecharModalStatus();
+                mostrarMensagem("Status atualizado com sucesso.", false);
+            } catch (erro) {
+                console.error("Erro ao salvar status:", erro);
+                mostrarMensagem(erro.message || "Erro ao atualizar status.", true);
+            }
+        }
+
+        carregarTela();
+    </script>
+</body>
+
+</html>

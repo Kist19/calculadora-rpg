@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastro de Personagem</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-ui);
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    body {
+      min-height: 100vh;
+    }
+
+    .topo {
+      background: linear-gradient(90deg, #101826 0%, #152033 55%, #0c111a 100%);
+      color: var(--text);
+      padding: 18px 18px;
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.20);
+    }
+
+    .topo h1 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.2;
+      color: var(--primary-strong);
+    }
+
+    .topo p {
+      margin: 6px 0 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 16px 14px 110px;
+    }
+
+    .bloco {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0) 100%), linear-gradient(180deg, var(--card) 0%, var(--card-soft) 100%);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .bloco h2 {
+      margin: 0 0 16px;
+      font-size: 20px;
+      color: var(--primary-strong);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .campo {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .campo-full {
+      grid-column: 1 / -1;
+    }
+
+    .campo label {
+      font-weight: bold;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .campo input,
+    .campo select {
+      width: 100%;
+      height: 48px;
+      padding: 0 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 15px;
+      background: #10151d;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    .campo input:focus,
+    .campo select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(201, 168, 106, 0.15);
+    }
+
+    .campo input::placeholder {
+      color: #a69678;
+    }
+
+    .pericia-topo {
+      display: grid;
+      grid-template-columns: 1fr 220px;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .label-espaco {
+      visibility: hidden;
+    }
+
+    .botao {
+      border: 1px solid transparent;
+      border-radius: 12px;
+      min-height: 48px;
+      padding: 0 16px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.18s ease;
+    }
+
+    .btn-primario {
+      background: linear-gradient(180deg, var(--primary-strong) 0%, var(--primary) 100%);
+      color: var(--button-text);
+      border-color: rgba(0, 0, 0, 0.10);
+    }
+
+    .btn-primario:hover {
+      background: linear-gradient(180deg, #e7ce98 0%, var(--primary-hover) 100%);
+      transform: translateY(-1px);
+    }
+
+    .btn-secundario {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    .btn-secundario:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(201, 168, 106, 0.38);
+    }
+
+    .btn-add {
+      background: linear-gradient(180deg, var(--primary-strong) 0%, var(--primary) 100%);
+      color: var(--button-text);
+      width: 100%;
+      border-color: rgba(0, 0, 0, 0.10);
+    }
+
+    .btn-add:hover {
+      background: linear-gradient(180deg, #e7ce98 0%, var(--primary-hover) 100%);
+      transform: translateY(-1px);
+    }
+
+    .observacao {
+      margin-top: 14px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .lista-dinamica {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .linha-item {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr 120px;
+      gap: 12px;
+      align-items: end;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .mensagem {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 12px;
+      display: none;
+      font-weight: bold;
+      font-size: 14px;
+      border: 1px solid transparent;
+    }
+
+    .mensagem.sucesso {
+      background: rgba(79, 138, 91, 0.15);
+      color: #cfe8d3;
+      border-color: rgba(79, 138, 91, 0.45);
+      display: block;
+    }
+
+    .mensagem.erro {
+      background: rgba(169, 74, 74, 0.15);
+      color: #f0c7c7;
+      border-color: rgba(169, 74, 74, 0.45);
+      display: block;
+    }
+
+    .barra-acoes {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(12, 15, 21, 0.94);
+      backdrop-filter: blur(8px);
+      border-top: 1px solid var(--border);
+      padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
+      z-index: 20;
+    }
+
+    .acoes {
+      width: 100%;
+      max-width: 780px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 8, 6, 0.76);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      z-index: 999;
+    }
+
+    .modal-overlay.ativo {
+      display: flex;
+    }
+
+    .modal-arma {
+      width: 100%;
+      max-width: 460px;
+      max-height: 92vh;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0) 100%), linear-gradient(180deg, var(--card) 0%, var(--card-soft) 100%);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.34);
+    }
+
+    .modal-header {
+      padding: 16px 16px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.2;
+      color: var(--primary-strong);
+    }
+
+    .modal-fechar {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 30px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0;
+      min-width: 34px;
+      min-height: 34px;
+    }
+
+    .modal-fechar:hover {
+      color: var(--primary-strong);
+    }
+
+    .modal-body {
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    .modal-texto {
+      margin: 0 0 16px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .form-arma {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .modal-footer {
+      padding: 14px 16px 16px;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .loader-texto {
+      font-size: 14px;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 720px) {
+      .container {
+        padding: 12px 12px 110px;
+      }
+
+      .topo {
+        padding: 14px 14px;
+      }
+
+      .topo h1 {
+        font-size: 20px;
+      }
+
+      .topo p {
+        font-size: 12px;
+      }
+
+      .bloco {
+        padding: 16px;
+        border-radius: 14px;
+      }
+
+      .bloco h2 {
+        font-size: 19px;
+        padding-bottom: 8px;
+        margin-bottom: 14px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .pericia-topo {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .label-espaco {
+        display: none;
+      }
+
+      .linha-item {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .campo input,
+      .campo select,
+      .botao {
+        height: 48px;
+        font-size: 14px;
+      }
+
+      .acoes {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .form-arma {
+        grid-template-columns: 1fr;
+      }
+
+      .modal-arma {
+        max-width: 100%;
+        max-height: calc(100vh - 24px);
+        border-radius: 16px;
+      }
+
+      .modal-header h3 {
+        font-size: 20px;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .container {
+        padding: 10px 10px 112px;
+      }
+
+      .bloco {
+        padding: 14px;
+      }
+
+      .acoes {
+        grid-template-columns: 1fr;
+      }
+
+      .modal-overlay {
+        padding: 8px;
+        align-items: flex-end;
+      }
+
+      .modal-arma {
+        border-radius: 16px 16px 0 0;
+        max-height: calc(100vh - 8px);
+      }
+
+      .modal-header {
+        padding: 14px 14px 10px;
+      }
+
+      .modal-body {
+        padding: 14px;
+      }
+
+      .modal-footer {
+        grid-template-columns: 1fr;
+        padding: 12px 14px 14px;
+      }
+    }
+  
+
+  .botao:focus-visible,
+  .modal-fechar:focus-visible,
+  .campo input:focus-visible,
+  .campo select:focus-visible {
+    outline: 2px solid rgba(207, 178, 119, 0.55);
+    outline-offset: 2px;
+  }
+
+  .botao:disabled {
+    opacity: 0.62;
+    cursor: not-allowed;
+    transform: none;
+  }
+</style>
+</head>
+
+<body>
+  <header class="topo">
+    <h1>Cadastro de Personagem</h1>
+    <p>Preencha a ficha e depois cadastre a arma inicial.</p>
+  </header>
+
+  <main class="container">
+    <section class="bloco">
+      <h2>Informações principais</h2>
+      <div class="grid">
+        <div class="campo">
+          <label for="nome">Nome</label>
+          <input type="text" id="nome" placeholder="Digite o nome do personagem" />
+        </div>
+
+        <div class="campo">
+          <label for="raca">Raça</label>
+          <input type="text" id="raca" placeholder="Digite a raça" />
+        </div>
+
+        <div class="campo">
+          <label for="classe">Classe</label>
+          <input type="text" id="classe" placeholder="Digite a classe" />
+        </div>
+
+        <div class="campo">
+          <label for="origem">Origem</label>
+          <input type="text" id="origem" placeholder="Digite a origem" />
+        </div>
+
+        <div class="campo">
+          <label for="nivel">Nível</label>
+          <input type="number" id="nivel" min="1" value="1" />
+        </div>
+      </div>
+    </section>
+
+    <section class="bloco">
+      <h2>Status base</h2>
+      <div class="grid">
+        <div class="campo">
+          <label for="vidaBase">Vida base</label>
+          <input type="number" id="vidaBase" min="0" value="0" />
+        </div>
+
+        <div class="campo">
+          <label for="manaBase">Mana base</label>
+          <input type="number" id="manaBase" min="0" value="0" />
+        </div>
+
+        <div class="campo">
+          <label for="defesa">Defesa</label>
+          <input type="number" id="defesa" min="0" value="0" />
+        </div>
+
+        <div class="campo">
+          <label for="dinheiro">Dinheiro</label>
+          <input type="number" id="dinheiro" min="0" value="0" />
+        </div>
+
+        <div class="campo">
+          <label for="espacoBase">Espaço base</label>
+          <input type="number" id="espacoBase" min="0" step="0.1" value="0" />
+        </div>
+      </div>
+    </section>
+
+    <section class="bloco">
+      <h2>Atributos</h2>
+      <div class="grid">
+        <div class="campo">
+          <label for="forca">Força</label>
+          <input type="number" id="forca" value="0" />
+        </div>
+
+        <div class="campo">
+          <label for="destreza">Destreza</label>
+          <input type="number" id="destreza" value="0" />
+        </div>
+
+        <div class="campo">
+          <label for="constituicao">Constituição</label>
+          <input type="number" id="constituicao" value="0" />
+        </div>
+
+        <div class="campo">
+          <label for="inteligencia">Inteligência</label>
+          <input type="number" id="inteligencia" value="0" />
+        </div>
+
+        <div class="campo">
+          <label for="sabedoria">Sabedoria</label>
+          <input type="number" id="sabedoria" value="0" />
+        </div>
+
+        <div class="campo">
+          <label for="carisma">Carisma</label>
+          <input type="number" id="carisma" value="0" />
+        </div>
+      </div>
+    </section>
+
+    <section class="bloco">
+      <h2>Perícias</h2>
+
+      <div class="pericia-topo">
+        <div class="campo">
+          <label for="selectPericia">Selecionar perícia</label>
+          <select id="selectPericia">
+            <option value="">Escolha uma perícia</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label class="label-espaco">Adicionar</label>
+          <button type="button" class="botao btn-add" onclick="adicionarPericiaSelecionada()">
+            Adicionar perícia
+          </button>
+        </div>
+      </div>
+
+      <div id="listaPericias" class="lista-dinamica"></div>
+
+      <p class="observacao">
+        No cadastro, você escolhe apenas as perícias que quer preencher. Cada uma terá treinamento e outros.
+      </p>
+    </section>
+
+    <div id="mensagem" class="mensagem"></div>
+  </main>
+
+  <div class="barra-acoes">
+    <div class="acoes">
+      <button type="button" class="botao btn-secundario" onclick="limparFormulario()">
+        Limpar
+      </button>
+      <button type="button" id="btnSalvarFicha" class="botao btn-primario" onclick="salvarFicha()">
+        Salvar ficha
+      </button>
+    </div>
+  </div>
+
+  <div id="modalArmaInicial" class="modal-overlay" onclick="fecharModalArmaAoClicarFora(event)">
+    <div class="modal-arma">
+      <div class="modal-header">
+        <h3>Nova arma</h3>
+        <button type="button" class="modal-fechar" onclick="cancelarModalArmaInicial()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-texto">
+          Agora cadastre a arma inicial do personagem. Ela vai para a biblioteca de armas e para o inventário.
+        </p>
+
+        <form id="formArmaInicial" class="form-arma">
+          <div class="campo campo-full" style="grid-column: 1 / -1;">
+            <label for="armaNome">Nome</label>
+            <input type="text" id="armaNome" required />
+          </div>
+
+          <div class="campo">
+            <label for="armaTipoPericia">Tipo de perícia</label>
+            <select id="armaTipoPericia">
+              <option value="LUTA">LUTA</option>
+              <option value="PONTARIA">PONTARIA</option>
+              <option value="MISTICISMO">MISTICISMO</option>
+            </select>
+          </div>
+
+          <div class="campo">
+            <label for="armaQuantidadeDado">Qtd. de dados</label>
+            <input type="number" id="armaQuantidadeDado" min="1" value="1" />
+          </div>
+
+          <div class="campo">
+            <label for="armaTipoDado">Tipo de dado</label>
+            <select id="armaTipoDado">
+              <option value="D4">D4</option>
+              <option value="D6">D6</option>
+              <option value="D8">D8</option>
+              <option value="D10">D10</option>
+              <option value="D12">D12</option>
+              <option value="D20">D20</option>
+            </select>
+          </div>
+
+          <div class="campo">
+            <label for="armaCriticoMinimo">Crítico mínimo</label>
+            <input type="number" id="armaCriticoMinimo" min="1" value="20" />
+          </div>
+
+          <div class="campo">
+            <label for="armaCriticoMultiplicador">Crítico x</label>
+            <input type="number" id="armaCriticoMultiplicador" min="1" value="2" />
+          </div>
+
+          <div class="campo">
+            <label for="armaAlcance">Alcance</label>
+            <select id="armaAlcance">
+              <option value="CURTO">CURTO</option>
+              <option value="MEDIO">MEDIO</option>
+              <option value="LONGO">LONGO</option>
+            </select>
+          </div>
+
+          <div class="campo">
+            <label for="armaTipo">Tipo</label>
+            <select id="armaTipo">
+              <option value="CORTE">CORTE</option>
+              <option value="IMPACTO">IMPACTO</option>
+              <option value="PERFURACAO">PERFURACAO</option>
+            </select>
+          </div>
+
+          <div class="campo">
+            <label for="armaEspaco">Espaço</label>
+            <input type="number" id="armaEspaco" min="0.1" step="0.1" value="1" />
+          </div>
+
+          <div class="campo">
+            <label for="armaPreco">Preço</label>
+            <input type="number" id="armaPreco" min="0" value="0" />
+          </div>
+        </form>
+
+        <div id="mensagemModalArma" class="loader-texto"></div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" id="btnSalvarArmaInicial" class="botao btn-add" onclick="salvarArmaInicial()">
+          Salvar arma
+        </button>
+        <button type="button" class="botao btn-secundario" onclick="cancelarModalArmaInicial()">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:8080';
+    const params = new URLSearchParams(window.location.search);
+    const usuarioId = params.get("usuarioId");
+
+    if (!usuarioId) {
+      alert("usuarioId ausente na URL.");
+      throw new Error("usuarioId ausente na URL.");
+    }
+
+    const periciasBase = [
+      { chave: 'Acrobacia', treinamento: 'periciaAcrobacia', outros: 'outrosAcrobacia' },
+      { chave: 'Adestramento', treinamento: 'periciaAdestramento', outros: 'outrosAdestramento' },
+      { chave: 'Atletismo', treinamento: 'periciaAtletismo', outros: 'outrosAtletismo' },
+      { chave: 'Atuação', treinamento: 'periciaAtuacao', outros: 'outrosAtuacao' },
+      { chave: 'Cavalgar', treinamento: 'periciaCavalgar', outros: 'outrosCavalgar' },
+      { chave: 'Conhecimento', treinamento: 'periciaConhecimento', outros: 'outrosConhecimento' },
+      { chave: 'Cura', treinamento: 'periciaCura', outros: 'outrosCura' },
+      { chave: 'Diplomacia', treinamento: 'periciaDiplomacia', outros: 'outrosDiplomacia' },
+      { chave: 'Enganação', treinamento: 'periciaEnganacao', outros: 'outrosEnganacao' },
+      { chave: 'Fortitude', treinamento: 'periciaFortitude', outros: 'outrosFortitude' },
+      { chave: 'Furtividade', treinamento: 'periciaFurtividade', outros: 'outrosFurtividade' },
+      { chave: 'Guerra', treinamento: 'periciaGuerra', outros: 'outrosGuerra' },
+      { chave: 'Iniciativa', treinamento: 'periciaIniciativa', outros: 'outrosIniciativa' },
+      { chave: 'Intimidação', treinamento: 'periciaIntimidacao', outros: 'outrosIntimidacao' },
+      { chave: 'Intuição', treinamento: 'periciaIntuicao', outros: 'outrosIntuicao' },
+      { chave: 'Investigação', treinamento: 'periciaInvestigacao', outros: 'outrosInvestigacao' },
+      { chave: 'Ladinagem', treinamento: 'periciaLadinagem', outros: 'outrosLadinagem' },
+      { chave: 'Luta', treinamento: 'periciaLuta', outros: 'outrosLuta' },
+      { chave: 'Misticismo', treinamento: 'periciaMisticismo', outros: 'outrosMisticismo' },
+      { chave: 'Nobreza', treinamento: 'periciaNobreza', outros: 'outrosNobreza' },
+      { chave: 'Ofício', treinamento: 'periciaOficio', outros: 'outrosOficio' },
+      { chave: 'Percepção', treinamento: 'periciaPercepcao', outros: 'outrosPercepcao' },
+      { chave: 'Pontaria', treinamento: 'periciaPontaria', outros: 'outrosPontaria' },
+      { chave: 'Reflexo', treinamento: 'periciaReflexo', outros: 'outrosReflexo' },
+      { chave: 'Religião', treinamento: 'periciaReligiao', outros: 'outrosReligiao' },
+      { chave: 'Sobrevivência', treinamento: 'periciaSobrevivencia', outros: 'outrosSobrevivencia' },
+      { chave: 'Vontade', treinamento: 'periciaVontade', outros: 'outrosVontade' }
+    ];
+
+    let periciasSelecionadas = [];
+    let personagemCriadoId = null;
+    let inventarioCriadoId = null;
+    let salvandoFichaEmAndamento = false;
+    let salvandoArmaInicialEmAndamento = false;
+
+    function obterChaveCadastroConcluido(usuarioId) {
+      return `cadastro_personagem_concluido_${usuarioId}`;
+    }
+
+    function salvarCadastroConcluido(usuarioId, personagemId) {
+      if (!usuarioId || !personagemId) return;
+
+      localStorage.setItem(
+        obterChaveCadastroConcluido(usuarioId),
+        JSON.stringify({
+          usuarioId: Number(usuarioId),
+          personagemId: Number(personagemId),
+          concluido: true
+        })
+      );
+    }
+
+    function lerCadastroConcluido(usuarioId) {
+      if (!usuarioId) return null;
+
+      const valor = localStorage.getItem(obterChaveCadastroConcluido(usuarioId));
+      if (!valor) return null;
+
+      try {
+        return JSON.parse(valor);
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function redirecionarSeCadastroJaConcluido() {
+      const cadastro = lerCadastroConcluido(usuarioId);
+
+      if (cadastro?.concluido && cadastro?.personagemId) {
+        window.location.replace(`dados.html?id=${cadastro.personagemId}`);
+        return true;
+      }
+
+      return false;
+    }
+
+    window.addEventListener('pageshow', function () {
+      redirecionarSeCadastroJaConcluido();
+    });
+
+    function inicializarSelectPericias() {
+      const select = document.getElementById('selectPericia');
+      select.innerHTML = '<option value="">Escolha uma perícia</option>';
+
+      periciasBase.forEach((pericia, index) => {
+        const jaSelecionada = periciasSelecionadas.some(item => item.chave === pericia.chave);
+
+        if (!jaSelecionada) {
+          const option = document.createElement('option');
+          option.value = index;
+          option.textContent = pericia.chave;
+          select.appendChild(option);
+        }
+      });
+    }
+
+    function adicionarPericiaSelecionada() {
+      atualizarPericiasSelecionadasPelosInputs();
+
+      const select = document.getElementById('selectPericia');
+      const index = select.value;
+
+      if (index === '') {
+        mostrarMensagem('Selecione uma perícia antes de adicionar.', 'erro');
+        return;
+      }
+
+      const pericia = periciasBase[Number(index)];
+      const jaExiste = periciasSelecionadas.some(item => item.chave === pericia.chave);
+
+      if (jaExiste) {
+        mostrarMensagem('Essa perícia já foi adicionada.', 'erro');
+        return;
+      }
+
+      periciasSelecionadas.push({
+        ...pericia,
+        valorTreinamento: 0,
+        valorOutros: 0
+      });
+
+      renderizarPericiasSelecionadas();
+      inicializarSelectPericias();
+      select.value = '';
+      limparMensagem();
+    }
+
+    function renderizarPericiasSelecionadas() {
+      const container = document.getElementById('listaPericias');
+      container.innerHTML = '';
+
+      if (!periciasSelecionadas.length) {
+        return;
+      }
+
+      periciasSelecionadas.forEach((pericia) => {
+        const linha = document.createElement('div');
+        linha.className = 'linha-item';
+        linha.innerHTML = `
+          <div class="campo">
+            <label>Perícia</label>
+            <input type="text" value="${pericia.chave}" disabled />
+          </div>
+          <div class="campo">
+            <label>Treinamento</label>
+            <input type="number" min="0" value="${pericia.valorTreinamento}" data-campo="treinamento" data-chave="${pericia.chave}" />
+          </div>
+          <div class="campo">
+            <label>Outros</label>
+            <input type="number" value="${pericia.valorOutros}" data-campo="outros" data-chave="${pericia.chave}" />
+          </div>
+          <div class="campo">
+            <label>&nbsp;</label>
+            <button type="button" class="botao btn-secundario" onclick="removerPericia('${pericia.chave}')">Remover</button>
+          </div>
+        `;
+        container.appendChild(linha);
+      });
+    }
+
+    function removerPericia(chave) {
+      atualizarPericiasSelecionadasPelosInputs();
+      periciasSelecionadas = periciasSelecionadas.filter(item => item.chave !== chave);
+      renderizarPericiasSelecionadas();
+      inicializarSelectPericias();
+    }
+
+    function atualizarPericiasSelecionadasPelosInputs() {
+      periciasSelecionadas = periciasSelecionadas.map((pericia) => {
+        const inputTreinamento = document.querySelector(`[data-campo="treinamento"][data-chave="${pericia.chave}"]`);
+        const inputOutros = document.querySelector(`[data-campo="outros"][data-chave="${pericia.chave}"]`);
+
+        return {
+          ...pericia,
+          valorTreinamento: Number(inputTreinamento?.value || 0),
+          valorOutros: Number(inputOutros?.value || 0)
+        };
+      });
+    }
+
+    function montarPayloadPericias() {
+      atualizarPericiasSelecionadasPelosInputs();
+
+      const payload = {};
+      periciasBase.forEach((pericia) => {
+        payload[pericia.treinamento] = 0;
+        payload[pericia.outros] = 0;
+      });
+
+      periciasSelecionadas.forEach((periciaSelecionada) => {
+        payload[periciaSelecionada.treinamento] = periciaSelecionada.valorTreinamento;
+        payload[periciaSelecionada.outros] = periciaSelecionada.valorOutros;
+      });
+
+      return payload;
+    }
+
+    function coletarDadosFormulario() {
+      return {
+        personagem: {
+          personagemNome: document.getElementById('nome').value.trim(),
+          personagemRaca: document.getElementById('raca').value.trim(),
+          personagemClasse: document.getElementById('classe').value.trim(),
+          personagemOrigem: document.getElementById('origem').value.trim(),
+          personagemNivel: Number(document.getElementById('nivel').value)
+        },
+        status: {
+          statusVidaBase: Number(document.getElementById('vidaBase').value),
+          statusVidaAtual: Number(document.getElementById('vidaBase').value),
+          statusManaBase: Number(document.getElementById('manaBase').value),
+          statusManaAtual: Number(document.getElementById('manaBase').value),
+          statusDefesa: Number(document.getElementById('defesa').value),
+          statusDinheiro: Number(document.getElementById('dinheiro').value),
+          statusEspacoBase: Number(document.getElementById('espacoBase').value),
+          statusEspacoAtual: Number(document.getElementById('espacoBase').value)
+        },
+        atributo: {
+          atributoForca: Number(document.getElementById('forca').value),
+          atributoDestreza: Number(document.getElementById('destreza').value),
+          atributoConstituicao: Number(document.getElementById('constituicao').value),
+          atributoInteligencia: Number(document.getElementById('inteligencia').value),
+          atributoSabedoria: Number(document.getElementById('sabedoria').value),
+          atributoCarisma: Number(document.getElementById('carisma').value)
+        },
+        pericia: montarPayloadPericias()
+      };
+    }
+
+    function validarFormulario(dados) {
+      if (!dados.personagem.personagemNome) {
+        throw new Error('Informe o nome do personagem.');
+      }
+
+      if (!dados.personagem.personagemRaca) {
+        throw new Error('Informe a raça do personagem.');
+      }
+
+      if (!dados.personagem.personagemClasse) {
+        throw new Error('Informe a classe do personagem.');
+      }
+
+      if (!dados.personagem.personagemOrigem) {
+        throw new Error('Informe a origem do personagem.');
+      }
+
+      if (dados.personagem.personagemNivel < 1) {
+        throw new Error('O nível deve ser no mínimo 1.');
+      }
+    }
+
+    async function fazerRequisicao(url, metodo, body = null) {
+      const config = {
+        method: metodo,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      };
+
+      if (body !== null) {
+        config.body = JSON.stringify(body);
+      }
+
+      const response = await fetch(url, config);
+
+      if (!response.ok) {
+        let mensagemErro = `Erro ${response.status}`;
+
+        try {
+          const erro = await response.text();
+          if (erro) {
+            mensagemErro = erro;
+          }
+        } catch (_) { }
+
+        throw new Error(mensagemErro);
+      }
+
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        return response.json();
+      }
+
+      return null;
+    }
+
+    function mostrarMensagem(texto, tipo) {
+      const mensagem = document.getElementById('mensagem');
+      mensagem.textContent = texto;
+      mensagem.className = `mensagem ${tipo}`;
+    }
+
+    function limparMensagem() {
+      const mensagem = document.getElementById('mensagem');
+      mensagem.textContent = '';
+      mensagem.className = 'mensagem';
+    }
+
+    function mostrarMensagemModal(texto) {
+      document.getElementById('mensagemModalArma').textContent = texto || '';
+    }
+
+    function limparFormulario() {
+      document.querySelectorAll('input').forEach((input) => {
+        if (input.type === 'number') {
+          if (input.id === 'nivel') {
+            input.value = 1;
+          } else if (input.id === 'armaQuantidadeDado') {
+            input.value = 1;
+          } else if (input.id === 'armaCriticoMinimo') {
+            input.value = 20;
+          } else if (input.id === 'armaCriticoMultiplicador') {
+            input.value = 2;
+          } else if (input.id === 'armaEspaco') {
+            input.value = 1;
+          } else if (input.id === 'armaPreco') {
+            input.value = 0;
+          } else {
+            input.value = 0;
+          }
+        } else if (!input.disabled) {
+          input.value = '';
+        }
+      });
+
+      document.querySelectorAll('select').forEach((select) => {
+        if (select.id === 'armaTipoPericia') select.value = 'LUTA';
+        else if (select.id === 'armaTipoDado') select.value = 'D8';
+        else if (select.id === 'armaAlcance') select.value = 'LONGO';
+        else if (select.id === 'armaTipo') select.value = 'PERFURACAO';
+        else if (select.id === 'selectPericia') select.value = '';
+      });
+
+      periciasSelecionadas = [];
+      renderizarPericiasSelecionadas();
+      inicializarSelectPericias();
+      mostrarMensagem('Formulário limpo.', 'sucesso');
+    }
+
+    function abrirModalArmaInicial() {
+      document.getElementById('modalArmaInicial').classList.add('ativo');
+      mostrarMensagemModal('');
+    }
+
+    function fecharModalArmaInicial() {
+      document.getElementById('modalArmaInicial').classList.remove('ativo');
+      mostrarMensagemModal('');
+    }
+
+    function fecharModalArmaAoClicarFora(event) {
+      if (event.target.id === 'modalArmaInicial') {
+        cancelarModalArmaInicial();
+      }
+    }
+
+    function cancelarModalArmaInicial() {
+      if (!personagemCriadoId) {
+        fecharModalArmaInicial();
+        return;
+      }
+
+      const confirmar = confirm('Cancelar a arma inicial e ir para a tela do personagem?');
+      if (!confirmar) return;
+
+      salvarCadastroConcluido(usuarioId, personagemCriadoId);
+      window.location.replace(`dados.html?id=${personagemCriadoId}`);
+    }
+
+    function obterPayloadArmaInicial() {
+      return {
+        armaNome: document.getElementById('armaNome').value.trim(),
+        armaTipoPericia: document.getElementById('armaTipoPericia').value,
+        armaTesteAtaque: '1d20',
+        armaBonusTesteAtaque: 0,
+        armaPenalidadeTesteAtaque: 0,
+        armaQuantidadeDado: Number(document.getElementById('armaQuantidadeDado').value || 1),
+        armaTipoDado: document.getElementById('armaTipoDado').value,
+        armaBonusDano: 0,
+        armaPenalidadeDano: 0,
+        armaCriticoMinimo: Number(document.getElementById('armaCriticoMinimo').value || 20),
+        armaCriticoMultiplicador: Number(document.getElementById('armaCriticoMultiplicador').value || 2),
+        armaAlcance: document.getElementById('armaAlcance').value,
+        armaTipo: document.getElementById('armaTipo').value,
+        armaEspaco: Number(document.getElementById('armaEspaco').value || 1),
+        armaPreco: Number(document.getElementById('armaPreco').value || 0),
+        armaBonusPv: 0,
+        armaPenalidadePv: 0,
+        armaBonusPm: 0,
+        armaPenalidadePm: 0
+      };
+    }
+
+    function validarArmaInicial(payload) {
+      if (!payload.armaNome) {
+        throw new Error('Informe o nome da arma.');
+      }
+
+      if (payload.armaQuantidadeDado < 1) {
+        throw new Error('A quantidade de dados deve ser no mínimo 1.');
+      }
+
+      if (payload.armaCriticoMinimo < 1) {
+        throw new Error('O crítico mínimo deve ser no mínimo 1.');
+      }
+
+      if (payload.armaCriticoMultiplicador < 1) {
+        throw new Error('O crítico x deve ser no mínimo 1.');
+      }
+    }
+
+    function encontrarInventarioIdEmEstrutura(valor) {
+      if (valor === null || valor === undefined) {
+        return null;
+      }
+
+      if (typeof valor !== 'object') {
+        return null;
+      }
+
+      if (typeof valor.inventarioId === 'number') {
+        return valor.inventarioId;
+      }
+
+      if (valor.inventario && typeof valor.inventario.id === 'number') {
+        return valor.inventario.id;
+      }
+
+      if (Array.isArray(valor)) {
+        for (const item of valor) {
+          const encontrado = encontrarInventarioIdEmEstrutura(item);
+          if (encontrado) return encontrado;
+        }
+        return null;
+      }
+
+      for (const chave of Object.keys(valor)) {
+        const encontrado = encontrarInventarioIdEmEstrutura(valor[chave]);
+        if (encontrado) return encontrado;
+      }
+
+      return null;
+    }
+
+    async function buscarInventarioIdDoPersonagem(personagemId) {
+      try {
+        const inventarioBase = await fazerRequisicao(`${API_BASE}/inventario/base/personagem/${personagemId}`, 'GET');
+        if (typeof inventarioBase?.inventarioId === 'number') {
+          return inventarioBase.inventarioId;
+        }
+      } catch (_) { }
+
+      try {
+        const completo = await fazerRequisicao(`${API_BASE}/inventario/completo/personagem/${personagemId}`, 'GET');
+        const inventarioIdCompleto = encontrarInventarioIdEmEstrutura(completo);
+        if (inventarioIdCompleto) return inventarioIdCompleto;
+      } catch (_) { }
+
+      try {
+        const simples = await fazerRequisicao(`${API_BASE}/inventario/personagem/${personagemId}`, 'GET');
+        const inventarioIdSimples = encontrarInventarioIdEmEstrutura(simples);
+        if (inventarioIdSimples) return inventarioIdSimples;
+      } catch (_) { }
+
+      return null;
+    }
+
+    async function salvarFicha() {
+      if (salvandoFichaEmAndamento) return;
+      if (personagemCriadoId) return;
+
+      let personagemCriadoComSucesso = false;
+
+      try {
+        salvandoFichaEmAndamento = true;
+        travarBotaoSalvarFicha();
+        mostrarMensagem('Salvando ficha...', 'sucesso');
+
+        const dados = coletarDadosFormulario();
+        validarFormulario(dados);
+
+        const personagemCriado = await fazerRequisicao(
+          `${API_BASE}/personagem`,
+          'POST',
+          dados.personagem
+        );
+
+        personagemCriadoId = personagemCriado?.id;
+
+        if (!personagemCriadoId) {
+          throw new Error('O backend não retornou o ID do personagem criado.');
+        }
+
+        personagemCriadoComSucesso = true;
+
+        await fazerRequisicao(
+          `${API_BASE}/status/personagem/${personagemCriadoId}`,
+          'POST',
+          dados.status
+        );
+
+        await fazerRequisicao(
+          `${API_BASE}/atributo/personagem/${personagemCriadoId}`,
+          'POST',
+          dados.atributo
+        );
+
+        await fazerRequisicao(
+          `${API_BASE}/pericia/personagem/${personagemCriadoId}`,
+          'POST',
+          dados.pericia
+        );
+
+        await fazerRequisicao(
+          `${API_BASE}/usuarios/${usuarioId}/personagem/${personagemCriadoId}`,
+          'PATCH',
+          {}
+        );
+
+        inventarioCriadoId = null;
+
+        mostrarMensagem('Ficha criada. Buscando inventário para cadastrar a arma inicial...', 'sucesso');
+        inventarioCriadoId = await buscarInventarioIdDoPersonagem(personagemCriadoId);
+
+        if (!inventarioCriadoId) {
+          mostrarMensagem('Ficha criada, mas não foi possível localizar o inventário do personagem para cadastrar a arma inicial.', 'erro');
+
+          salvarCadastroConcluido(usuarioId, personagemCriadoId);
+
+          setTimeout(() => {
+            window.location.replace(`dados.html?id=${personagemCriadoId}`);
+          }, 1600);
+          return;
+        }
+
+        mostrarMensagem('Ficha criada com sucesso. Agora cadastre a arma inicial.', 'sucesso');
+        abrirModalArmaInicial();
+
+      } catch (erro) {
+        console.error('Erro ao salvar ficha:', erro);
+
+        if (personagemCriadoComSucesso) {
+          mostrarMensagem(
+            'A ficha começou a ser criada, mas houve erro na continuação do fluxo. Não clique novamente em "Salvar ficha". Recarregue a página só depois de verificar o personagem criado.',
+            'erro'
+          );
+          return;
+        }
+
+        mostrarMensagem(`Erro ao salvar ficha: ${erro.message}`, 'erro');
+        destravarBotaoSalvarFicha();
+        salvandoFichaEmAndamento = false;
+        return;
+      }
+
+      salvandoFichaEmAndamento = false;
+    }
+
+    async function salvarArmaInicial() {
+      if (salvandoArmaInicialEmAndamento) return;
+
+      try {
+        salvandoArmaInicialEmAndamento = true;
+
+        const botaoSalvarArma = document.getElementById('btnSalvarArmaInicial');
+        if (botaoSalvarArma) botaoSalvarArma.disabled = true;
+
+        const payload = obterPayloadArmaInicial();
+        validarArmaInicial(payload);
+
+        if (!personagemCriadoId) {
+          throw new Error('Personagem ainda não foi criado.');
+        }
+
+        if (!inventarioCriadoId) {
+          throw new Error('Inventário do personagem não encontrado.');
+        }
+
+        mostrarMensagemModal('Salvando arma inicial...');
+
+        await fazerRequisicao(
+          `${API_BASE}/arma`,
+          'POST',
+          payload
+        );
+
+        await fazerRequisicao(
+          `${API_BASE}/arma/inventario/${inventarioCriadoId}`,
+          'POST',
+          payload
+        );
+
+        salvarCadastroConcluido(usuarioId, personagemCriadoId);
+
+        mostrarMensagem('Arma inicial cadastrada com sucesso. Redirecionando...', 'sucesso');
+        fecharModalArmaInicial();
+
+        setTimeout(() => {
+          window.location.replace(`dados.html?id=${personagemCriadoId}`);
+        }, 900);
+
+      } catch (erro) {
+        console.error('Erro ao salvar arma inicial:', erro);
+        mostrarMensagemModal(erro.message || 'Erro ao salvar arma inicial.');
+      } finally {
+        salvandoArmaInicialEmAndamento = false;
+
+        const botaoSalvarArma = document.getElementById('btnSalvarArmaInicial');
+        if (botaoSalvarArma) botaoSalvarArma.disabled = false;
+      }
+    }
+
+    function travarBotaoSalvarFicha() {
+      const botao = document.getElementById('btnSalvarFicha');
+      if (!botao) return;
+
+      botao.disabled = true;
+      botao.textContent = 'Salvando...';
+    }
+
+    function destravarBotaoSalvarFicha() {
+      const botao = document.getElementById('btnSalvarFicha');
+      if (!botao) return;
+
+      botao.disabled = false;
+      botao.textContent = 'Salvar ficha';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (redirecionarSeCadastroJaConcluido()) {
+        return;
+      }
+
+      inicializarSelectPericias();
+      renderizarPericiasSelecionadas();
+    });
+  </script>
+</body>
+
+</html>

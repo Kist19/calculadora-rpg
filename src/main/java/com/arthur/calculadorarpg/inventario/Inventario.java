@@ -15,12 +15,12 @@ public class Inventario {
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "personagem_id")
+	@JoinColumn(name = "personagem_id", nullable = false)
 	@JsonIgnore
 	private Personagem personagem;
 
 	@ManyToOne
-	@JoinColumn(name = "item_id", nullable = false)
+	@JoinColumn(name = "item_id", nullable = true)
 	private Item item;
 
 	@Column(nullable = false)

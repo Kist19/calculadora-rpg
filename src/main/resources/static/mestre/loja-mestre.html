@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Loja do Mestre</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/mestre-theme.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #08111f;
+            --bg-soft: #0b1526;
+            --card: linear-gradient(180deg, rgba(17, 28, 48, 0.96), rgba(10, 22, 40, 0.96));
+            --card-2: rgba(2, 6, 23, 0.68);
+            --text: #f8fafc;
+            --muted: #cbd5e1;
+            --muted-2: #94a3b8;
+            --line: rgba(148, 163, 184, 0.14);
+            --line-strong: rgba(148, 163, 184, 0.22);
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: rgba(30, 41, 59, 0.88);
+            --secondary-hover: rgba(51, 65, 85, 0.92);
+            --success-bg: rgba(16, 185, 129, 0.16);
+            --success-text: #d1fae5;
+            --success-border: rgba(16, 185, 129, 0.34);
+            --danger-bg: rgba(239, 68, 68, 0.16);
+            --danger-text: #fecaca;
+            --danger-border: rgba(239, 68, 68, 0.34);
+            --warning-bg: rgba(245, 158, 11, 0.14);
+            --warning-text: #fde68a;
+            --shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+            --radius-xl: 22px;
+            --radius-lg: 16px;
+            --radius-md: 14px;
+            --radius-sm: 10px;
+        }
+
+        html,
+        body {
+            margin: 0;
+            min-height: 100%;
+            font-family: Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        body.modal-aberto {
+            overflow: hidden;
+        }
+
+        .topo-admin {
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(10, 18, 34, 0.92));
+            color: #fff;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+        }
+
+        .logo-admin {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .menu-admin {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .menu-admin a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 14px;
+            background: rgba(30, 41, 59, 0.72);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            transition: 0.2s;
+        }
+
+        .menu-admin a:hover,
+        .menu-admin a.ativo {
+            background: rgba(37, 99, 235, 0.18);
+            border-color: rgba(96, 165, 250, 0.28);
+        }
+
+        .pagina {
+            width: 100%;
+            max-width: 1680px;
+            margin: 0 auto;
+            padding: 16px 22px 10px;
+        }
+
+        .cabecalho-pagina {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .cabecalho-pagina__texto h1 {
+            margin: 0 0 8px;
+            font-size: 34px;
+            color: #f8fafc;
+        }
+
+        .cabecalho-pagina__texto p {
+            margin: 0;
+            font-size: 16px;
+            color: var(--muted);
+            max-width: 900px;
+            line-height: 1.5;
+        }
+
+        .cabecalho-pagina__acoes {
+            margin-left: auto;
+            padding-top: 6px;
+        }
+
+        .mensagem {
+            margin-bottom: 14px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .mensagem.sucesso {
+            display: block;
+            background: var(--success-bg);
+            color: var(--success-text);
+            border: 1px solid var(--success-border);
+        }
+
+        .mensagem.erro {
+            display: block;
+            background: var(--danger-bg);
+            color: var(--danger-text);
+            border: 1px solid var(--danger-border);
+        }
+
+        .grid-topo {
+            display: grid;
+            grid-template-columns: 470px 1fr;
+            gap: 16px;
+            align-items: stretch;
+            margin-bottom: 16px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-xl);
+            padding: 18px;
+            min-width: 0;
+            box-shadow: var(--shadow);
+        }
+
+        .card h2,
+        .card h3 {
+            margin-top: 0;
+            color: #f8fafc;
+        }
+
+        .card h2 {
+            font-size: 22px;
+            margin-bottom: 14px;
+        }
+
+        .card h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        .card--produtos {
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            height: calc(100vh - 250px);
+        }
+
+        .bloco-ajuda {
+            margin-top: 14px;
+            border-top: 1px solid var(--line);
+            padding-top: 12px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.55;
+        }
+
+        .campo {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .campo label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #e2e8f0;
+        }
+
+        .campo input,
+        .campo select {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            border-radius: 14px;
+            font-size: 15px;
+            background: rgba(2, 6, 23, 0.72);
+            color: #e5e7eb;
+            outline: none;
+        }
+
+        .campo input::placeholder {
+            color: var(--muted-2);
+        }
+
+        .campo input:focus,
+        .campo select:focus {
+            border-color: rgba(59, 130, 246, 0.6);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .linha-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .acoes,
+        .acoes-item {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .acoes-item {
+            margin-top: 12px;
+        }
+
+        button {
+            border: 1px solid transparent;
+            border-radius: 14px;
+            padding: 11px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+            transform: none;
+        }
+
+        .btn-primario {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            border-color: rgba(96, 165, 250, 0.24);
+        }
+
+        .btn-primario:hover {
+            background: linear-gradient(135deg, var(--primary-dark), #1e40af);
+        }
+
+        .btn-secundario {
+            background: var(--secondary);
+            color: #f8fafc;
+            border-color: rgba(148, 163, 184, 0.22);
+        }
+
+        .btn-secundario:hover {
+            background: var(--secondary-hover);
+        }
+
+        .btn-editar {
+            background: rgba(59, 130, 246, 0.14);
+            color: #dbeafe;
+            border-color: rgba(96, 165, 250, 0.22);
+        }
+
+        .btn-editar:hover {
+            background: rgba(59, 130, 246, 0.22);
+        }
+
+        .btn-excluir {
+            background: rgba(239, 68, 68, 0.16);
+            color: #fecaca;
+            border-color: rgba(239, 68, 68, 0.24);
+        }
+
+        .btn-excluir:hover {
+            background: rgba(239, 68, 68, 0.24);
+        }
+
+        .btn-abrir {
+            background: rgba(37, 99, 235, 0.18);
+            color: #dbeafe;
+            border-color: rgba(96, 165, 250, 0.22);
+        }
+
+        .btn-abrir:hover {
+            background: rgba(37, 99, 235, 0.28);
+        }
+
+        .btn-ativar {
+            background: rgba(30, 41, 59, 0.9);
+            color: #e5e7eb;
+            border-color: rgba(148, 163, 184, 0.2);
+        }
+
+        .btn-ativar:hover {
+            background: rgba(51, 65, 85, 0.92);
+        }
+
+        .btn-ativar-ativa {
+            background: rgba(16, 185, 129, 0.16);
+            color: #d1fae5;
+            border-color: rgba(16, 185, 129, 0.24);
+        }
+
+        .painel-topo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .painel-vazio {
+            padding: 18px;
+            border: 1px dashed rgba(148, 163, 184, 0.24);
+            border-radius: 14px;
+            text-align: center;
+            color: var(--muted);
+            background: rgba(2, 6, 23, 0.35);
+        }
+
+        .lista {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: 0;
+        }
+
+        .lista-lojas-scroll,
+        .lista-produtos-scroll,
+        .catalogo-scroll {
+            min-height: 0;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        .lista-lojas-scroll {
+            max-height: 520px;
+        }
+
+        .lista-produtos-scroll {
+            flex: 1;
+            min-height: 220px;
+        }
+
+        .catalogo-scroll {
+            max-height: 340px;
+            margin-bottom: 14px;
+        }
+
+        .item-card {
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 14px;
+            background: rgba(2, 6, 23, 0.4);
+        }
+
+        .item-topo {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .item-titulo {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #f8fafc;
+        }
+
+        .item-subtitulo {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.45;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+            border: 1px solid transparent;
+        }
+
+        .tag-ativa,
+        .tag-disponivel {
+            background: rgba(16, 185, 129, 0.16);
+            color: #d1fae5;
+            border-color: rgba(16, 185, 129, 0.24);
+        }
+
+        .tag-inativa,
+        .tag-indisponivel {
+            background: rgba(239, 68, 68, 0.16);
+            color: #fecaca;
+            border-color: rgba(239, 68, 68, 0.24);
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .chip {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 6px 10px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #dbe4f0;
+        }
+
+        .painel-loja-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .info-pill {
+            background: rgba(15, 23, 42, 0.72);
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #dbe4f0;
+        }
+
+        .modal-fundo {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.74);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 999;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-fundo.ativo {
+            display: flex;
+        }
+
+        .modal {
+            width: 100%;
+            max-width: 780px;
+            max-height: 90vh;
+            overflow: hidden;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(10, 18, 34, 0.98));
+            border-radius: 22px;
+            border: 1px solid var(--line-strong);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.32);
+        }
+
+        .modal-topo {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-topo h3 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .modal-topo button {
+            width: 38px;
+            height: 38px;
+            padding: 0;
+            border-radius: 12px;
+            background: rgba(30, 41, 59, 0.9);
+            color: #f8fafc;
+            font-size: 18px;
+            font-weight: 700;
+            border-color: rgba(148, 163, 184, 0.2);
+        }
+
+        .modal-corpo {
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .barra-filtro {
+            margin-bottom: 12px;
+        }
+
+        .catalogo-item {
+            cursor: pointer;
+            transition: 0.15s ease;
+        }
+
+        .catalogo-item:hover {
+            border-color: rgba(96, 165, 250, 0.26);
+            transform: translateY(-1px);
+        }
+
+        .catalogo-item.selecionado {
+            border-color: rgba(59, 130, 246, 0.6);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+            background: rgba(15, 23, 42, 0.72);
+        }
+
+        .resumo-selecao {
+            margin: 14px 0;
+            padding: 14px;
+            border-radius: 16px;
+            background: rgba(2, 6, 23, 0.5);
+            border: 1px solid var(--line);
+        }
+
+        .resumo-selecao strong {
+            display: block;
+            margin-bottom: 6px;
+            color: #f8fafc;
+        }
+
+        .resumo-selecao .item-subtitulo {
+            margin: 0;
+        }
+
+        @media (max-width: 1080px) {
+            .grid-topo {
+                grid-template-columns: 1fr;
+            }
+
+            .card--produtos {
+                height: auto;
+            }
+
+            .lista-produtos-scroll {
+                max-height: 560px;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .pagina {
+                padding: 16px;
+            }
+
+            .cabecalho-pagina__texto h1 {
+                font-size: 28px;
+            }
+
+            .linha-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .topo-admin {
+                padding: 16px;
+            }
+
+            .menu-admin {
+                width: 100%;
+            }
+
+            .menu-admin a {
+                flex: 1 1 calc(50% - 12px);
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="topo-admin">
+        <div class="logo-admin">Painel do Mestre</div>
+
+        <nav class="menu-admin">
+            <a href="dashboard-mestre.html">Dashboard</a>
+            <a href="personagens.html">Personagens</a>
+            <a href="biblioteca.html">Biblioteca</a>
+            <a href="loja-mestre.html" class="ativo">Loja</a>
+            <a href="efeitos.html">Efeitos</a>
+            <a href="combate.html">Combate</a>
+        </nav>
+    </header>
+
+    <main class="pagina">
+        <section class="cabecalho-pagina">
+            <div class="cabecalho-pagina__texto">
+                <h1>Lojas do Mestre</h1>
+                <p>Crie lojas, organize o catálogo e gerencie os produtos disponíveis mantendo o mesmo padrão visual das bibliotecas do sistema.</p>
+            </div>
+            <div class="cabecalho-pagina__acoes">
+                <button class="btn-secundario" onclick="location.href='biblioteca.html'">Voltar para bibliotecas</button>
+            </div>
+        </section>
+
+        <div id="mensagem" class="mensagem"></div>
+
+        <section class="grid-topo">
+            <div class="card">
+                <h2 id="tituloFormularioLoja">Nova loja</h2>
+
+                <div class="campo">
+                    <label for="lojaNome">Nome da loja</label>
+                    <input id="lojaNome" type="text" placeholder="Ex.: Arsenal do Reino" maxlength="60">
+                </div>
+
+                <div class="linha-2">
+                    <div class="campo">
+                        <label for="lojaTipo">Tipo da loja</label>
+                        <select id="lojaTipo">
+                            <option value="GERAL">GERAL</option>
+                            <option value="ARMAS">ARMAS</option>
+                            <option value="ARMADURAS">ARMADURAS</option>
+                            <option value="POCOES">POÇÕES</option>
+                            <option value="MAGICA">MÁGICA</option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="lojaAtiva">Status</label>
+                        <select id="lojaAtiva">
+                            <option value="true">Ativa</option>
+                            <option value="false">Inativa</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="acoes">
+                    <button class="btn-primario" onclick="salvarLoja()">Salvar loja</button>
+                    <button class="btn-secundario" onclick="limparFormularioLoja()">Limpar</button>
+                </div>
+
+                <div class="bloco-ajuda">
+                    <strong>Fluxo:</strong><br>
+                    1. Crie a loja.<br>
+                    2. Abra a loja na listagem.<br>
+                    3. Adicione itens, armas ou armaduras da biblioteca com valor próprio.<br>
+                    4. Ajuste quantidade, disponibilidade e preço quando precisar.
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="painel-topo">
+                    <h2 style="margin:0;">Lojas cadastradas</h2>
+                    <button class="btn-secundario" onclick="carregarLojas()">Atualizar</button>
+                </div>
+
+                <div class="lista-lojas-scroll">
+                    <div id="listaLojas" class="lista">
+                        <div class="painel-vazio">Carregando lojas...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="card card--produtos">
+            <div class="painel-topo">
+                <div>
+                    <h2 id="tituloPainelLoja" style="margin:0 0 4px;">Nenhuma loja selecionada</h2>
+                    <div id="subtituloPainelLoja" class="item-subtitulo">
+                        Selecione uma loja na lista para gerenciar os produtos.
+                    </div>
+                    <div id="painelLojaInfo" class="painel-loja-info" style="display:none;"></div>
+                </div>
+
+                <button id="btnAbrirModalProduto" class="btn-primario" onclick="abrirModalProduto()" disabled>
+                    Adicionar item na loja
+                </button>
+            </div>
+
+            <div class="lista-produtos-scroll">
+                <div id="listaProdutosLoja" class="lista">
+                    <div class="painel-vazio">Nenhuma loja aberta no momento.</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="modalProdutoFundo" class="modal-fundo">
+        <div class="modal">
+            <div class="modal-topo">
+                <h3>Adicionar item na loja</h3>
+                <button type="button" onclick="fecharModalProduto()">×</button>
+            </div>
+
+            <div class="modal-corpo">
+                <div class="barra-filtro">
+                    <div class="campo" style="margin-bottom:0;">
+                        <label for="buscaItemBiblioteca">Buscar item da biblioteca</label>
+                        <input id="buscaItemBiblioteca" type="text" placeholder="Digite o nome do item" oninput="renderizarCatalogoItens()">
+                    </div>
+                </div>
+
+                <div class="linha-2">
+                    <div class="campo">
+                        <label>Tipo de produto</label>
+                        <select id="tipoProduto" onchange="trocarTipoProduto()">
+                            <option value="item">Item</option>
+                            <option value="arma">Arma</option>
+                            <option value="armadura">Armadura</option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="produtoLojaQuantidade">Quantidade</label>
+                        <input id="produtoLojaQuantidade" type="number" min="0" step="1" placeholder="Ex.: 10">
+                    </div>
+                </div>
+
+                <div class="catalogo-scroll">
+                    <div id="listaCatalogoItens" class="lista">
+                        <div class="painel-vazio">Carregando itens da biblioteca...</div>
+                    </div>
+                </div>
+
+                <div class="resumo-selecao">
+                    <strong id="resumoItemSelecionado">Nenhum item selecionado</strong>
+                    <div id="resumoValorOriginal" class="item-subtitulo">Valor original: --</div>
+                </div>
+
+                <div class="linha-2">
+                    <div class="campo">
+                        <label for="produtoLojaPreco">Valor da loja</label>
+                        <input id="produtoLojaPreco" type="number" min="0" step="1" placeholder="Ex.: 50">
+                    </div>
+
+                    <div class="campo">
+                        <label for="produtoLojaDisponivel">Disponibilidade</label>
+                        <select id="produtoLojaDisponivel">
+                            <option value="true">Disponível</option>
+                            <option value="false">Indisponível</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="acoes">
+                    <button class="btn-primario" onclick="adicionarItemNaLoja()">Adicionar</button>
+                    <button class="btn-secundario" onclick="fecharModalProduto()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8080";
+
+        let lojas = [];
+        let lojaSelecionada = null;
+        let lojaEditandoId = null;
+        let produtosDaLoja = [];
+        let itensBiblioteca = [];
+        let armasBiblioteca = [];
+        let armadurasBiblioteca = [];
+
+        let produtoSelecionado = null;
+        let tipoSelecionado = "item";
+
+        function mostrarMensagem(texto, erro = false) {
+            const el = document.getElementById("mensagem");
+            el.textContent = texto;
+            el.className = erro ? "mensagem erro" : "mensagem sucesso";
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        function limparMensagem() {
+            const el = document.getElementById("mensagem");
+            el.textContent = "";
+            el.className = "mensagem";
+        }
+
+        function escapeHtml(valor) {
+            return String(valor ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function formatarTexto(valor) {
+            return String(valor || "").replace(/_/g, " ").trim();
+        }
+
+        function formatarNumero(valor) {
+            if (valor === null || valor === undefined || valor === "") return "0";
+            const numero = Number(valor);
+            if (Number.isNaN(numero)) return String(valor);
+            return Number.isInteger(numero) ? String(numero) : numero.toFixed(1).replace(".", ",");
+        }
+
+        function formatarMoeda(valor) {
+            return `${formatarNumero(valor)} PP`;
+        }
+
+        function limparFormularioLoja() {
+            lojaEditandoId = null;
+            document.getElementById("tituloFormularioLoja").textContent = "Nova loja";
+            document.getElementById("lojaNome").value = "";
+            document.getElementById("lojaTipo").value = "GERAL";
+            document.getElementById("lojaAtiva").value = "true";
+        }
+
+        function preencherFormularioLoja(loja) {
+            lojaEditandoId = loja.id;
+            document.getElementById("tituloFormularioLoja").textContent = "Editar loja";
+            document.getElementById("lojaNome").value = loja.lojaNome || "";
+            document.getElementById("lojaTipo").value = loja.lojaTipo || "GERAL";
+            document.getElementById("lojaAtiva").value = String(loja.ativa === true);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        async function salvarLoja() {
+            try {
+                limparMensagem();
+
+                const lojaNome = document.getElementById("lojaNome").value.trim();
+                const lojaTipo = document.getElementById("lojaTipo").value;
+                const ativa = document.getElementById("lojaAtiva").value === "true";
+
+                if (!lojaNome) {
+                    mostrarMensagem("Informe o nome da loja.", true);
+                    return;
+                }
+
+                const body = { lojaNome, lojaTipo, ativa };
+                const editando = !!lojaEditandoId;
+
+                const response = await fetch(
+                    editando ? `${API_BASE}/lojas/${lojaEditandoId}` : `${API_BASE}/lojas`,
+                    {
+                        method: editando ? "PATCH" : "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(body)
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error(editando ? "Erro ao atualizar a loja." : "Erro ao criar a loja.");
+                }
+
+                mostrarMensagem(editando ? "Loja atualizada com sucesso." : "Loja criada com sucesso.");
+                limparFormularioLoja();
+                await carregarLojas();
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem(erro.message || "Erro ao salvar loja.", true);
+            }
+        }
+
+        async function carregarLojas() {
+            const lista = document.getElementById("listaLojas");
+            lista.innerHTML = `<div class="painel-vazio">Carregando lojas...</div>`;
+
+            try {
+                const response = await fetch(`${API_BASE}/lojas`);
+
+                if (!response.ok) {
+                    throw new Error("Não foi possível carregar as lojas.");
+                }
+
+                lojas = await response.json();
+
+                if (lojaSelecionada) {
+                    const lojaAtualizada = lojas.find(l => String(l.id) === String(lojaSelecionada.id));
+                    lojaSelecionada = lojaAtualizada || null;
+                    atualizarPainelLoja();
+                }
+
+                renderizarLojas();
+            } catch (erro) {
+                console.error(erro);
+                lista.innerHTML = `<div class="painel-vazio">Erro ao carregar lojas.</div>`;
+                throw erro;
+            }
+        }
+
+        function renderizarLojas() {
+            const lista = document.getElementById("listaLojas");
+
+            if (!Array.isArray(lojas) || lojas.length === 0) {
+                lista.innerHTML = `<div class="painel-vazio">Nenhuma loja cadastrada ainda.</div>`;
+                return;
+            }
+
+            lista.innerHTML = lojas.map(loja => `
+                <div class="item-card">
+                    <div class="item-topo">
+                        <div>
+                            <div class="item-titulo">${escapeHtml(loja.lojaNome || "Loja")}</div>
+                            <div class="item-subtitulo">Tipo: ${escapeHtml(formatarTexto(loja.lojaTipo || "GERAL"))}</div>
+                        </div>
+                        <span class="tag ${loja.ativa ? "tag-ativa" : "tag-inativa"}">
+                            ${loja.ativa ? "ATIVA" : "INATIVA"}
+                        </span>
+                    </div>
+
+                    <div class="acoes-item">
+                        <button class="btn-abrir" onclick="abrirLoja(${loja.id})">Abrir</button>
+                        <button class="${loja.ativa ? "btn-ativar btn-ativar-ativa" : "btn-ativar"}" onclick="alternarStatusLoja(${loja.id}, ${loja.ativa})">
+                            ${loja.ativa ? "Desativar" : "Ativar"}
+                        </button>
+                        <button class="btn-editar" onclick="editarLoja(${loja.id})">Editar</button>
+                        <button class="btn-excluir" onclick="excluirLoja(${loja.id})">Excluir</button>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        async function alternarStatusLoja(lojaId, lojaAtiva) {
+            try {
+                limparMensagem();
+
+                let response;
+
+                if (lojaAtiva) {
+                    response = await fetch(`${API_BASE}/lojas/${lojaId}`, {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ ativa: false })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Erro ao desativar a loja.");
+                    }
+                } else {
+                    response = await fetch(`${API_BASE}/lojas/${lojaId}/ativar`, {
+                        method: "PATCH"
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Erro ao ativar a loja.");
+                    }
+                }
+
+                await carregarLojas();
+
+                if (lojaSelecionada && String(lojaSelecionada.id) === String(lojaId)) {
+                    const lojaAtualizada = lojas.find(l => String(l.id) === String(lojaId));
+                    lojaSelecionada = lojaAtualizada || null;
+                    atualizarPainelLoja();
+                }
+
+                mostrarMensagem(lojaAtiva ? "Loja desativada com sucesso." : "Loja ativada com sucesso.");
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem(erro.message || "Erro ao alterar status da loja.", true);
+            }
+        }
+
+        function editarLoja(lojaId) {
+            const loja = lojas.find(l => String(l.id) === String(lojaId));
+
+            if (!loja) {
+                mostrarMensagem("Loja não encontrada para edição.", true);
+                return;
+            }
+
+            preencherFormularioLoja(loja);
+        }
+
+        async function excluirLoja(lojaId) {
+            try {
+                const loja = lojas.find(l => String(l.id) === String(lojaId));
+                const confirmou = confirm(`Deseja excluir a loja "${loja?.lojaNome || "selecionada"}"?`);
+
+                if (!confirmou) return;
+
+                const response = await fetch(`${API_BASE}/lojas/${lojaId}`, {
+                    method: "DELETE"
+                });
+
+                if (!response.ok) {
+                    throw new Error("Erro ao excluir a loja.");
+                }
+
+                if (lojaSelecionada && String(lojaSelecionada.id) === String(lojaId)) {
+                    lojaSelecionada = null;
+                    produtosDaLoja = [];
+                    atualizarPainelLoja();
+                    renderizarProdutosDaLoja();
+                }
+
+                mostrarMensagem("Loja excluída com sucesso.");
+                await carregarLojas();
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem(erro.message || "Erro ao excluir loja.", true);
+            }
+        }
+
+        async function abrirLoja(lojaId) {
+            try {
+                limparMensagem();
+
+                const loja = lojas.find(l => String(l.id) === String(lojaId));
+                if (!loja) {
+                    throw new Error("Loja não encontrada.");
+                }
+
+                lojaSelecionada = loja;
+                atualizarPainelLoja();
+
+                const response = await fetch(`${API_BASE}/lojas/${lojaId}/itens`);
+                if (!response.ok) {
+                    throw new Error("Não foi possível carregar os produtos da loja.");
+                }
+
+                produtosDaLoja = await response.json();
+                renderizarProdutosDaLoja();
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem(erro.message || "Erro ao abrir loja.", true);
+            }
+        }
+
+        function atualizarPainelLoja() {
+            const titulo = document.getElementById("tituloPainelLoja");
+            const subtitulo = document.getElementById("subtituloPainelLoja");
+            const botao = document.getElementById("btnAbrirModalProduto");
+            const painelInfo = document.getElementById("painelLojaInfo");
+
+            if (!lojaSelecionada) {
+                titulo.textContent = "Nenhuma loja selecionada";
+                subtitulo.textContent = "Selecione uma loja na lista para gerenciar os produtos.";
+                botao.disabled = true;
+                painelInfo.style.display = "none";
+                painelInfo.innerHTML = "";
+                return;
+            }
+
+            titulo.textContent = `Loja: ${lojaSelecionada.lojaNome || "Sem nome"}`;
+            subtitulo.textContent = `Gerencie os produtos, preços e disponibilidade da loja selecionada.`;
+            painelInfo.style.display = "flex";
+            painelInfo.innerHTML = `
+                <span class="info-pill">Tipo: ${escapeHtml(formatarTexto(lojaSelecionada.lojaTipo || "GERAL"))}</span>
+                <span class="info-pill">Status: ${lojaSelecionada.ativa ? "Ativa" : "Inativa"}</span>
+                <span class="info-pill">Produtos: ${formatarNumero(produtosDaLoja.length)}</span>
+            `;
+            botao.disabled = false;
+        }
+
+        function renderizarProdutosDaLoja() {
+            const lista = document.getElementById("listaProdutosLoja");
+
+            if (!lojaSelecionada) {
+                lista.innerHTML = `<div class="painel-vazio">Nenhuma loja aberta no momento.</div>`;
+                atualizarPainelLoja();
+                return;
+            }
+
+            if (!Array.isArray(produtosDaLoja) || produtosDaLoja.length === 0) {
+                lista.innerHTML = `<div class="painel-vazio">Essa loja ainda não possui itens cadastrados.</div>`;
+                atualizarPainelLoja();
+                return;
+            }
+
+            lista.innerHTML = produtosDaLoja.map(produto => {
+                const item = produto.item || produto.arma || produto.armadura || {};
+                const disponivel = produto.disponivel === true;
+
+                return `
+                    <div class="item-card">
+                        <div class="item-topo">
+                            <div>
+                                <div class="item-titulo">${escapeHtml(item.itemNome || item.armaNome || item.armaduraNome || "Item")}</div>
+                                <div class="item-subtitulo">Tipo: ${escapeHtml(formatarTexto(item.itemTipo || item.armaTipo || item.armaduraTipo || "ITEM"))}</div>
+                            </div>
+                            <span class="tag ${disponivel ? "tag-disponivel" : "tag-indisponivel"}">
+                                ${disponivel ? "DISPONÍVEL" : "INDISPONÍVEL"}
+                            </span>
+                        </div>
+
+                        <div class="chips">
+                            <span class="chip">Valor original: ${formatarMoeda(item.itemPreco ?? item.armaPreco ?? item.armaduraPreco ?? 0)}</span>
+                            <span class="chip">Valor da loja: ${formatarMoeda(produto.lojaPreco ?? 0)}</span>
+                            <span class="chip">Quantidade: ${formatarNumero(produto.lojaQuantidade ?? 0)}</span>
+                        </div>
+
+                        <div class="acoes-item">
+                            <button class="btn-editar" onclick="editarProdutoDaLoja(${produto.id})">Editar</button>
+                            <button class="btn-excluir" onclick="removerProdutoDaLoja(${produto.id})">Remover</button>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+
+            atualizarPainelLoja();
+        }
+
+        async function carregarItensBiblioteca() {
+            const response = await fetch(`${API_BASE}/item`);
+            if (!response.ok) throw new Error("Não foi possível carregar os itens da biblioteca.");
+            itensBiblioteca = await response.json();
+        }
+
+        async function carregarArmas() {
+            const response = await fetch(`${API_BASE}/arma`);
+            if (!response.ok) throw new Error("Não foi possível carregar as armas.");
+            armasBiblioteca = await response.json();
+        }
+
+        async function carregarArmaduras() {
+            const response = await fetch(`${API_BASE}/armadura`);
+            if (!response.ok) throw new Error("Não foi possível carregar as armaduras.");
+            armadurasBiblioteca = await response.json();
+        }
+
+        function abrirModalProduto() {
+            if (!lojaSelecionada) {
+                mostrarMensagem("Selecione uma loja antes de adicionar item.", true);
+                return;
+            }
+
+            produtoSelecionado = null;
+            tipoSelecionado = document.getElementById("tipoProduto").value;
+
+            document.getElementById("buscaItemBiblioteca").value = "";
+            document.getElementById("produtoLojaPreco").value = "";
+            document.getElementById("produtoLojaQuantidade").value = "1";
+            document.getElementById("produtoLojaDisponivel").value = "true";
+            document.getElementById("resumoItemSelecionado").textContent = "Nenhum item selecionado";
+            document.getElementById("resumoValorOriginal").textContent = "Valor original: --";
+
+            renderizarCatalogoItens();
+            document.body.classList.add("modal-aberto");
+            document.getElementById("modalProdutoFundo").classList.add("ativo");
+        }
+
+        function fecharModalProduto() {
+            document.body.classList.remove("modal-aberto");
+            document.getElementById("modalProdutoFundo").classList.remove("ativo");
+        }
+
+        function trocarTipoProduto() {
+            tipoSelecionado = document.getElementById("tipoProduto").value;
+            produtoSelecionado = null;
+
+            document.getElementById("resumoItemSelecionado").textContent = "Nenhum item selecionado";
+            document.getElementById("resumoValorOriginal").textContent = "Valor original: --";
+            document.getElementById("produtoLojaPreco").value = "";
+
+            renderizarCatalogoItens();
+        }
+
+        function renderizarCatalogoItens() {
+            const lista = document.getElementById("listaCatalogoItens");
+            const termo = document.getElementById("buscaItemBiblioteca").value.trim().toLowerCase();
+
+            let itens = [];
+            if (tipoSelecionado === "item") itens = [...itensBiblioteca];
+            if (tipoSelecionado === "arma") itens = [...armasBiblioteca];
+            if (tipoSelecionado === "armadura") itens = [...armadurasBiblioteca];
+
+            if (termo) {
+                itens = itens.filter(item =>
+                    String(item.itemNome || item.armaNome || item.armaduraNome || "")
+                        .toLowerCase()
+                        .includes(termo)
+                );
+            }
+
+            if (itens.length === 0) {
+                lista.innerHTML = `<div class="painel-vazio">Nenhum item encontrado.</div>`;
+                return;
+            }
+
+            lista.innerHTML = itens.map(item => `
+                <div class="item-card catalogo-item ${produtoSelecionado && String(produtoSelecionado.id) === String(item.id) ? "selecionado" : ""}" onclick="selecionarItemBiblioteca(${item.id})">
+                    <div class="item-topo">
+                        <div>
+                            <div class="item-titulo">${escapeHtml(item.itemNome || item.armaNome || item.armaduraNome || "Item")}</div>
+                            <div class="item-subtitulo">Tipo: ${escapeHtml(formatarTexto(item.itemTipo || item.armaTipo || item.armaduraTipo || "ITEM"))}</div>
+                        </div>
+                        <span class="tag tag-ativa">BIBLIOTECA</span>
+                    </div>
+
+                    <div class="chips">
+                        <span class="chip">Valor original: ${formatarMoeda(item.itemPreco ?? item.armaPreco ?? item.armaduraPreco ?? 0)}</span>
+                        <span class="chip">Duração: ${formatarNumero(item.itemDuracaoTurno ?? 0)}</span>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        function selecionarItemBiblioteca(itemId) {
+            let lista = [];
+            if (tipoSelecionado === "item") lista = itensBiblioteca;
+            if (tipoSelecionado === "arma") lista = armasBiblioteca;
+            if (tipoSelecionado === "armadura") lista = armadurasBiblioteca;
+
+            const item = lista.find(i => String(i.id) === String(itemId));
+            if (!item) return;
+
+            produtoSelecionado = item;
+
+            const nome = item.itemNome || item.armaNome || item.armaduraNome || "Item";
+            const preco = item.itemPreco ?? item.armaPreco ?? item.armaduraPreco ?? 0;
+
+            document.getElementById("resumoItemSelecionado").textContent = nome;
+            document.getElementById("resumoValorOriginal").textContent = `Valor original: ${formatarMoeda(preco)}`;
+
+            if (!document.getElementById("produtoLojaPreco").value) {
+                document.getElementById("produtoLojaPreco").value = preco;
+            }
+
+            renderizarCatalogoItens();
+        }
+
+        async function adicionarItemNaLoja() {
+            try {
+                limparMensagem();
+
+                if (!lojaSelecionada) {
+                    mostrarMensagem("Nenhuma loja selecionada.", true);
+                    return;
+                }
+
+                if (!produtoSelecionado) {
+                    mostrarMensagem("Selecione um item da biblioteca.", true);
+                    return;
+                }
+
+                const lojaPreco = Number(document.getElementById("produtoLojaPreco").value);
+                const lojaQuantidade = Number(document.getElementById("produtoLojaQuantidade").value);
+                const disponivel = document.getElementById("produtoLojaDisponivel").value === "true";
+
+                if (Number.isNaN(lojaPreco) || lojaPreco < 0) {
+                    mostrarMensagem("Informe um valor válido para a loja.", true);
+                    return;
+                }
+
+                if (Number.isNaN(lojaQuantidade) || lojaQuantidade < 0) {
+                    mostrarMensagem("Informe uma quantidade válida.", true);
+                    return;
+                }
+
+                let body = { lojaPreco, lojaQuantidade, disponivel };
+
+                if (tipoSelecionado === "item") body.item = { id: produtoSelecionado.id };
+                if (tipoSelecionado === "arma") body.arma = { id: produtoSelecionado.id };
+                if (tipoSelecionado === "armadura") body.armadura = { id: produtoSelecionado.id };
+
+                const response = await fetch(`${API_BASE}/lojas/${lojaSelecionada.id}/itens`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(body)
+                });
+
+                if (!response.ok) {
+                    throw new Error("Erro ao adicionar item na loja.");
+                }
+
+                mostrarMensagem("Item adicionado na loja com sucesso.");
+                fecharModalProduto();
+                await abrirLoja(lojaSelecionada.id);
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem(erro.message || "Erro ao adicionar item na loja.", true);
+            }
+        }
+
+        async function editarProdutoDaLoja(lojaItemId) {
+            try {
+                const produto = produtosDaLoja.find(p => String(p.id) === String(lojaItemId));
+
+                if (!produto) {
+                    mostrarMensagem("Produto da loja não encontrado.", true);
+                    return;
+                }
+
+                const novoPreco = prompt("Novo valor da loja:", produto.lojaPreco ?? 0);
+                if (novoPreco === null) return;
+
+                const novaQuantidade = prompt("Nova quantidade:", produto.lojaQuantidade ?? 0);
+                if (novaQuantidade === null) return;
+
+                const disponibilidadeAtual = produto.disponivel === true;
+                const novaDisponibilidade = confirm(
+                    `Produto disponível?\n\nOK = disponível\nCancelar = indisponível\n\nStatus atual: ${disponibilidadeAtual ? "disponível" : "indisponível"}`
+                );
+
+                const body = {
+                    lojaPreco: Number(novoPreco),
+                    lojaQuantidade: Number(novaQuantidade),
+                    disponivel: novaDisponibilidade
+                };
+
+                if (Number.isNaN(body.lojaPreco) || body.lojaPreco < 0) {
+                    mostrarMensagem("Valor inválido para o produto.", true);
+                    return;
+                }
+
+                if (Number.isNaN(body.lojaQuantidade) || body.lojaQuantidade < 0) {
+                    mostrarMensagem("Quantidade inválida para o produto.", true);
+                    return;
+                }
+
+                const response = await fetch(`${API_BASE}/lojas/loja-item/${lojaItemId}`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(body)
+                });
+
+                if (!response.ok) {
+                    throw new Error("Erro ao atualizar produto da loja.");
+                }
+
+                mostrarMensagem("Produto da loja atualizado com sucesso.");
+                await abrirLoja(lojaSelecionada.id);
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem(erro.message || "Erro ao editar produto da loja.", true);
+            }
+        }
+
+        async function removerProdutoDaLoja(lojaItemId) {
+            try {
+                const produto = produtosDaLoja.find(p => String(p.id) === String(lojaItemId));
+                const nome =
+                    produto?.item?.itemNome ||
+                    produto?.arma?.armaNome ||
+                    produto?.armadura?.armaduraNome ||
+                    "produto selecionado";
+
+                const confirmou = confirm(`Deseja remover "${nome}" da loja?`);
+                if (!confirmou) return;
+
+                const response = await fetch(`${API_BASE}/lojas/loja-item/${lojaItemId}`, {
+                    method: "DELETE"
+                });
+
+                if (!response.ok) {
+                    throw new Error("Erro ao remover produto da loja.");
+                }
+
+                mostrarMensagem("Produto removido da loja com sucesso.");
+                await abrirLoja(lojaSelecionada.id);
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem(erro.message || "Erro ao remover produto da loja.", true);
+            }
+        }
+
+        async function iniciarTela() {
+            try {
+                limparMensagem();
+                limparFormularioLoja();
+                await Promise.all([
+                    carregarLojas(),
+                    carregarItensBiblioteca(),
+                    carregarArmas(),
+                    carregarArmaduras()
+                ]);
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem("Erro ao iniciar a tela de lojas.", true);
+            }
+        }
+
+        document.getElementById("modalProdutoFundo").addEventListener("click", function (event) {
+            if (event.target.id === "modalProdutoFundo") {
+                fecharModalProduto();
+            }
+        });
+
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") {
+                fecharModalProduto();
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", iniciarTela);
+    </script>
+</body>
+
+</html>

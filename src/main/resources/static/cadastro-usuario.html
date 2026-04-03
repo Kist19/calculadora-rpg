@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Usuário - Sistema RPG</title>
+    <link rel="stylesheet" href="css/global.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: var(--font-ui);
+            background: #09111b;
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 460px;
+            padding: 32px 24px;
+            background: #101926;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+        }
+
+        h1 {
+            margin: 0 0 24px;
+            text-align: center;
+            color: var(--text);
+            font-size: 28px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--muted);
+        }
+
+        input,
+        select {
+            width: 100%;
+            min-height: 44px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 16px;
+            background: #10151d;
+            color: var(--text);
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: rgba(255,255,255,0.16);
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
+        }
+
+        button {
+            width: 100%;
+            min-height: 44px;
+            padding: 12px 14px;
+            border: none;
+            border-radius: 10px;
+            background: #182434;
+            color: var(--text);
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        button:hover {
+            background: #223044;
+            transform: translateY(-1px);
+        }
+
+        .mensagem {
+            margin-top: 16px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .link-login {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .link-login a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .link-login a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Criar Usuário</h1>
+
+        <form id="formCadastroUsuario">
+            <label for="usuarioNome">Usuário</label>
+            <input type="text" id="usuarioNome" required>
+
+            <label for="usuarioSenha">Senha</label>
+            <input type="password" id="usuarioSenha" required>
+
+            <label for="usuarioPerfil">Perfil</label>
+            <select id="usuarioPerfil" required>
+                <option value="">Selecione</option>
+                <option value="JOGADOR">Jogador</option>
+                <option value="MESTRE">Mestre</option>
+            </select>
+
+            <button type="submit">Cadastrar</button>
+        </form>
+
+        <div class="mensagem" id="mensagem"></div>
+
+        <div class="link-login">
+            <a href="login.html">Voltar para o login</a>
+        </div>
+    </div>
+
+    <script>
+        const formCadastroUsuario = document.getElementById("formCadastroUsuario");
+        const mensagem = document.getElementById("mensagem");
+
+        formCadastroUsuario.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const usuarioNome = document.getElementById("usuarioNome").value.trim();
+            const usuarioSenha = document.getElementById("usuarioSenha").value.trim();
+            const usuarioPerfil = document.getElementById("usuarioPerfil").value;
+
+            mensagem.textContent = "Cadastrando...";
+
+            try {
+                const response = await fetch("http://localhost:8080/usuarios", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        usuarioNome: usuarioNome,
+                        usuarioSenha: usuarioSenha,
+                        usuarioPerfil: usuarioPerfil
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error("Não foi possível cadastrar o usuário.");
+                }
+
+                const data = await response.json();
+
+                mensagem.textContent = "Usuário cadastrado com sucesso.";
+
+                setTimeout(() => {
+                    window.location.href = "login.html";
+                }, 1000);
+
+            } catch (error) {
+                mensagem.textContent = error.message;
+            }
+        });
+    </script>
+</body>
+
+</html>

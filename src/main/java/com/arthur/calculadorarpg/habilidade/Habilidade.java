@@ -6,11 +6,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import com.arthur.calculadorarpg.arma.ArmaTipoDado;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import com.arthur.calculadorarpg.item.DadoTipoAcao;
 
 @Entity
 @Table(name = "tb_habilidade")
 public class Habilidade {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -39,11 +43,25 @@ public class Habilidade {
     @Column(nullable = false)
     private Integer habilidadePenalidadeDano;
 
-    public Habilidade(){
+    @Column(nullable = false)
+    private Integer habilidadeDuracaoTurno = 0;
+
+    @Column(nullable = true)
+    private Integer habilidadeQuantidadeDado;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true, length = 10)
+    private ArmaTipoDado habilidadeTipoDado;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true, length = 10)
+    private DadoTipoAcao habilidadeDadoTipoAcao;
+
+    public Habilidade() {
 
     }
 
-    public Long Id(){
+    public Long Id() {
         return id;
     }
 
@@ -117,6 +135,38 @@ public class Habilidade {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Integer getHabilidadeDuracaoTurno() {
+        return habilidadeDuracaoTurno;
+    }
+
+    public void setHabilidadeDuracaoTurno(Integer habilidadeDuracaoTurno) {
+        this.habilidadeDuracaoTurno = habilidadeDuracaoTurno;
+    }
+
+    public Integer getHabilidadeQuantidadeDado() {
+        return habilidadeQuantidadeDado;
+    }
+
+    public void setHabilidadeQuantidadeDado(Integer habilidadeQuantidadeDado) {
+        this.habilidadeQuantidadeDado = habilidadeQuantidadeDado;
+    }
+
+    public ArmaTipoDado getHabilidadeTipoDado() {
+        return habilidadeTipoDado;
+    }
+
+    public void setHabilidadeTipoDado(ArmaTipoDado habilidadeTipoDado) {
+        this.habilidadeTipoDado = habilidadeTipoDado;
+    }
+
+    public DadoTipoAcao getHabilidadeDadoTipoAcao() {
+        return habilidadeDadoTipoAcao;
+    }
+
+    public void setHabilidadeDadoTipoAcao(DadoTipoAcao habilidadeDadoTipoAcao) {
+        this.habilidadeDadoTipoAcao = habilidadeDadoTipoAcao;
     }
     
 }

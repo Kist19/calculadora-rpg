@@ -1,7 +1,9 @@
 package com.arthur.calculadorarpg.personagem;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.arthur.calculadorarpg.armadura.Armadura;
 import com.arthur.calculadorarpg.arma.Arma;
@@ -36,6 +38,21 @@ public class Personagem {
     @Column(nullable = false)
     private int personagemNivel;
 
+    @Column(nullable = false)
+    private Boolean personagemEmCombate = false;
+
+    @ElementCollection
+    @CollectionTable(name = "tb_personagem_item_turno", joinColumns = @JoinColumn(name = "personagem_id"))
+    @MapKeyColumn(name = "item_nome")
+    @Column(name = "turnos_restantes")
+    private Map<String, Integer> itensTurnosRestantesNaCena = new HashMap<>();
+
+    @ElementCollection
+    @CollectionTable(name = "tb_personagem_habilidade_turno", joinColumns = @JoinColumn(name = "personagem_id"))
+    @MapKeyColumn(name = "habilidade_nome")
+    @Column(name = "turnos_restantes")
+    private Map<String, Integer> habilidadesTurnosRestantesNaCena = new HashMap<>();
+
     @OneToOne(mappedBy = "personagem", cascade = CascadeType.ALL)
     private Status status;
 
@@ -45,15 +62,11 @@ public class Personagem {
     @OneToOne(mappedBy = "personagem", cascade = CascadeType.ALL)
     private Pericia pericia;
 
-    @OneToOne(mappedBy = "personagem", cascade = CascadeType.ALL)
-    private Inventario inventario;
+    @OneToMany(mappedBy = "personagem", cascade = CascadeType.ALL)
+    private List<Inventario> inventarios = new ArrayList<>();
 
     @ManyToMany
-    @JoinTable(
-        name = "tb_personagem_habilidade",
-        joinColumns = @JoinColumn(name = "personagem_id"),
-        inverseJoinColumns = @JoinColumn(name = "habilidade_id")
-    )
+    @JoinTable(name = "tb_personagem_habilidade", joinColumns = @JoinColumn(name = "personagem_id"), inverseJoinColumns = @JoinColumn(name = "habilidade_id"))
     private List<Habilidade> habilidades = new ArrayList<>();
 
     @ManyToOne
@@ -143,14 +156,6 @@ public class Personagem {
         this.pericia = pericia;
     }
 
-    public Inventario getInventario() {
-        return inventario;
-    }
-
-    public void setInventario(Inventario inventario) {
-        this.inventario = inventario;
-    }
-
     public List<Habilidade> getHabilidades() {
         return habilidades;
     }
@@ -181,5 +186,37 @@ public class Personagem {
 
     public void setEscudoEquipado(Armadura escudoEquipado) {
         this.escudoEquipado = escudoEquipado;
+    }
+
+    public List<Inventario> getInventarios() {
+        return inventarios;
+    }
+
+    public void setInventarios(List<Inventario> inventarios) {
+        this.inventarios = inventarios;
+    }
+
+    public Boolean getPersonagemEmCombate() {
+        return personagemEmCombate;
+    }
+
+    public void setPersonagemEmCombate(Boolean personagemEmCombate) {
+        this.personagemEmCombate = personagemEmCombate;
+    }
+
+    public Map<String, Integer> getItensTurnosRestantesNaCena() {
+        return itensTurnosRestantesNaCena;
+    }
+
+    public void setItensTurnosRestantesNaCena(Map<String, Integer> itensTurnosRestantesNaCena) {
+        this.itensTurnosRestantesNaCena = itensTurnosRestantesNaCena;
+    }
+
+    public Map<String, Integer> getHabilidadesTurnosRestantesNaCena() {
+        return habilidadesTurnosRestantesNaCena;
+    }
+
+    public void setHabilidadesTurnosRestantesNaCena(Map<String, Integer> habilidadesTurnosRestantesNaCena) {
+        this.habilidadesTurnosRestantesNaCena = habilidadesTurnosRestantesNaCena;
     }
 }

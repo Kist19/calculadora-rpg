@@ -77,8 +77,13 @@ public class PersonagemService {
         Arma arma = armaRepositorio.findById(armaId)
                 .orElseThrow(() -> new RuntimeException("Arma não encontrada"));
 
-        personagem.setArmaEquipada(arma);
+        if (arma.getInventario() == null
+                || arma.getInventario().getPersonagem() == null
+                || !arma.getInventario().getPersonagem().getId().equals(personagemId)) {
+            throw new RuntimeException("Essa arma não pertence ao inventário do personagem");
+        }
 
+        personagem.setArmaEquipada(arma);
         return personagemRepositorio.save(personagem);
     }
 
@@ -87,7 +92,6 @@ public class PersonagemService {
                 .orElseThrow(() -> new RuntimeException("Personagem não encontrado"));
 
         personagem.setArmaEquipada(null);
-
         return personagemRepositorio.save(personagem);
     }
 
@@ -98,12 +102,17 @@ public class PersonagemService {
         Armadura armadura = armaduraRepositorio.findById(armaduraId)
                 .orElseThrow(() -> new RuntimeException("Armadura não encontrada"));
 
-        if (!ArmaduraTipo.ARMADURA.equals(armadura.getArmaduraTipo())) {
-            throw new RuntimeException("Este item não é uma armadura");
+        if (armadura.getInventario() == null
+                || armadura.getInventario().getPersonagem() == null
+                || !armadura.getInventario().getPersonagem().getId().equals(personagemId)) {
+            throw new RuntimeException("Essa armadura não pertence ao inventário do personagem");
+        }
+
+        if (armadura.getArmaduraTipo() != ArmaduraTipo.ARMADURA) {
+            throw new RuntimeException("O equipamento informado não é uma armadura");
         }
 
         personagem.setArmaduraEquipada(armadura);
-
         return personagemRepositorio.save(personagem);
     }
 
@@ -112,7 +121,6 @@ public class PersonagemService {
                 .orElseThrow(() -> new RuntimeException("Personagem não encontrado"));
 
         personagem.setArmaduraEquipada(null);
-
         return personagemRepositorio.save(personagem);
     }
 
@@ -124,11 +132,10 @@ public class PersonagemService {
                 .orElseThrow(() -> new RuntimeException("Escudo não encontrado"));
 
         if (!ArmaduraTipo.ESCUDO.equals(escudo.getArmaduraTipo())) {
-            throw new RuntimeException("Este item não é um escudo");
+            throw new RuntimeException("O equipamento informado não é um escudo");
         }
 
         personagem.setEscudoEquipado(escudo);
-
         return personagemRepositorio.save(personagem);
     }
 
@@ -137,7 +144,43 @@ public class PersonagemService {
                 .orElseThrow(() -> new RuntimeException("Personagem não encontrado"));
 
         personagem.setEscudoEquipado(null);
-
         return personagemRepositorio.save(personagem);
+    }
+
+    public Personagem ativarModoCombate(Long personagemId) {
+        Personagem personagem = personagemRepositorio.findById(personagemId)
+                .orElseThrow(() -> new RuntimeException("Personagem não encontrado"));
+
+        personagem.setPersonagemEmCombate(true);
+        return personagemRepositorio.save(personagem);
+    }
+
+    public Personagem desativarModoCombate(Long personagemId) {
+        Personagem personagem = personagemRepositorio.findById(personagemId)
+                .orElseThrow(() -> new RuntimeException("Personagem não encontrado"));
+
+        personagem.setPersonagemEmCombate(false);
+        return personagemRepositorio.save(personagem);
+    }
+
+    public Personagem alternarModoCombate(Long personagemId) {
+        Personagem personagem = personagemRepositorio.findById(personagemId)
+                .orElseThrow(() -> new RuntimeException("Personagem não encontrado"));
+
+        personagem.setPersonagemEmCombate(!Boolean.TRUE.equals(personagem.getPersonagemEmCombate()));
+        return personagemRepositorio.save(personagem);
+    }
+
+    public DadosCenaResponse buscarDadosCena(Long personagemId) {
+        Personagem personagem = personagemRepositorio.findById(personagemId)
+                .orElseThrow(() -> new RuntimeException("Personagem não encontrado"));
+
+        DadosCenaResponse response = new DadosCenaResponse();
+        response.setPersonagemNome(personagem.getPersonagemNome());
+        response.setPersonagemEmCombate(personagem.getPersonagemEmCombate());
+        response.setItensTurnosRestantesNaCena(personagem.getItensTurnosRestantesNaCena());
+        response.setHabilidadesTurnosRestantesNaCena(personagem.getHabilidadesTurnosRestantesNaCena());
+
+        return response;
     }
 }

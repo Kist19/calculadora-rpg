@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.arthur.calculadorarpg.personagem.Personagem;
+
 @RestController
 @RequestMapping("/habilidades")
 public class HabilidadeController {
@@ -31,9 +33,21 @@ public class HabilidadeController {
         return habilidadeRepository.save(habilidade);
     }
 
+    @PostMapping("/{habilidadeId}/personagem/{personagemId}")
+    public Personagem vincularHabilidadeAoPersonagem(
+            @PathVariable Long habilidadeId,
+            @PathVariable Long personagemId) {
+        return habilidadeService.vincularHabilidadeAoPersonagem(personagemId, habilidadeId);
+    }
+
     @GetMapping
     public List<Habilidade> listarHabilidades() {
         return habilidadeRepository.findAll();
+    }
+
+    @GetMapping("/{habilidadeId}")
+    public Habilidade buscarPorId(@PathVariable Long habilidadeId) {
+        return habilidadeService.buscarPorId(habilidadeId);
     }
 
     @PostMapping("/usar")
@@ -49,5 +63,13 @@ public class HabilidadeController {
     @DeleteMapping("/{id}")
     public void deletarHabilidade(@PathVariable Long id) {
         habilidadeService.deletarHabilidade(id);
+    }
+
+    @DeleteMapping("/{habilidadeId}/personagem/{personagemId}")
+    public void desvincularHabilidadeDoPersonagem(
+            @PathVariable Long habilidadeId,
+            @PathVariable Long personagemId) {
+
+        habilidadeService.desvincularHabilidadeDoPersonagem(habilidadeId, personagemId);
     }
 }

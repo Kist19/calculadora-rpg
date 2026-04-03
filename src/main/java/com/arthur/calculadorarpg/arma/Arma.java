@@ -21,6 +21,10 @@ public class Arma {
     @Column(length = 30, nullable = false)
     private String armaNome;
 
+    @Enumerated(EnumType.STRING)
+    @Column(length = 15, nullable = false)
+    private ArmaTipoPericia armaTipoPericia;
+
     @Column(length = 10, nullable = false)
     private String armaTesteAtaque = "1d20";
 
@@ -56,7 +60,7 @@ public class Arma {
     private ArmaTipoArma armaTipo;
 
     @Column(nullable = false)
-    private Integer armaEspaco;
+    private double armaEspaco = 0.0;
 
     @Column(nullable = false)
     private Integer armaPreco;
@@ -71,7 +75,7 @@ public class Arma {
     @Column(nullable = false)
     private Integer armaPenalidadePm = 0;
 
-    public Arma(){
+    public Arma() {
 
     }
 
@@ -179,14 +183,6 @@ public class Arma {
         this.armaTipo = armaTipo;
     }
 
-    public Integer getArmaEspaco() {
-        return armaEspaco;
-    }
-
-    public void setArmaEspaco(Integer armaEspaco) {
-        this.armaEspaco = armaEspaco;
-    }
-
     public Integer getArmaQuantidadeDado() {
         return armaQuantidadeDado;
     }
@@ -234,23 +230,39 @@ public class Arma {
     public void setArmaPenalidadePm(Integer armaPenalidadePm) {
         this.armaPenalidadePm = armaPenalidadePm;
     }
-    
+
     @Transient
-    public String getDanoFormatado(){
-        if (armaQuantidadeDado == null || armaTipoDado ==null) {
+    public String getDanoFormatado() {
+        if (armaQuantidadeDado == null || armaTipoDado == null) {
             return null;
         }
-        String dano =  armaQuantidadeDado + "d" + armaTipoDado.name().substring(1);
+        String dano = armaQuantidadeDado + "d" + armaTipoDado.name().substring(1);
 
-        if (armaBonusDano != null && armaBonusDano >0) {
+        if (armaBonusDano != null && armaBonusDano > 0) {
             dano += " + " + armaBonusDano;
         }
 
-        if (armaPenalidadeDano != null && armaPenalidadeDano >0) {
+        if (armaPenalidadeDano != null && armaPenalidadeDano > 0) {
             dano += " - " + armaPenalidadeDano;
-            
+
         }
 
         return dano;
+    }
+
+    public ArmaTipoPericia getArmaTipoPericia() {
+        return armaTipoPericia;
+    }
+
+    public void setArmaTipoPericia(ArmaTipoPericia armaTipoPericia) {
+        this.armaTipoPericia = armaTipoPericia;
+    }
+
+    public double getArmaEspaco() {
+        return armaEspaco;
+    }
+
+    public void setArmaEspaco(double armaEspaco) {
+        this.armaEspaco = armaEspaco;
     }
 }

@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca de Armaduras</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            min-height: 100%;
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topo-admin {
+            background: #111827;
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .logo-admin {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .menu-admin {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .menu-admin a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: #1f2937;
+            transition: 0.2s;
+        }
+
+        .menu-admin a:hover,
+        .menu-admin a.ativo {
+            background: #374151;
+        }
+
+        .conteudo {
+            width: 100%;
+            max-width: 1680px;
+            margin: 0 auto;
+            padding: 18px 18px 10px;
+        }
+
+        .cabecalho {
+            margin-bottom: 12px;
+        }
+
+        .cabecalho h1 {
+            margin: 0 0 6px 0;
+            font-size: 34px;
+        }
+
+        .cabecalho p {
+            margin: 0;
+            font-size: 16px;
+            color: #4b5563;
+        }
+
+        .cabecalho-pagina {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 24px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .cabecalho-pagina__texto {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .cabecalho-pagina__texto h1 {
+            margin: 0;
+        }
+
+        .cabecalho-pagina__texto p {
+            margin: 0;
+        }
+
+        .cabecalho-pagina__acoes {
+            margin-left: auto;
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-end;
+            padding-top: 6px;
+        }
+
+        .voltar {
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .mensagem {
+            margin-bottom: 14px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .mensagem.sucesso {
+            display: block;
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+
+        .mensagem.erro {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 470px 1fr;
+            gap: 16px;
+            align-items: stretch;
+            min-height: 630px;
+        }
+
+        .bloco {
+            background: white;
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+            min-width: 0;
+        }
+
+        .bloco h2 {
+            margin: 0 0 14px 0;
+            font-size: 22px;
+        }
+
+        .bloco-form {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        #formArmadura {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px 12px;
+            align-items: end;
+        }
+
+        .campo {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .campo.full {
+            grid-column: 1 / -1;
+        }
+
+        .campo label {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .campo input,
+        .campo select {
+            width: 100%;
+            padding: 9px 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 15px;
+            background: white;
+            outline: none;
+        }
+
+        .campo input:focus,
+        .campo select:focus,
+        .busca input:focus,
+        .linha-vinculo select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .campo input[type="number"] {
+            max-width: 100%;
+        }
+
+        .acoes-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+            padding-top: 0;
+            border-top: none;
+        }
+
+        .botao {
+            border: none;
+            border-radius: 10px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 15px;
+            transition: 0.2s;
+        }
+
+        .botao-primario {
+            background: #2563eb;
+            color: white;
+        }
+
+        .botao-primario:hover {
+            background: #1d4ed8;
+        }
+
+        .botao-secundario {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        .botao-secundario:hover {
+            background: #d1d5db;
+        }
+
+        .botao-perigo {
+            background: #dc2626;
+            color: white;
+        }
+
+        .botao-perigo:hover {
+            background: #b91c1c;
+        }
+
+        .bloco-lista {
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .barra-topo-lista {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .barra-topo-lista h2 {
+            margin: 0;
+            flex-shrink: 0;
+        }
+
+        .busca {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .busca input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .lista-armaduras {
+            flex: 1;
+            min-height: 0;
+            max-height: 560px;
+            overflow-y: auto;
+            padding-right: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .card-armadura {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 14px;
+            background: #f9fafb;
+        }
+
+        .card-topo {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .card-topo h3 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .card-topo .sub {
+            margin-top: 4px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .pill-wrap {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .pill {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1d4ed8;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .atributos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .mini {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .mini strong {
+            display: block;
+            font-size: 13px;
+            color: #374151;
+            margin-bottom: 4px;
+        }
+
+        .mini span {
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .acoes-card {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .linha-vinculo {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 10px;
+            align-items: center;
+            border-top: none;
+            padding-top: 0;
+            margin-top: 14px;
+        }
+
+        .linha-vinculo select {
+            width: 100%;
+            min-width: 0;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 15px;
+            background: white;
+            outline: none;
+        }
+
+        .linha-vinculo .botao {
+            min-width: 96px;
+            white-space: nowrap;
+        }
+
+        .vazio {
+            text-align: center;
+            color: #6b7280;
+            padding: 50px 20px;
+            border: 1px dashed #cbd5e1;
+            border-radius: 12px;
+            background: #f8fafc;
+        }
+
+        @media (max-width: 1200px) {
+            .layout {
+                grid-template-columns: 430px 1fr;
+            }
+        }
+
+        @media (max-width: 980px) {
+            .layout {
+                grid-template-columns: 1fr;
+                min-height: unset;
+            }
+
+            .lista-armaduras {
+                max-height: 420px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .conteudo {
+                padding: 16px;
+            }
+
+            .cabecalho h1 {
+                font-size: 28px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .campo.full {
+                grid-column: auto;
+            }
+
+            .campo input[type="number"] {
+                max-width: 100%;
+            }
+
+            .barra-topo-lista {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .busca {
+                min-width: unset;
+            }
+
+            .lista-armaduras {
+                max-height: 380px;
+            }
+
+            .linha-vinculo {
+                grid-template-columns: 1fr;
+            }
+
+            .linha-vinculo .botao {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .cabecalho-pagina {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .cabecalho-pagina__acoes {
+                margin-left: 0;
+                justify-content: flex-start;
+                padding-top: 0;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../css/mestre-theme.css">
+</head>
+
+<body>
+    <header class="topo-admin">
+        <div class="logo-admin">Painel do Mestre</div>
+        <nav class="menu-admin">
+            <a href="dashboard-mestre.html">Dashboard</a>
+            <a href="personagens.html">Personagens</a>
+            <a href="biblioteca.html" class="ativo">Biblioteca</a>
+            <a href="loja-mestre.html">Loja</a>
+            <a href="efeitos.html">Efeitos</a>
+            <a href="combate.html">Combate</a>
+        </nav>
+    </header>
+
+    <div class="conteudo">
+        <section class="cabecalho-pagina">
+            <div class="cabecalho-pagina__texto">
+                <h1>Biblioteca de Armaduras</h1>
+                <p>Cadastre, edite, exclua e envie armaduras para o inventário dos personagens.</p>
+            </div>
+
+            <div class="cabecalho-pagina__acoes">
+                <button class="botao botao-secundario" onclick="window.location.href='biblioteca.html'">
+                    Voltar para bibliotecas
+                </button>
+            </div>
+        </section>
+
+        <div id="mensagem" class="mensagem"></div>
+
+        <section class="layout">
+            <div class="bloco bloco-form">
+                <h2 id="tituloFormulario">Nova armadura</h2>
+
+                <form id="formArmadura">
+                    <input type="hidden" id="armaduraId">
+
+                    <div class="form-grid">
+                        <div class="campo full">
+                            <label for="armaduraNome">Nome</label>
+                            <input type="text" id="armaduraNome" required maxlength="100">
+                        </div>
+
+                        <div class="campo">
+                            <label for="armaduraTipo">Tipo</label>
+                            <select id="armaduraTipo">
+                                <option value="ARMADURA" selected>ARMADURA</option>
+                                <option value="ESCUDO">ESCUDO</option>
+                            </select>
+                        </div>
+
+                        <div class="campo">
+                            <label for="armaduraBonusDefesa">Bônus de defesa</label>
+                            <input type="number" id="armaduraBonusDefesa" value="0" min="0">
+                        </div>
+
+                        <div class="campo">
+                            <label for="armaduraPenalidadeArmadura">Penalidade</label>
+                            <input type="number" id="armaduraPenalidadeArmadura" value="0" min="0">
+                        </div>
+
+                        <div class="campo">
+                            <label for="armaduraEspaco">Espaço</label>
+                            <input type="number" id="armaduraEspaco" value="1" min="0">
+                        </div>
+
+                        <div class="campo">
+                            <label for="armaduraPreco">Preço</label>
+                            <input type="number" id="armaduraPreco" value="0" min="0">
+                        </div>
+                    </div>
+
+                    <div class="acoes-form">
+                        <button type="submit" class="botao botao-primario" id="botaoSalvar">Salvar armadura</button>
+                        <button type="button" class="botao botao-secundario" onclick="limparFormulario()">
+                            Cancelar edição
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="bloco bloco-lista">
+                <div class="barra-topo-lista">
+                    <h2>Armaduras cadastradas</h2>
+                    <div class="busca">
+                        <input type="text" id="buscaArmadura" placeholder="Buscar armadura por nome"
+                            oninput="renderizarArmaduras()">
+                    </div>
+                </div>
+
+                <div id="listaArmaduras" class="lista-armaduras"></div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8080";
+
+        let armaduras = [];
+        let personagens = [];
+
+        async function inicializarTela() {
+            try {
+                await Promise.all([
+                    carregarArmaduras(),
+                    carregarPersonagens()
+                ]);
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem("Erro ao inicializar a biblioteca de armaduras.", true);
+            }
+        }
+
+        async function carregarArmaduras() {
+            const resposta = await fetch(`${API_BASE}/armadura`);
+            if (!resposta.ok) {
+                throw new Error("Erro ao carregar armaduras.");
+            }
+
+            const dados = await resposta.json();
+            armaduras = Array.isArray(dados) ? dados : [];
+            renderizarArmaduras();
+        }
+
+        async function carregarPersonagens() {
+            const resposta = await fetch(`${API_BASE}/personagem`);
+            if (!resposta.ok) {
+                throw new Error("Erro ao carregar personagens.");
+            }
+
+            const dados = await resposta.json();
+            personagens = Array.isArray(dados) ? dados : [];
+            renderizarArmaduras();
+        }
+
+        function renderizarArmaduras() {
+            const lista = document.getElementById("listaArmaduras");
+            const termo = document.getElementById("buscaArmadura").value.trim().toLowerCase();
+
+            let filtradas = armaduras;
+
+            if (termo) {
+                filtradas = armaduras.filter(armadura =>
+                    String(armadura.armaduraNome || "").toLowerCase().includes(termo)
+                );
+            }
+
+            if (!filtradas.length) {
+                lista.innerHTML = `<div class="vazio">Nenhuma armadura encontrada.</div>`;
+                return;
+            }
+
+            lista.innerHTML = filtradas.map(armadura => {
+                const id = armadura.id;
+                const nome = armadura.armaduraNome || "Sem nome";
+                const tipo = armadura.armaduraTipo || "-";
+                const bonusDefesa = armadura.armaduraBonusDefesa ?? 0;
+                const penalidade = armadura.armaduraPenalidadeArmadura ?? 0;
+                const espaco = armadura.armaduraEspaco ?? 0;
+                const preco = armadura.armaduraPreco ?? 0;
+
+                return `
+                    <div class="card-armadura">
+                        <div class="card-topo">
+                            <div>
+                                <h3>${escapeHtml(nome)}</h3>
+                                <div class="sub">ID ${id} · ${escapeHtml(tipo)}</div>
+                            </div>
+
+                            <div class="pill-wrap">
+                                <span class="pill">Defesa +${bonusDefesa}</span>
+                                <span class="pill">Preço ${preco}</span>
+                            </div>
+                        </div>
+
+                        <div class="atributos">
+                            <div class="mini">
+                                <strong>Tipo</strong>
+                                <span>${escapeHtml(tipo)}</span>
+                            </div>
+                            <div class="mini">
+                                <strong>Bônus defesa</strong>
+                                <span>+${bonusDefesa}</span>
+                            </div>
+                            <div class="mini">
+                                <strong>Penalidade</strong>
+                                <span>${penalidade}</span>
+                            </div>
+                            <div class="mini">
+                                <strong>Espaço</strong>
+                                <span>${espaco}</span>
+                            </div>
+                            <div class="mini">
+                                <strong>Preço</strong>
+                                <span>${preco}</span>
+                            </div>
+                        </div>
+
+                        <div class="acoes-card">
+                            <button class="botao botao-primario" onclick="editarArmadura(${id})">Editar</button>
+                            <button class="botao botao-perigo" onclick="excluirArmadura(${id}, '${escapeJs(nome)}')">Excluir</button>
+                        </div>
+
+                        <div class="linha-vinculo">
+                            <select id="personagemSelect-${id}">
+                                <option value="">Selecione um personagem</option>
+                                ${personagens.map(personagem => `
+                                    <option value="${personagem.id}">
+                                        ${escapeHtml(personagem.personagemNome || "Personagem")} (ID ${personagem.id})
+                                    </option>
+                                `).join("")}
+                            </select>
+
+                            <button class="botao botao-primario" onclick="enviarArmaduraAoInventario(${id})">
+                                Enviar
+                            </button>
+
+                            <button class="botao botao-secundario" onclick="retirarArmaduraDoInventario(${id})">
+                                Retirar
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        document.getElementById("formArmadura").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const id = document.getElementById("armaduraId").value.trim();
+
+            const payload = {
+                armaduraNome: document.getElementById("armaduraNome").value.trim(),
+                armaduraPreco: numero("armaduraPreco"),
+                armaduraBonusDefesa: numero("armaduraBonusDefesa"),
+                armaduraPenalidadeArmadura: numero("armaduraPenalidadeArmadura"),
+                armaduraEspaco: numero("armaduraEspaco"),
+                armaduraTipo: document.getElementById("armaduraTipo").value
+            };
+
+            if (!payload.armaduraNome) {
+                mostrarMensagem("Informe o nome da armadura.", true);
+                return;
+            }
+
+            try {
+                limparMensagem();
+
+                let resposta;
+
+                if (id) {
+                    resposta = await fetch(`${API_BASE}/armadura/${id}`, {
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                } else {
+                    resposta = await fetch(`${API_BASE}/armadura`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                }
+
+                if (!resposta.ok) {
+                    const textoErro = await resposta.text();
+                    throw new Error(textoErro || "Erro ao salvar armadura.");
+                }
+
+                mostrarMensagem(id ? "Armadura atualizada com sucesso." : "Armadura cadastrada com sucesso.", false);
+                limparFormulario();
+                await carregarArmaduras();
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem(erro.message || "Erro ao salvar armadura.", true);
+            }
+        });
+
+        function editarArmadura(id) {
+            const armadura = armaduras.find(item => String(item.id) === String(id));
+
+            if (!armadura) {
+                mostrarMensagem("Armadura não encontrada para edição.", true);
+                return;
+            }
+
+            document.getElementById("tituloFormulario").textContent = "Editar armadura";
+            document.getElementById("botaoSalvar").textContent = "Atualizar armadura";
+
+            document.getElementById("armaduraId").value = armadura.id || "";
+            document.getElementById("armaduraNome").value = armadura.armaduraNome || "";
+            document.getElementById("armaduraTipo").value = armadura.armaduraTipo || "ARMADURA";
+            document.getElementById("armaduraBonusDefesa").value = armadura.armaduraBonusDefesa ?? 0;
+            document.getElementById("armaduraPenalidadeArmadura").value = armadura.armaduraPenalidadeArmadura ?? 0;
+            document.getElementById("armaduraEspaco").value = armadura.armaduraEspaco ?? 1;
+            document.getElementById("armaduraPreco").value = armadura.armaduraPreco ?? 0;
+        }
+
+        async function excluirArmadura(id, nome) {
+            const confirmar = confirm(`Deseja realmente excluir a armadura "${nome}"?`);
+            if (!confirmar) return;
+
+            try {
+                limparMensagem();
+
+                const resposta = await fetch(`${API_BASE}/armadura/${id}`, {
+                    method: "DELETE"
+                });
+
+                if (!resposta.ok) {
+                    const textoErro = await resposta.text();
+                    throw new Error(textoErro || "Erro ao excluir armadura.");
+                }
+
+                mostrarMensagem("Armadura excluída com sucesso.", false);
+                await carregarArmaduras();
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem(erro.message || "Erro ao excluir armadura.", true);
+            }
+        }
+
+        async function enviarArmaduraAoInventario(armaduraId) {
+            const select = document.getElementById(`personagemSelect-${armaduraId}`);
+            const personagemId = select.value;
+
+            if (!personagemId) {
+                mostrarMensagem("Selecione um personagem para enviar a armadura.", true);
+                return;
+            }
+
+            try {
+                limparMensagem();
+
+                const respostaInventario = await fetch(`${API_BASE}/inventario/base/personagem/${personagemId}`);
+                if (!respostaInventario.ok) {
+                    const textoErro = await respostaInventario.text();
+                    throw new Error(textoErro || "Erro ao buscar inventário base do personagem.");
+                }
+
+                const inventario = await respostaInventario.json();
+                const inventarioId = inventario.inventarioId;
+
+                if (!inventarioId) {
+                    throw new Error("Inventário base do personagem não encontrado.");
+                }
+
+                const resposta = await fetch(`${API_BASE}/armadura/${armaduraId}/inventario/${inventarioId}`, {
+                    method: "POST"
+                });
+
+                if (!resposta.ok) {
+                    const textoErro = await resposta.text();
+                    throw new Error(textoErro || "Erro ao enviar armadura para o inventário.");
+                }
+
+                mostrarMensagem("Armadura enviada ao inventário com sucesso.", false);
+            } catch (erro) {
+                console.error("Erro ao enviar armadura para o inventário:", erro);
+                mostrarMensagem(erro.message || "Erro ao enviar armadura para o inventário.", true);
+            }
+        }
+
+        async function retirarArmaduraDoInventario(armaduraId) {
+            const select = document.getElementById(`personagemSelect-${armaduraId}`);
+            const personagemId = select.value;
+
+            if (!personagemId) {
+                mostrarMensagem("Selecione um personagem para retirar a armadura do inventário.", true);
+                return;
+            }
+
+            try {
+                limparMensagem();
+
+                const respostaInventario = await fetch(`${API_BASE}/inventario/completo/personagem/${personagemId}`);
+                if (!respostaInventario.ok) {
+                    const textoErro = await respostaInventario.text();
+                    throw new Error(textoErro || "Erro ao buscar inventário do personagem.");
+                }
+
+                const inventarioCompleto = await respostaInventario.json();
+                const armadurasInventario = inventarioCompleto.armaduras || [];
+
+                const armaduraBiblioteca = armaduras.find(item => item.id === armaduraId);
+                if (!armaduraBiblioteca) {
+                    throw new Error("Armadura da biblioteca não encontrada.");
+                }
+
+                const copiaNoInventario = armadurasInventario.find(item =>
+                    item.armaduraNome === armaduraBiblioteca.armaduraNome &&
+                    item.armaduraTipo === armaduraBiblioteca.armaduraTipo &&
+                    Number(item.armaduraBonusDefesa ?? 0) === Number(armaduraBiblioteca.armaduraBonusDefesa ?? 0) &&
+                    Number(item.armaduraPenalidadeArmadura ?? 0) === Number(armaduraBiblioteca.armaduraPenalidadeArmadura ?? 0) &&
+                    Number(item.armaduraEspaco ?? 0) === Number(armaduraBiblioteca.armaduraEspaco ?? 0) &&
+                    Number(item.armaduraPreco ?? 0) === Number(armaduraBiblioteca.armaduraPreco ?? 0)
+                );
+
+                if (!copiaNoInventario) {
+                    throw new Error("Essa armadura não está no inventário do personagem selecionado.");
+                }
+
+                const resposta = await fetch(`${API_BASE}/armadura/${copiaNoInventario.id}/remover-inventario`, {
+                    method: "PATCH"
+                });
+
+                if (!resposta.ok) {
+                    const textoErro = await resposta.text();
+                    throw new Error(textoErro || "Erro ao retirar armadura do inventário.");
+                }
+
+                mostrarMensagem("Armadura retirada do inventário com sucesso.", false);
+            } catch (erro) {
+                console.error("Erro ao retirar armadura do inventário:", erro);
+                mostrarMensagem(erro.message || "Erro ao retirar armadura do inventário.", true);
+            }
+        }
+
+        function limparFormulario() {
+            document.getElementById("tituloFormulario").textContent = "Nova armadura";
+            document.getElementById("botaoSalvar").textContent = "Salvar armadura";
+            document.getElementById("armaduraId").value = "";
+            document.getElementById("formArmadura").reset();
+
+            document.getElementById("armaduraTipo").value = "ARMADURA";
+            document.getElementById("armaduraBonusDefesa").value = 0;
+            document.getElementById("armaduraPenalidadeArmadura").value = 0;
+            document.getElementById("armaduraEspaco").value = 1;
+            document.getElementById("armaduraPreco").value = 0;
+        }
+
+        function numero(id) {
+            const valor = document.getElementById(id).value;
+            return Number(valor || 0);
+        }
+
+        function mostrarMensagem(texto, erro) {
+            const el = document.getElementById("mensagem");
+            el.textContent = texto;
+            el.className = erro ? "mensagem erro" : "mensagem sucesso";
+        }
+
+        function limparMensagem() {
+            const el = document.getElementById("mensagem");
+            el.textContent = "";
+            el.className = "mensagem";
+        }
+
+        function escapeHtml(texto) {
+            return String(texto)
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#039;");
+        }
+
+        function escapeJs(texto) {
+            return String(texto).replace(/'/g, "\\'");
+        }
+
+        inicializarTela();
+    </script>
+</body>
+
+</html>

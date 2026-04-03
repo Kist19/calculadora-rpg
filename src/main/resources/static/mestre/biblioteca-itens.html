@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca de Itens</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/mestre-theme.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            min-height: 100%;
+            font-family: Arial, sans-serif;
+            background: #08111f;
+            color: #e5e7eb;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topo-admin {
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(10, 18, 34, 0.92));
+            color: #fff;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+        }
+
+        .logo-admin {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .menu-admin {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .menu-admin a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 14px;
+            background: rgba(30, 41, 59, 0.72);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            transition: 0.2s;
+        }
+
+        .menu-admin a:hover,
+        .menu-admin a.ativo {
+            background: rgba(37, 99, 235, 0.18);
+            border-color: rgba(96, 165, 250, 0.28);
+        }
+
+        .conteudo {
+            width: 100%;
+            max-width: 1680px;
+            margin: 0 auto;
+            padding: 16px 22px 8px;
+        }
+
+        .cabecalho-pagina {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .cabecalho-pagina__texto {
+            min-width: 0;
+        }
+
+        .cabecalho-pagina__texto h1 {
+            margin: 0 0 8px 0;
+            font-size: 34px;
+            color: #f8fafc;
+        }
+
+        .cabecalho-pagina__texto p {
+            margin: 0;
+            font-size: 16px;
+            color: #cbd5e1;
+        }
+
+        .cabecalho-pagina__acoes {
+            margin-left: auto;
+            padding-top: 6px;
+        }
+
+        .mensagem {
+            margin-bottom: 14px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .mensagem.sucesso {
+            display: block;
+            background: rgba(16, 185, 129, 0.16);
+            color: #d1fae5;
+            border: 1px solid rgba(16, 185, 129, 0.34);
+        }
+
+        .mensagem.erro {
+            display: block;
+            background: rgba(239, 68, 68, 0.16);
+            color: #fecaca;
+            border: 1px solid rgba(239, 68, 68, 0.34);
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 470px 1fr;
+            gap: 16px;
+            align-items: start;
+        }
+
+        .bloco {
+            background: linear-gradient(180deg, rgba(17, 28, 48, 0.96), rgba(10, 22, 40, 0.96));
+            border: 1px solid rgba(148, 163, 184, 0.14);
+            border-radius: 22px;
+            padding: 18px;
+            min-width: 0;
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+        }
+
+        .bloco h2 {
+            margin: 0 0 14px 0;
+            font-size: 22px;
+            color: #f8fafc;
+        }
+
+        .bloco-form {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-self: start;
+            height: auto;
+            overflow: visible;
+        }
+
+        .bloco-lista {
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            height: calc(100vh - 190px);
+            overflow: hidden;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        #formItem {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .campo {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .campo.full {
+            grid-column: 1 / -1;
+        }
+
+        .campo label {
+            font-weight: bold;
+            font-size: 14px;
+            color: #e2e8f0;
+        }
+
+        .campo input,
+        .campo select,
+        .busca input,
+        .linha-vinculo select,
+        .linha-vinculo input {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            border-radius: 14px;
+            font-size: 15px;
+            background: rgba(2, 6, 23, 0.72);
+            color: #e5e7eb;
+            outline: none;
+        }
+
+        .campo input::placeholder,
+        .busca input::placeholder {
+            color: #94a3b8;
+        }
+
+        .campo input:focus,
+        .campo select:focus,
+        .busca input:focus,
+        .linha-vinculo select:focus,
+        .linha-vinculo input:focus {
+            border-color: rgba(59, 130, 246, 0.6);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .acoes-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .botao {
+            border: 1px solid transparent;
+            border-radius: 14px;
+            padding: 11px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .botao:hover {
+            transform: translateY(-1px);
+        }
+
+        .botao-primario {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            border-color: rgba(96, 165, 250, 0.24);
+        }
+
+        .botao-primario:hover {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+        }
+
+        .botao-secundario {
+            background: rgba(30, 41, 59, 0.85);
+            color: #f8fafc;
+            border-color: rgba(148, 163, 184, 0.22);
+        }
+
+        .botao-secundario:hover {
+            background: rgba(51, 65, 85, 0.9);
+        }
+
+        .botao-perigo {
+            background: rgba(127, 29, 29, 0.22);
+            color: #fecaca;
+            border-color: rgba(239, 68, 68, 0.28);
+        }
+
+        .botao-perigo:hover {
+            background: rgba(127, 29, 29, 0.3);
+        }
+
+        .barra-topo-lista {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+
+        .barra-topo-lista h2 {
+            margin: 0;
+        }
+
+        .busca {
+            min-width: 260px;
+            flex: 1;
+            max-width: 420px;
+        }
+
+        .lista-itens {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: 0;
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 6px;
+        }
+
+        .card-item {
+            border: 1px solid rgba(148, 163, 184, 0.14);
+            border-radius: 18px;
+            padding: 16px;
+            background: linear-gradient(180deg, rgba(31, 41, 55, 0.56), rgba(15, 23, 42, 0.46));
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .card-topo {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .card-topo h3 {
+            margin: 0;
+            font-size: 20px;
+            color: #f8fafc;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(59, 130, 246, 0.14);
+            color: #dbeafe;
+            border: 1px solid rgba(96, 165, 250, 0.22);
+            border-radius: 999px;
+            padding: 5px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .info-box {
+            background: rgba(15, 23, 42, 0.72);
+            border: 1px solid rgba(148, 163, 184, 0.14);
+            border-radius: 14px;
+            padding: 12px;
+        }
+
+        .info-box strong {
+            display: block;
+            font-size: 12px;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .info-box span {
+            font-size: 15px;
+            font-weight: bold;
+            color: #f8fafc;
+        }
+
+        .subsecao {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .subsecao h4 {
+            margin: 0;
+            font-size: 15px;
+            color: #cbd5e1;
+        }
+
+        .linha-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 6px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            background: rgba(15, 23, 42, 0.74);
+        }
+
+        .badge.azul {
+            background: rgba(59, 130, 246, 0.14);
+            color: #dbeafe;
+            border-color: rgba(96, 165, 250, 0.22);
+        }
+
+        .badge.verde {
+            background: rgba(16, 185, 129, 0.14);
+            color: #d1fae5;
+            border-color: rgba(16, 185, 129, 0.22);
+        }
+
+        .badge.vermelho {
+            background: rgba(239, 68, 68, 0.14);
+            color: #fecaca;
+            border-color: rgba(239, 68, 68, 0.22);
+        }
+
+        .acoes-card {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 2px;
+        }
+
+        .linha-vinculo {
+            display: grid;
+            grid-template-columns: 1fr 84px auto auto;
+            gap: 10px;
+            align-items: center;
+            margin-top: 2px;
+        }
+
+        .linha-vinculo input[type="number"] {
+            width: 100%;
+            text-align: center;
+        }
+
+        .vazio {
+            text-align: center;
+            color: #cbd5e1;
+            padding: 50px 20px;
+            border: 1px dashed rgba(148, 163, 184, 0.18);
+            border-radius: 14px;
+            background: rgba(15, 23, 42, 0.42);
+        }
+
+        @media (max-width: 1200px) {
+            .layout {
+                grid-template-columns: 430px 1fr;
+            }
+
+            .linha-vinculo {
+                grid-template-columns: 1fr;
+            }
+
+            .linha-vinculo .botao {
+                width: 100%;
+            }
+
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 980px) {
+            .layout {
+                grid-template-columns: 1fr;
+                min-height: unset;
+            }
+
+            .bloco-form,
+            .bloco-lista {
+                height: auto;
+                overflow: visible;
+            }
+
+            .lista-itens {
+                max-height: 420px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .conteudo {
+                padding: 16px;
+            }
+
+            .cabecalho-pagina {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .cabecalho-pagina__acoes {
+                margin-left: 0;
+                padding-top: 0;
+            }
+
+            .cabecalho-pagina__texto h1 {
+                font-size: 28px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .campo.full {
+                grid-column: auto;
+            }
+
+            .campo input[type="number"] {
+                max-width: 100%;
+            }
+
+            .barra-topo-lista {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .busca {
+                min-width: unset;
+                max-width: none;
+            }
+
+            .linha-vinculo {
+                grid-template-columns: 1fr;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="topo-admin">
+        <div class="logo-admin">Painel do Mestre</div>
+        <nav class="menu-admin">
+            <a href="dashboard-mestre.html">Dashboard</a>
+            <a href="personagens.html">Personagens</a>
+            <a href="biblioteca.html" class="ativo">Biblioteca</a>
+            <a href="loja-mestre.html">Loja</a>
+            <a href="efeitos.html">Efeitos</a>
+            <a href="combate.html">Combate</a>
+        </nav>
+    </header>
+
+    <div class="conteudo">
+        <section class="cabecalho-pagina">
+            <div class="cabecalho-pagina__texto">
+                <h1>Biblioteca de Itens</h1>
+                <p>Cadastre, edite, exclua e envie itens para o inventário dos personagens.</p>
+            </div>
+
+            <div class="cabecalho-pagina__acoes">
+                <button class="botao botao-secundario" onclick="window.location.href='biblioteca.html'">
+                    Voltar para bibliotecas
+                </button>
+            </div>
+        </section>
+
+        <div id="mensagem" class="mensagem"></div>
+
+        <section class="layout">
+            <div class="bloco bloco-form">
+                <h2 id="tituloFormulario">Novo item</h2>
+
+                <form id="formItem">
+                    <input type="hidden" id="itemId">
+
+                    <div class="form-grid">
+                        <div class="campo full">
+                            <label for="itemNome">Nome</label>
+                            <input type="text" id="itemNome" required />
+                        </div>
+
+                        <div class="campo">
+                            <label for="itemTipo">Tipo</label>
+                            <select id="itemTipo" required>
+                                <option value="">Selecione</option>
+                                <option value="POCAO">POÇÃO</option>
+                                <option value="COMIDA">COMIDA</option>
+                                <option value="ARTEFATO">ARTEFATO</option>
+                                <option value="OUTRO">OUTRO</option>
+                            </select>
+                        </div>
+
+                        <div class="campo">
+                            <label for="itemPreco">Preço</label>
+                            <input type="number" id="itemPreco" min="0" step="0.01" />
+                        </div>
+
+                        <div class="campo">
+                            <label for="itemEspaco">Espaço</label>
+                            <input type="number" id="itemEspaco" min="0" step="0.1" />
+                        </div>
+
+                        <div class="campo">
+                            <label for="itemDuracaoTurno">Duração em turnos</label>
+                            <input type="number" id="itemDuracaoTurno" min="0" step="1" />
+                        </div>
+
+                        <div class="campo">
+                            <label for="itemBonusAtaque">Bônus ataque</label>
+                            <input type="number" id="itemBonusAtaque" />
+                        </div>
+
+                        <div class="campo">
+                            <label for="itemPenalidadeAtaque">Penalidade ataque</label>
+                            <input type="number" id="itemPenalidadeAtaque" />
+                        </div>
+
+                        <div class="campo">
+                            <label for="itemBonusDano">Bônus dano</label>
+                            <input type="number" id="itemBonusDano" />
+                        </div>
+
+                        <div class="campo">
+                            <label for="itemPenalidadeDano">Penalidade dano</label>
+                            <input type="number" id="itemPenalidadeDano" />
+                        </div>
+
+                        <div class="campo">
+                            <label for="itemBonusPv">Bônus PV</label>
+                            <input type="number" id="itemBonusPv" />
+                        </div>
+
+                        <div class="campo">
+                            <label for="itemPenalidadePv">Penalidade PV</label>
+                            <input type="number" id="itemPenalidadePv" />
+                        </div>
+
+                        <div class="campo">
+                            <label for="itemBonusPm">Bônus PM</label>
+                            <input type="number" id="itemBonusPm" />
+                        </div>
+
+                        <div class="campo">
+                            <label for="itemPenalidadePm">Penalidade PM</label>
+                            <input type="number" id="itemPenalidadePm" />
+                        </div>
+
+                        <div class="campo">
+                            <label for="itemQuantidadeDado">Quantidade de dado</label>
+                            <input type="number" id="itemQuantidadeDado" min="1" step="1" />
+                        </div>
+
+                        <div class="campo">
+                            <label for="itemTipoDado">Tipo de dado</label>
+                            <select id="itemTipoDado">
+                                <option value="">Selecione</option>
+                                <option value="D4">D4</option>
+                                <option value="D6">D6</option>
+                                <option value="D8">D8</option>
+                                <option value="D10">D10</option>
+                                <option value="D12">D12</option>
+                                <option value="D20">D20</option>
+                            </select>
+                        </div>
+
+                        <div class="campo">
+                            <label for="itemDadoTipoAcao">Tipo de ação do dado</label>
+                            <select id="itemDadoTipoAcao">
+                                <option value="">Selecione</option>
+                                <option value="DANO">DANO</option>
+                                <option value="CURA">CURA</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="acoes-form">
+                        <button type="submit" class="botao botao-primario" id="botaoSalvar">Salvar item</button>
+                        <button type="button" class="botao botao-secundario" onclick="limparFormulario()">
+                            Cancelar edição
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="bloco bloco-lista">
+                <div class="barra-topo-lista">
+                    <h2>Itens cadastrados</h2>
+                    <div class="busca">
+                        <input type="text" id="buscaItem" placeholder="Buscar item por nome"
+                            oninput="renderizarItens()">
+                    </div>
+                </div>
+
+                <div id="listaItens" class="lista-itens"></div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8080";
+        const params = new URLSearchParams(window.location.search);
+        const personagemIdPreSelecionado = params.get("personagemId");
+
+        let itens = [];
+        let personagens = [];
+
+        async function inicializarTela() {
+            try {
+                await Promise.all([
+                    carregarItens(),
+                    carregarPersonagens()
+                ]);
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem("Erro ao inicializar a biblioteca de itens.", true);
+            }
+        }
+
+        async function carregarItens() {
+            const resposta = await fetch(`${API_BASE}/item`);
+            if (!resposta.ok) {
+                throw new Error("Erro ao carregar itens.");
+            }
+
+            const dados = await resposta.json();
+            itens = Array.isArray(dados) ? dados : [];
+            renderizarItens();
+        }
+
+        async function carregarPersonagens() {
+            const resposta = await fetch(`${API_BASE}/personagem`);
+            if (!resposta.ok) {
+                throw new Error("Erro ao carregar personagens.");
+            }
+
+            const dados = await resposta.json();
+            personagens = Array.isArray(dados) ? dados : [];
+            renderizarItens();
+        }
+
+        function renderizarItens() {
+            const lista = document.getElementById("listaItens");
+            const termo = document.getElementById("buscaItem").value.trim().toLowerCase();
+
+            let filtrados = itens;
+
+            if (termo) {
+                filtrados = itens.filter(item =>
+                    String(item.itemNome || "").toLowerCase().includes(termo)
+                );
+            }
+
+            if (!filtrados.length) {
+                lista.innerHTML = `<div class="vazio">Nenhum item encontrado.</div>`;
+                return;
+            }
+
+            lista.innerHTML = filtrados.map(item => {
+                const id = item.id;
+                const nome = item.itemNome || "Sem nome";
+                const tipo = item.itemTipo || "-";
+                const preco = item.itemPreco ?? 0;
+                const espaco = item.itemEspaco ?? 0;
+                const duracao = item.itemDuracaoTurno ?? 0;
+                const bonusPv = item.itemBonusPv ?? 0;
+                const bonusPm = item.itemBonusPm ?? 0;
+                const bonusAtaque = item.itemBonusAtaque ?? 0;
+                const bonusDano = item.itemBonusDano ?? 0;
+                const penalidadePv = item.itemPenalidadePv ?? 0;
+                const penalidadePm = item.itemPenalidadePm ?? 0;
+                const penalidadeAtaque = item.itemPenalidadeAtaque ?? 0;
+                const penalidadeDano = item.itemPenalidadeDano ?? 0;
+                const quantidadeDado = item.itemQuantidadeDado ?? "-";
+                const tipoDado = item.itemTipoDado ?? "-";
+                const dadoTipoAcao = item.itemDadoTipoAcao ?? "-";
+
+                const dadoFormatado = quantidadeDado !== "-" && tipoDado !== "-"
+                    ? `${quantidadeDado}${tipoDado}`
+                    : "-";
+
+                const temDadoExtra =
+                    quantidadeDado !== "-" ||
+                    tipoDado !== "-" ||
+                    dadoTipoAcao !== "-";
+
+                return `
+                    <div class="card-item">
+                        <div class="card-topo">
+                            <div>
+                                <h3>${nome}</h3>
+                                <span class="tag">${tipo}</span>
+                            </div>
+                        </div>
+
+                        <div class="info-grid">
+                            <div class="info-box">
+                                <strong>Preço</strong>
+                                <span>${preco}</span>
+                            </div>
+                            <div class="info-box">
+                                <strong>Espaço</strong>
+                                <span>${espaco}</span>
+                            </div>
+                            <div class="info-box">
+                                <strong>Duração</strong>
+                                <span>${duracao}</span>
+                            </div>
+                            <div class="info-box">
+                                <strong>Dado</strong>
+                                <span>${dadoFormatado}</span>
+                            </div>
+                        </div>
+
+                        <div class="subsecao">
+                            <h4>Bônus</h4>
+                            <div class="linha-badges">
+                                <span class="badge azul">Ataque: ${bonusAtaque}</span>
+                                <span class="badge azul">Dano: ${bonusDano}</span>
+                                <span class="badge azul">PV: ${bonusPv}</span>
+                                <span class="badge azul">PM: ${bonusPm}</span>
+                            </div>
+                        </div>
+
+                        <div class="subsecao">
+                            <h4>Penalidades</h4>
+                            <div class="linha-badges">
+                                <span class="badge vermelho">Ataque: ${penalidadeAtaque}</span>
+                                <span class="badge vermelho">Dano: ${penalidadeDano}</span>
+                                <span class="badge vermelho">PV: ${penalidadePv}</span>
+                                <span class="badge vermelho">PM: ${penalidadePm}</span>
+                            </div>
+                        </div>
+
+                        ${temDadoExtra ? `
+                            <div class="subsecao">
+                                <h4>Dado extra</h4>
+                                <div class="linha-badges">
+                                    <span class="badge verde">Quantidade: ${quantidadeDado}</span>
+                                    <span class="badge verde">Tipo: ${tipoDado}</span>
+                                    <span class="badge verde">Ação: ${dadoTipoAcao}</span>
+                                </div>
+                            </div>
+                        ` : ""}
+
+                        <div class="subsecao">
+                            <h4>Enviar para inventário</h4>
+                            <div class="linha-vinculo">
+                                <select id="personagem-item-${id}">
+                                    <option value="">Selecione o personagem</option>
+                                    ${personagens.map(personagem => `
+                                        <option value="${personagem.id}" ${String(personagem.id) === String(personagemIdPreSelecionado || "") ? "selected" : ""}>
+                                            ${personagem.personagemNome}
+                                        </option>
+                                    `).join("")}
+                                </select>
+
+                                <input type="number" id="quantidade-item-${id}" min="1" step="1" value="1" />
+
+                                <button class="botao botao-primario" onclick="adicionarAoInventario(${id})">
+                                    Enviar
+                                </button>
+
+                                <button class="botao botao-secundario" onclick="retirarDoInventario(${id})">
+                                    Retirar
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="acoes-card">
+                            <button class="botao botao-secundario" onclick="editarItem(${id})">Editar</button>
+                            <button class="botao botao-perigo" onclick="excluirItem(${id})">Excluir</button>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        document.getElementById("formItem").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const itemId = document.getElementById("itemId").value.trim();
+
+            const payload = {
+                itemNome: document.getElementById("itemNome").value.trim(),
+                itemTipo: document.getElementById("itemTipo").value || null,
+                itemPreco: parseFloat(document.getElementById("itemPreco").value) || 0,
+                itemEspaco: parseFloat(document.getElementById("itemEspaco").value) || 0,
+                itemDuracaoTurno: document.getElementById("itemDuracaoTurno").value
+                    ? parseInt(document.getElementById("itemDuracaoTurno").value)
+                    : 0,
+                itemBonusAtaque: parseInt(document.getElementById("itemBonusAtaque").value) || 0,
+                itemPenalidadeAtaque: parseInt(document.getElementById("itemPenalidadeAtaque").value) || 0,
+                itemBonusDano: parseInt(document.getElementById("itemBonusDano").value) || 0,
+                itemPenalidadeDano: parseInt(document.getElementById("itemPenalidadeDano").value) || 0,
+                itemBonusPv: parseInt(document.getElementById("itemBonusPv").value) || 0,
+                itemPenalidadePv: parseInt(document.getElementById("itemPenalidadePv").value) || 0,
+                itemBonusPm: parseInt(document.getElementById("itemBonusPm").value) || 0,
+                itemPenalidadePm: parseInt(document.getElementById("itemPenalidadePm").value) || 0,
+                itemQuantidadeDado: document.getElementById("itemQuantidadeDado").value
+                    ? parseInt(document.getElementById("itemQuantidadeDado").value)
+                    : null,
+                itemTipoDado: document.getElementById("itemTipoDado").value || null,
+                itemDadoTipoAcao: document.getElementById("itemDadoTipoAcao").value || null
+            };
+
+            if (!payload.itemNome) {
+                mostrarMensagem("Informe o nome do item.", true);
+                return;
+            }
+
+            if (!payload.itemTipo) {
+                mostrarMensagem("Selecione o tipo do item.", true);
+                return;
+            }
+
+            try {
+                const metodo = itemId ? "PATCH" : "POST";
+                const url = itemId
+                    ? `${API_BASE}/item/${itemId}`
+                    : `${API_BASE}/item`;
+
+                const resposta = await fetch(url, {
+                    method: metodo,
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!resposta.ok) {
+                    const erroTexto = await resposta.text();
+                    throw new Error(erroTexto || "Erro ao salvar item.");
+                }
+
+                mostrarMensagem(itemId ? "Item atualizado com sucesso." : "Item criado com sucesso.");
+                limparFormulario();
+                await carregarItens();
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem("Erro ao salvar item.", true);
+            }
+        });
+
+        function editarItem(id) {
+            const item = itens.find(i => String(i.id) === String(id));
+            if (!item) {
+                mostrarMensagem("Item não encontrado para edição.", true);
+                return;
+            }
+
+            document.getElementById("itemId").value = item.id ?? "";
+            document.getElementById("itemNome").value = item.itemNome ?? "";
+            document.getElementById("itemTipo").value = item.itemTipo ?? "";
+            document.getElementById("itemPreco").value = item.itemPreco ?? "";
+            document.getElementById("itemEspaco").value = item.itemEspaco ?? "";
+            document.getElementById("itemDuracaoTurno").value = item.itemDuracaoTurno ?? "";
+            document.getElementById("itemBonusAtaque").value = item.itemBonusAtaque ?? "";
+            document.getElementById("itemPenalidadeAtaque").value = item.itemPenalidadeAtaque ?? "";
+            document.getElementById("itemBonusDano").value = item.itemBonusDano ?? "";
+            document.getElementById("itemPenalidadeDano").value = item.itemPenalidadeDano ?? "";
+            document.getElementById("itemBonusPv").value = item.itemBonusPv ?? "";
+            document.getElementById("itemPenalidadePv").value = item.itemPenalidadePv ?? "";
+            document.getElementById("itemBonusPm").value = item.itemBonusPm ?? "";
+            document.getElementById("itemPenalidadePm").value = item.itemPenalidadePm ?? "";
+            document.getElementById("itemQuantidadeDado").value = item.itemQuantidadeDado ?? "";
+            document.getElementById("itemTipoDado").value = item.itemTipoDado ?? "";
+            document.getElementById("itemDadoTipoAcao").value = item.itemDadoTipoAcao ?? "";
+
+            document.getElementById("tituloFormulario").textContent = "Editar item";
+            document.getElementById("botaoSalvar").textContent = "Salvar alterações";
+
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        function limparFormulario() {
+            document.getElementById("formItem").reset();
+            document.getElementById("itemId").value = "";
+            document.getElementById("tituloFormulario").textContent = "Novo item";
+            document.getElementById("botaoSalvar").textContent = "Salvar item";
+        }
+
+        async function excluirItem(id) {
+            const confirmar = confirm("Deseja realmente excluir este item?");
+            if (!confirmar) {
+                return;
+            }
+
+            try {
+                const resposta = await fetch(`${API_BASE}/item/${id}`, {
+                    method: "DELETE"
+                });
+
+                const mensagem = await resposta.text();
+
+                if (!resposta.ok) {
+                    throw new Error(mensagem || "Erro ao excluir item.");
+                }
+
+                mostrarMensagem(mensagem || "Item excluído com sucesso.");
+                if (String(document.getElementById("itemId").value) === String(id)) {
+                    limparFormulario();
+                }
+                await carregarItens();
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem(erro.message || "Erro ao excluir item.", true);
+            }
+        }
+
+        async function adicionarAoInventario(itemId) {
+            const select = document.getElementById(`personagem-item-${itemId}`);
+            const inputQuantidade = document.getElementById(`quantidade-item-${itemId}`);
+
+            const personagemId = select.value;
+            const quantidade = parseInt(inputQuantidade.value) || 1;
+
+            if (!personagemId) {
+                mostrarMensagem("Selecione um personagem para enviar o item.", true);
+                return;
+            }
+
+            try {
+                const resposta = await fetch(`${API_BASE}/inventario/personagem/${personagemId}/item/${itemId}?quantidade=${quantidade}`, {
+                    method: "POST"
+                });
+
+                if (!resposta.ok) {
+                    const erroTexto = await resposta.text();
+                    throw new Error(erroTexto || "Erro ao enviar item para o inventário.");
+                }
+
+                mostrarMensagem("Item enviado para o inventário com sucesso.");
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem(erro.message || "Erro ao enviar item para o inventário.", true);
+            }
+        }
+
+        async function retirarDoInventario(itemId) {
+            const select = document.getElementById(`personagem-item-${itemId}`);
+            const inputQuantidade = document.getElementById(`quantidade-item-${itemId}`);
+
+            const personagemId = select.value;
+            const quantidade = parseInt(inputQuantidade.value) || 1;
+
+            if (!personagemId) {
+                mostrarMensagem("Selecione um personagem para retirar o item do inventário.", true);
+                return;
+            }
+
+            try {
+                const respostaInventario = await fetch(`${API_BASE}/inventario/completo/personagem/${personagemId}`);
+
+                if (!respostaInventario.ok) {
+                    const erroTexto = await respostaInventario.text();
+                    throw new Error(erroTexto || "Erro ao buscar inventário do personagem.");
+                }
+
+                const inventarioCompleto = await respostaInventario.json();
+                const itensInventario = inventarioCompleto.itens || [];
+
+                const registroInventario = itensInventario.find(registro =>
+                    registro.item && String(registro.item.id) === String(itemId)
+                );
+
+                if (!registroInventario) {
+                    throw new Error("Esse item não está no inventário do personagem selecionado.");
+                }
+
+                const resposta = await fetch(
+                    `${API_BASE}/inventario/${registroInventario.id}/item/${itemId}?quantidade=${quantidade}`,
+                    {
+                        method: "DELETE"
+                    }
+                );
+
+                if (!resposta.ok) {
+                    const erroTexto = await resposta.text();
+                    throw new Error(erroTexto || "Erro ao retirar item do inventário.");
+                }
+
+                mostrarMensagem("Item retirado do inventário com sucesso.");
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem(erro.message || "Erro ao retirar item do inventário.", true);
+            }
+        }
+
+        function mostrarMensagem(texto, erro = false) {
+            const mensagem = document.getElementById("mensagem");
+            mensagem.textContent = texto;
+            mensagem.className = erro ? "mensagem erro" : "mensagem sucesso";
+
+            clearTimeout(mensagem._timeoutId);
+            mensagem._timeoutId = setTimeout(() => {
+                mensagem.className = "mensagem";
+                mensagem.textContent = "";
+            }, 4000);
+        }
+
+        inicializarTela();
+    </script>
+</body>
+
+</html>

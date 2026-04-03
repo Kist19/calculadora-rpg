@@ -16,30 +16,45 @@ import java.util.List;
 @RequestMapping("/lojas")
 public class LojaController {
 
-    private final LojaRepository lojaRepository;
     private final LojaItemRepository lojaItemRepository;
     private final LojaService lojaService;
 
-    public LojaController(LojaRepository lojaRepository, LojaItemRepository lojaItemRepository,
+    public LojaController(
+            LojaItemRepository lojaItemRepository,
             LojaService lojaService) {
-        this.lojaRepository = lojaRepository;
+
         this.lojaItemRepository = lojaItemRepository;
         this.lojaService = lojaService;
     }
 
     @PostMapping
     public Loja criarLoja(@RequestBody Loja loja) {
-        return lojaRepository.save(loja);
+        return lojaService.criarLoja(loja);
     }
 
     @GetMapping
     public List<Loja> listarLojas() {
-        return lojaRepository.findAll();
+        return lojaService.listarLojas();
+    }
+
+    @GetMapping("/ativas")
+    public List<Loja> listarLojasAtivas() {
+        return lojaService.listarLojasAtivas();
+    }
+
+    @GetMapping("/{lojaId}")
+    public Loja buscarPorId(@PathVariable Long lojaId) {
+        return lojaService.buscarPorId(lojaId);
     }
 
     @GetMapping("/{lojaId}/itens")
     public List<LojaItem> listarItensDaLoja(@PathVariable Long lojaId) {
         return lojaItemRepository.findByLojaId(lojaId);
+    }
+
+    @GetMapping("/loja-item/{lojaItemId}")
+    public LojaItem buscarLojaItemPorId(@PathVariable Long lojaItemId) {
+        return lojaService.buscarLojaItemPorId(lojaItemId);
     }
 
     @PostMapping("/comprar")
@@ -52,6 +67,11 @@ public class LojaController {
         return lojaService.atualizarLoja(id, dadosAtualizados);
     }
 
+    @PatchMapping("/{id}/ativar")
+    public Loja ativarLoja(@PathVariable Long id) {
+        return lojaService.ativarLoja(id);
+    }
+
     @DeleteMapping("/{id}")
     public void deletarLoja(@PathVariable Long id) {
         lojaService.deletarLoja(id);
@@ -59,10 +79,7 @@ public class LojaController {
 
     @PostMapping("/{lojaId}/itens")
     public LojaItem adicionarItemNaLoja(@PathVariable Long lojaId, @RequestBody LojaItem lojaItem) {
-        Loja loja = lojaRepository.findById(lojaId).orElseThrow(() -> new RuntimeException("Loja não encontrada"));
-
-        lojaItem.setLoja(loja);
-        return lojaItemRepository.save(lojaItem);
+        return lojaService.adicionarProdutoNaLoja(lojaId, lojaItem);
     }
 
     @PatchMapping("/loja-item/{id}")

@@ -1,9 +1,15 @@
 package com.arthur.calculadorarpg.loja;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.arthur.calculadorarpg.armadura.Armadura;
+import com.arthur.calculadorarpg.armadura.ArmaduraRepository;
+import com.arthur.calculadorarpg.arma.Arma;
+import com.arthur.calculadorarpg.arma.ArmaRepository;
 import com.arthur.calculadorarpg.inventario.Inventario;
 import com.arthur.calculadorarpg.inventario.InventarioRepository;
 import com.arthur.calculadorarpg.personagem.Personagem;
@@ -13,22 +19,145 @@ import com.arthur.calculadorarpg.status.StatusRepository;
 
 @Service
 public class LojaService {
+
     private final LojaRepository lojaRepository;
     private final LojaItemRepository lojaItemRepository;
     private final PersonagemRepository personagemRepository;
     private final InventarioRepository inventarioRepository;
     private final StatusRepository statusRepository;
+    private final ArmaRepository armaRepository;
+    private final ArmaduraRepository armaduraRepository;
 
-    public LojaService(LojaRepository lojaRepository,
+    public LojaService(
+            LojaRepository lojaRepository,
             LojaItemRepository lojaItemRepository,
             PersonagemRepository personagemRepository,
             InventarioRepository inventarioRepository,
-            StatusRepository statusRepository) {
+            StatusRepository statusRepository,
+            ArmaRepository armaRepository,
+            ArmaduraRepository armaduraRepository) {
+
         this.lojaRepository = lojaRepository;
         this.lojaItemRepository = lojaItemRepository;
         this.personagemRepository = personagemRepository;
         this.inventarioRepository = inventarioRepository;
         this.statusRepository = statusRepository;
+        this.armaRepository = armaRepository;
+        this.armaduraRepository = armaduraRepository;
+    }
+
+    @Transactional
+    public Loja criarLoja(Loja loja) {
+        if (loja.getAtiva() == null) {
+            loja.setAtiva(true);
+        }
+
+        if (Boolean.TRUE.equals(loja.getAtiva())) {
+            desativarTodasAsLojas();
+        }
+
+        return lojaRepository.save(loja);
+    }
+
+    public List<Loja> listarLojas() {
+        return lojaRepository.findAll();
+    }
+
+    public List<Loja> listarLojasAtivas() {
+        return lojaRepository.findByAtivaTrue();
+    }
+
+    public Optional<Loja> buscarLojaAtiva() {
+        return lojaRepository.findFirstByAtivaTrue();
+    }
+
+    @Transactional
+    public Loja ativarLoja(Long lojaId) {
+        Loja loja = lojaRepository.findById(lojaId)
+                .orElseThrow(() -> new RuntimeException("Loja não encontrada"));
+
+        desativarTodasAsLojas();
+        loja.setAtiva(true);
+
+        return lojaRepository.save(loja);
+    }
+
+    @Transactional
+    public Loja atualizarLoja(Long id, Loja dadosAtualizados) {
+        Loja loja = lojaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Loja não encontrada"));
+
+        if (dadosAtualizados.getLojaNome() != null) {
+            loja.setLojaNome(dadosAtualizados.getLojaNome());
+        }
+
+        if (dadosAtualizados.getLojaTipo() != null) {
+            loja.setLojaTipo(dadosAtualizados.getLojaTipo());
+        }
+
+        if (dadosAtualizados.getAtiva() != null) {
+            if (Boolean.TRUE.equals(dadosAtualizados.getAtiva())) {
+                desativarTodasAsLojas();
+                loja.setAtiva(true);
+            } else {
+                loja.setAtiva(false);
+            }
+        }
+
+        return lojaRepository.save(loja);
+    }
+
+    public void deletarLoja(Long id) {
+        Loja loja = lojaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Loja não encontrada"));
+
+        lojaRepository.delete(loja);
+    }
+
+    public Loja buscarPorId(Long lojaId) {
+        return lojaRepository.findById(lojaId)
+                .orElseThrow(() -> new RuntimeException("Loja não encontrada"));
+    }
+
+    public LojaItem buscarLojaItemPorId(Long lojaItemId) {
+        return lojaItemRepository.findById(lojaItemId)
+                .orElseThrow(() -> new RuntimeException("Item da loja não encontrado"));
+    }
+
+    public LojaItem adicionarProdutoNaLoja(Long lojaId, LojaItem lojaItem) {
+        Loja loja = lojaRepository.findById(lojaId)
+                .orElseThrow(() -> new RuntimeException("Loja não encontrada"));
+
+        validarProdutoLoja(lojaItem);
+
+        lojaItem.setLoja(loja);
+        return lojaItemRepository.save(lojaItem);
+    }
+
+    public LojaItem atualizarLojaItem(Long id, LojaItem dadosAtualizados) {
+        LojaItem lojaItem = lojaItemRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Item da loja não encontrado"));
+
+        if (dadosAtualizados.getLojaPreco() != null) {
+            lojaItem.setLojaPreco(dadosAtualizados.getLojaPreco());
+        }
+
+        if (dadosAtualizados.getLojaQuantidade() != null) {
+            lojaItem.setLojaQuantidade(dadosAtualizados.getLojaQuantidade());
+        }
+
+        if (dadosAtualizados.getDisponivel() != null) {
+            lojaItem.setDisponivel(dadosAtualizados.getDisponivel());
+        }
+
+        return lojaItemRepository.save(lojaItem);
+    }
+
+    public void deletarLojaItem(Long id) {
+        LojaItem lojaItem = lojaItemRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Item da loja não encontrado"));
+
+        lojaItemRepository.delete(lojaItem);
     }
 
     public String comprarItem(Long personagemId, Long lojaItemId) {
@@ -46,12 +175,24 @@ public class LojaService {
         Personagem personagem = personagemOpt.get();
         LojaItem lojaItem = lojaItemOpt.get();
 
+        if (lojaItem.getLoja() == null || Boolean.FALSE.equals(lojaItem.getLoja().getAtiva())) {
+            return "A loja deste produto não está ativa.";
+        }
+
         if (Boolean.FALSE.equals(lojaItem.getDisponivel())) {
             return "Este item não está disponível para compra.";
         }
 
         if (lojaItem.getLojaQuantidade() == null || lojaItem.getLojaQuantidade() <= 0) {
             return "Item sem estoque na loja.";
+        }
+
+        if (lojaItem.getArma() != null && personagemJaPossuiArma(personagemId, lojaItem.getArma())) {
+            return "Você já possui esta arma.";
+        }
+
+        if (lojaItem.getArmadura() != null && personagemJaPossuiArmadura(personagemId, lojaItem.getArmadura())) {
+            return "Você já possui esta armadura.";
         }
 
         Status status = personagem.getStatus();
@@ -75,8 +216,29 @@ public class LojaService {
         }
         lojaItemRepository.save(lojaItem);
 
+        if (lojaItem.getItem() != null) {
+            adicionarItemAoInventario(personagem, lojaItem.getItem());
+            return "Compra de item realizada com sucesso.";
+        }
+
+        if (lojaItem.getArma() != null) {
+            Inventario inventarioBase = buscarOuCriarInventarioBase(personagem);
+            adicionarArmaAoInventario(inventarioBase, lojaItem.getArma());
+            return "Compra de arma realizada com sucesso.";
+        }
+
+        if (lojaItem.getArmadura() != null) {
+            Inventario inventarioBase = buscarOuCriarInventarioBase(personagem);
+            adicionarArmaduraAoInventario(inventarioBase, lojaItem.getArmadura());
+            return "Compra de armadura realizada com sucesso.";
+        }
+
+        return "Produto da loja inválido.";
+    }
+
+    private void adicionarItemAoInventario(Personagem personagem, com.arthur.calculadorarpg.item.Item item) {
         Inventario inventarioExistente = inventarioRepository
-                .findByPersonagemIdAndItemId(personagemId, lojaItem.getItem().getId())
+                .findByPersonagemIdAndItemId(personagem.getId(), item.getId())
                 .orElse(null);
 
         if (inventarioExistente != null) {
@@ -89,55 +251,116 @@ public class LojaService {
         } else {
             Inventario novoInventario = new Inventario();
             novoInventario.setPersonagem(personagem);
-            novoInventario.setItem(lojaItem.getItem());
+            novoInventario.setItem(item);
             novoInventario.setInventarioQuantidade(1);
             inventarioRepository.save(novoInventario);
         }
-
-        return "Compra realizada com sucesso.";
     }
 
-    public Loja atualizarLoja(Long id, Loja dadosAtualizados) {
+    private void adicionarArmaAoInventario(Inventario inventarioBase, Arma armaBase) {
+        Arma novaArma = new Arma();
 
-        Loja loja = lojaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Loja não encontrada"));
+        novaArma.setInventario(inventarioBase);
+        novaArma.setArmaNome(armaBase.getArmaNome());
+        novaArma.setArmaTipoPericia(armaBase.getArmaTipoPericia());
+        novaArma.setArmaTesteAtaque(armaBase.getArmaTesteAtaque());
+        novaArma.setArmaBonusTesteAtaque(armaBase.getArmaBonusTesteAtaque());
+        novaArma.setArmaPenalidadeTesteAtaque(armaBase.getArmaPenalidadeTesteAtaque());
+        novaArma.setArmaQuantidadeDado(armaBase.getArmaQuantidadeDado());
+        novaArma.setArmaTipoDado(armaBase.getArmaTipoDado());
+        novaArma.setArmaBonusDano(armaBase.getArmaBonusDano());
+        novaArma.setArmaPenalidadeDano(armaBase.getArmaPenalidadeDano());
+        novaArma.setArmaCriticoMinimo(armaBase.getArmaCriticoMinimo());
+        novaArma.setArmaCriticoMultiplicador(armaBase.getArmaCriticoMultiplicador());
+        novaArma.setArmaAlcance(armaBase.getArmaAlcance());
+        novaArma.setArmaTipo(armaBase.getArmaTipo());
+        novaArma.setArmaEspaco(armaBase.getArmaEspaco());
+        novaArma.setArmaPreco(armaBase.getArmaPreco());
+        novaArma.setArmaBonusPv(armaBase.getArmaBonusPv());
+        novaArma.setArmaPenalidadePv(armaBase.getArmaPenalidadePv());
+        novaArma.setArmaBonusPm(armaBase.getArmaBonusPm());
+        novaArma.setArmaPenalidadePm(armaBase.getArmaPenalidadePm());
 
-        if (dadosAtualizados.getLojaNome() != null) {
-            loja.setLojaNome(dadosAtualizados.getLojaNome());
+        armaRepository.save(novaArma);
+    }
+
+    private void adicionarArmaduraAoInventario(Inventario inventarioBase, Armadura armaduraBase) {
+        Armadura novaArmadura = new Armadura();
+
+        novaArmadura.setInventario(inventarioBase);
+        novaArmadura.setArmaduraNome(armaduraBase.getArmaduraNome());
+        novaArmadura.setArmaduraPreco(armaduraBase.getArmaduraPreco());
+        novaArmadura.setArmaduraBonusDefesa(armaduraBase.getArmaduraBonusDefesa());
+        novaArmadura.setArmaduraPenalidadeArmadura(armaduraBase.getArmaduraPenalidadeArmadura());
+        novaArmadura.setArmaduraEspaco(armaduraBase.getArmaduraEspaco());
+        novaArmadura.setArmaduraTipo(armaduraBase.getArmaduraTipo());
+
+        armaduraRepository.save(novaArmadura);
+    }
+
+    private Inventario buscarOuCriarInventarioBase(Personagem personagem) {
+        return inventarioRepository.findFirstByPersonagemIdAndItemIsNull(personagem.getId())
+                .orElseGet(() -> {
+                    Inventario novoInventarioBase = new Inventario();
+                    novoInventarioBase.setPersonagem(personagem);
+                    novoInventarioBase.setInventarioQuantidade(0);
+                    return inventarioRepository.save(novoInventarioBase);
+                });
+    }
+
+    private boolean personagemJaPossuiArma(Long personagemId, Arma arma) {
+        if (arma == null || arma.getArmaNome() == null || arma.getArmaNome().isBlank()) {
+            return false;
         }
 
-        if (dadosAtualizados.getLojaTipo() != null) {
-            loja.setLojaTipo(dadosAtualizados.getLojaTipo());
+        return armaRepository.existsByInventarioPersonagemIdAndArmaNomeIgnoreCase(
+                personagemId,
+                arma.getArmaNome().trim());
+    }
+
+    private boolean personagemJaPossuiArmadura(Long personagemId, Armadura armadura) {
+        if (armadura == null || armadura.getArmaduraNome() == null || armadura.getArmaduraNome().isBlank()) {
+            return false;
         }
 
-        return lojaRepository.save(loja);
+        return armaduraRepository.existsByInventarioPersonagemIdAndArmaduraNomeIgnoreCase(
+                personagemId,
+                armadura.getArmaduraNome().trim());
     }
 
-    public void deletarLoja(Long id) {
+    private void validarProdutoLoja(LojaItem lojaItem) {
+        int quantidadePreenchida = 0;
 
-        Loja loja = lojaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Loja não encontrada"));
-
-        lojaRepository.delete(loja);
-    }
-
-    public LojaItem atualizarLojaItem(Long id, LojaItem dadosAtualizados) {
-
-        LojaItem lojaItem = lojaItemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Item da loja não encontrado"));
-
-        if (dadosAtualizados.getLojaPreco() != null) {
-            lojaItem.setLojaPreco(dadosAtualizados.getLojaPreco());
+        if (lojaItem.getItem() != null) {
+            quantidadePreenchida++;
         }
 
-        return lojaItemRepository.save(lojaItem);
+        if (lojaItem.getArma() != null) {
+            quantidadePreenchida++;
+        }
+
+        if (lojaItem.getArmadura() != null) {
+            quantidadePreenchida++;
+        }
+
+        if (quantidadePreenchida == 0) {
+            throw new RuntimeException("Informe item, arma ou armadura para adicionar na loja.");
+        }
+
+        if (quantidadePreenchida > 1) {
+            throw new RuntimeException("A loja só pode receber um tipo por registro: item, arma ou armadura.");
+        }
     }
 
-    public void deletarLojaItem(Long id) {
+    private void desativarTodasAsLojas() {
+        List<Loja> lojas = lojaRepository.findAll();
 
-        LojaItem lojaItem = lojaItemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Item da loja não encontrado"));
+        for (Loja loja : lojas) {
+            if (Boolean.TRUE.equals(loja.getAtiva())) {
+                loja.setAtiva(false);
+            }
+        }
 
-        lojaItemRepository.delete(lojaItem);
+        lojaRepository.saveAll(lojas);
     }
 }

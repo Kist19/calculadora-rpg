@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habilidades do Personagem</title>
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/mestre-theme.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        .topo-admin {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+        }
+
+        .menu-admin {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .conteudo {
+            max-width: 1360px;
+            margin: 0 auto;
+            padding: 28px 24px 40px;
+        }
+
+        .topo-tela {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 10px;
+        }
+
+        .titulo-pagina {
+            margin: 0;
+            font-size: 2.15rem;
+            line-height: 1.1;
+        }
+
+        .subtitulo {
+            margin: 0 0 22px;
+            font-size: 0.98rem;
+            color: rgba(226, 234, 246, 0.72);
+        }
+
+        .botao-padrao {
+            background: rgba(255, 255, 255, 0.04);
+            color: #f8fafc;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            border-radius: 16px;
+            padding: 14px 22px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+        }
+
+        .botao-padrao:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.16);
+        }
+
+        .busca {
+            width: 100%;
+            margin-bottom: 18px;
+            padding: 16px 18px;
+            border-radius: 18px;
+            border: 1px solid rgba(93, 125, 179, 0.28);
+            outline: none;
+            background: rgba(8, 18, 35, 0.65);
+            color: #f3f6fb;
+            font-size: 1rem;
+            box-shadow: inset 0 0 0 1px rgba(80, 110, 160, 0.14);
+        }
+
+        .busca::placeholder {
+            color: rgba(219, 230, 246, 0.6);
+        }
+
+        .lista {
+            border-radius: 24px;
+            padding: 24px 24px 18px;
+            background: linear-gradient(180deg, rgba(22, 42, 74, 0.96), rgba(14, 29, 53, 0.96));
+            border: 1px solid rgba(84, 118, 174, 0.24);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+        }
+
+        .grupo-linhas {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .linha {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 18px;
+            padding: 16px 18px;
+            border-radius: 18px;
+            background: linear-gradient(90deg, rgba(32, 53, 87, 0.9), rgba(37, 56, 87, 0.72));
+            border: 1px solid rgba(97, 129, 183, 0.18);
+        }
+
+        .info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .info-nome {
+            font-size: 1.18rem;
+            font-weight: 700;
+            color: #f6f8fc;
+            line-height: 1.2;
+            word-break: break-word;
+        }
+
+        .info-detalhe {
+            font-size: 0.98rem;
+            color: rgba(226, 234, 246, 0.72);
+            line-height: 1.25;
+            word-break: break-word;
+        }
+
+        .botao-remover {
+            border: 1px solid rgba(196, 97, 97, 0.35);
+            background: linear-gradient(180deg, rgba(86, 55, 73, 0.9), rgba(70, 46, 60, 0.9));
+            color: #fff3f3;
+            padding: 12px 18px;
+            border-radius: 16px;
+            font-size: 0.98rem;
+            font-weight: 700;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+        }
+
+        .botao-remover:hover {
+            transform: translateY(-2px);
+            border-color: rgba(226, 126, 126, 0.48);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.16);
+        }
+
+        .vazio {
+            text-align: center;
+            padding: 28px 16px;
+            color: rgba(228, 236, 247, 0.76);
+            font-size: 1rem;
+        }
+
+        @media (max-width: 900px) {
+            .topo-admin {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 14px;
+            }
+
+            .menu-admin {
+                justify-content: flex-start;
+            }
+
+            .topo-tela {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .titulo-pagina {
+                font-size: 1.9rem;
+            }
+
+            .linha {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .botao-remover,
+            .botao-padrao {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="topo-admin">
+        <div>Painel do Mestre</div>
+        <nav class="menu-admin">
+            <a href="dashboard-mestre.html">Dashboard</a>
+            <a href="personagens.html">Personagens</a>
+            <a href="biblioteca.html">Biblioteca</a>
+            <a href="loja-mestre.html">Loja</a>
+            <a href="efeitos.html">Efeitos</a>
+            <a href="combate.html">Combate</a>
+        </nav>
+    </header>
+
+    <div class="conteudo">
+
+        <div class="topo-tela">
+            <h1 class="titulo-pagina">Habilidades do Personagem</h1>
+            <button class="botao-padrao" onclick="voltarParaFicha()">Voltar para ficha</button>
+        </div>
+
+        <input type="text" id="buscarHabilidade" class="busca" placeholder="Buscar habilidade..."
+            oninput="filtrarHabilidades()">
+
+        <div id="listaHabilidades" class="lista"></div>
+
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8080";
+
+        const params = new URLSearchParams(window.location.search);
+        const personagemId = Number(params.get("id"));
+
+        let personagemAtual = null;
+        let habilidadesCache = [];
+
+        function voltarParaFicha() {
+            window.location.href = `personagem-ficha.html?id=${personagemId}`;
+        }
+
+        async function carregarHabilidades() {
+            const container = document.getElementById("listaHabilidades");
+
+            if (!personagemId || Number.isNaN(personagemId)) {
+                container.innerHTML = `<div class="vazio">ID do personagem não informado</div>`;
+                return;
+            }
+
+            try {
+                const resposta = await fetch(`${API_BASE}/personagem`);
+
+                if (!resposta.ok) {
+                    throw new Error("Erro ao carregar personagens.");
+                }
+
+                const personagens = await resposta.json();
+                personagemAtual = personagens.find(p => Number(p.id) === personagemId);
+
+                if (!personagemAtual) {
+                    container.innerHTML = `<div class="vazio">Personagem não encontrado</div>`;
+                    return;
+                }
+
+                habilidadesCache = Array.isArray(personagemAtual.habilidades)
+                    ? personagemAtual.habilidades
+                    : [];
+
+                renderizarHabilidades(habilidadesCache);
+
+            } catch (erro) {
+                console.error("Erro ao carregar habilidades:", erro);
+                container.innerHTML = `<div class="vazio">Erro ao carregar habilidades</div>`;
+            }
+        }
+
+        function renderizarHabilidades(lista) {
+            const container = document.getElementById("listaHabilidades");
+
+            if (!lista || lista.length === 0) {
+                container.innerHTML = `<div class="vazio">Nenhuma habilidade</div>`;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="grupo-linhas">
+                    ${lista.map(habilidade => `
+                        <div class="linha">
+                            <div class="info">
+                                <div class="info-nome">${habilidade.habilidadeNome || "Habilidade"}</div>
+                                <div class="info-detalhe">
+                                    Custo PM: ${habilidade.habilidadeCustoPm ?? 0}
+                                </div>
+                            </div>
+
+                            <button
+                                class="botao-remover"
+                                onclick="removerHabilidade(${habilidade.id})"
+                            >
+                                Remover
+                            </button>
+                        </div>
+                    `).join("")}
+                </div>
+            `;
+        }
+
+        function filtrarHabilidades() {
+            const termo = document.getElementById("buscarHabilidade").value.trim().toLowerCase();
+
+            const filtradas = habilidadesCache.filter(habilidade =>
+                (habilidade.habilidadeNome || "").toLowerCase().includes(termo)
+            );
+
+            renderizarHabilidades(filtradas);
+        }
+
+        async function removerHabilidade(habilidadeId) {
+            if (!confirm("Tem certeza que deseja remover essa habilidade?")) {
+                return;
+            }
+
+            try {
+                const resposta = await fetch(`${API_BASE}/habilidades/${habilidadeId}/personagem/${personagemId}`, {
+                    method: "DELETE"
+                });
+
+                if (!resposta.ok) {
+                    throw new Error("Erro ao remover habilidade.");
+                }
+
+                habilidadesCache = habilidadesCache.filter(h => Number(h.id) !== Number(habilidadeId));
+                filtrarHabilidades();
+
+            } catch (erro) {
+                console.error("Erro ao remover habilidade:", erro);
+                alert("Erro ao remover habilidade.");
+            }
+        }
+
+        carregarHabilidades();
+    </script>
+
+</body>
+
+</html>

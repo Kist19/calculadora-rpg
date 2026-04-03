@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combate do Mestre</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #08111f;
+            --bg-soft: #0b1526;
+            --card: linear-gradient(180deg, rgba(17, 28, 48, 0.96), rgba(10, 22, 40, 0.96));
+            --card-2: linear-gradient(180deg, rgba(27, 40, 64, 0.95), rgba(18, 30, 50, 0.95));
+            --text: #f8fafc;
+            --muted: #cbd5e1;
+            --muted-2: #94a3b8;
+            --line: rgba(148, 163, 184, 0.14);
+            --line-strong: rgba(148, 163, 184, 0.24);
+            --primary-soft: rgba(37, 99, 235, 0.18);
+            --primary-btn: #1f3a5f;
+            --primary-btn-border: rgba(96, 165, 250, 0.24);
+            --primary-btn-hover: #27476f;
+            --danger-btn: rgba(92, 42, 58, 0.92);
+            --danger-btn-border: rgba(244, 114, 182, 0.18);
+            --danger-btn-hover: rgba(116, 48, 69, 0.95);
+            --shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+            --radius-xl: 24px;
+            --radius-lg: 18px;
+            --radius-md: 16px;
+            --radius-pill: 999px;
+        }
+
+        html,
+        body {
+            margin: 0;
+            min-height: 100%;
+            font-family: Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        body {
+            background:
+                radial-gradient(circle at top center, rgba(37, 99, 235, 0.10), transparent 34%),
+                linear-gradient(180deg, #07101d 0%, #08111f 100%);
+        }
+
+        .topo-admin {
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(10, 18, 34, 0.92));
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+        }
+
+        .logo-admin {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .menu-admin {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .menu-admin a {
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 18px;
+            background: rgba(30, 41, 59, 0.72);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            transition: 0.2s ease;
+        }
+
+        .menu-admin a:hover,
+        .menu-admin a.ativo {
+            background: rgba(37, 99, 235, 0.18);
+            border-color: rgba(96, 165, 250, 0.28);
+        }
+
+        .conteudo {
+            max-width: 1360px;
+            margin: 0 auto;
+            padding: 42px 26px 34px;
+        }
+
+        .titulo-pagina {
+            margin-bottom: 28px;
+        }
+
+        .titulo-pagina h1 {
+            margin: 0 0 10px 0;
+            font-size: clamp(34px, 4vw, 54px);
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            color: #f8fafc;
+        }
+
+        .titulo-pagina p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 18px;
+            line-height: 1.6;
+            max-width: 880px;
+        }
+
+        .barra-geral,
+        .bloco-lista {
+            background: var(--card);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow);
+        }
+
+        .barra-geral {
+            padding: 22px 24px;
+            margin-bottom: 24px;
+        }
+
+        .barra-geral h2 {
+            margin: 0 0 18px 0;
+            font-size: 24px;
+            color: #f8fafc;
+        }
+
+        .acoes-gerais {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .botao {
+            border-radius: 18px;
+            min-height: 56px;
+            padding: 14px 22px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 16px;
+            color: #fff;
+            border: 1px solid transparent;
+            transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+        }
+
+        .botao:hover {
+            transform: translateY(-1px);
+        }
+
+        .botao-ativar,
+        .botao-atualizar {
+            background: var(--primary-btn);
+            border-color: var(--primary-btn-border);
+        }
+
+        .botao-ativar:hover,
+        .botao-atualizar:hover {
+            background: var(--primary-btn-hover);
+        }
+
+        .botao-desativar {
+            background: var(--danger-btn);
+            border-color: var(--danger-btn-border);
+        }
+
+        .botao-desativar:hover {
+            background: var(--danger-btn-hover);
+        }
+
+        .bloco-lista {
+            padding: 22px;
+        }
+
+        .lista-interna {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .linha-personagem {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 22px;
+            padding: 22px 22px;
+            background: var(--card-2);
+            border: 1px solid var(--line-strong);
+            border-radius: 22px;
+            flex-wrap: wrap;
+        }
+
+        .linha-personagem + .linha-personagem {
+            margin-top: 14px;
+        }
+
+        .info-personagem {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 260px;
+            flex: 1;
+        }
+
+        .nome-personagem {
+            font-size: 24px;
+            font-weight: 800;
+            line-height: 1.1;
+        }
+
+        .detalhes-personagem {
+            color: var(--muted);
+            font-size: 18px;
+            line-height: 1.5;
+        }
+
+        .estado-combate {
+            display: inline-flex;
+            align-items: center;
+            width: fit-content;
+            padding: 8px 14px;
+            border-radius: var(--radius-pill);
+            font-size: 14px;
+            font-weight: 700;
+            border: 1px solid transparent;
+        }
+
+        .estado-ativo {
+            background: rgba(16, 185, 129, 0.16);
+            color: #d1fae5;
+            border-color: rgba(16, 185, 129, 0.34);
+        }
+
+        .estado-inativo {
+            background: rgba(244, 114, 182, 0.08);
+            color: #ffe4e6;
+            border-color: rgba(244, 114, 182, 0.24);
+        }
+
+        .acoes-personagem {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .acoes-personagem .botao {
+            min-width: 124px;
+            justify-content: center;
+        }
+
+        .mensagem {
+            margin-bottom: 18px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            display: none;
+            border: 1px solid transparent;
+        }
+
+        .mensagem.sucesso {
+            display: block;
+            background: rgba(16, 185, 129, 0.16);
+            color: #d1fae5;
+            border-color: rgba(16, 185, 129, 0.34);
+        }
+
+        .mensagem.erro {
+            display: block;
+            background: rgba(239, 68, 68, 0.16);
+            color: #fecaca;
+            border-color: rgba(239, 68, 68, 0.34);
+        }
+
+        .mensagem-vazia {
+            text-align: center;
+            color: var(--muted-2);
+            padding: 28px 18px;
+            border-radius: 18px;
+            background: rgba(15, 23, 42, 0.35);
+            border: 1px dashed rgba(148, 163, 184, 0.22);
+        }
+
+        @media (max-width: 900px) {
+            .conteudo {
+                padding: 28px 18px 24px;
+            }
+
+            .titulo-pagina h1 {
+                font-size: 40px;
+            }
+
+            .titulo-pagina p,
+            .detalhes-personagem {
+                font-size: 16px;
+            }
+
+            .linha-personagem {
+                padding: 18px;
+            }
+
+            .nome-personagem {
+                font-size: 22px;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .conteudo {
+                padding: 22px 14px 20px;
+            }
+
+            .titulo-pagina {
+                margin-bottom: 22px;
+            }
+
+            .titulo-pagina h1 {
+                font-size: 34px;
+            }
+
+            .barra-geral,
+            .bloco-lista {
+                padding: 16px;
+                border-radius: 20px;
+            }
+
+            .barra-geral h2 {
+                font-size: 21px;
+                margin-bottom: 14px;
+            }
+
+            .acoes-gerais,
+            .acoes-personagem {
+                width: 100%;
+            }
+
+            .acoes-gerais .botao,
+            .acoes-personagem .botao {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .linha-personagem {
+                align-items: stretch;
+            }
+
+            .nome-personagem {
+                font-size: 20px;
+            }
+
+            .detalhes-personagem {
+                font-size: 15px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../css/mestre-theme.css">
+</head>
+
+<body>
+
+    <header class="topo-admin">
+        <div class="logo-admin">Painel do Mestre</div>
+        <nav class="menu-admin">
+            <a href="dashboard-mestre.html">Dashboard</a>
+            <a href="personagens.html">Personagens</a>
+            <a href="biblioteca.html">Biblioteca</a>
+            <a href="loja-mestre.html">Loja</a>
+            <a href="efeitos.html">Efeitos</a>
+            <a href="combate.html" class="ativo">Combate</a>
+        </nav>
+    </header>
+
+    <div class="conteudo">
+        <div id="mensagem" class="mensagem"></div>
+
+        <section class="titulo-pagina">
+            <h1>Controle de Combate</h1>
+            <p>Ative ou desative o modo combate individualmente ou para todos os personagens.</p>
+        </section>
+
+        <section class="barra-geral">
+            <h2>Ações gerais</h2>
+            <div class="acoes-gerais">
+                <button class="botao botao-ativar" onclick="ativarCombateTodos()">Ativar todos</button>
+                <button class="botao botao-desativar" onclick="desativarCombateTodos()">Desativar todos</button>
+                <button class="botao botao-atualizar" onclick="carregarPersonagens()">Atualizar lista</button>
+            </div>
+        </section>
+
+        <section class="bloco-lista">
+            <div id="lista" class="lista-interna"></div>
+        </section>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8080";
+
+        async function carregarPersonagens() {
+            limparMensagem();
+
+            try {
+                const response = await fetch(`${API_BASE}/personagem`);
+
+                if (!response.ok) {
+                    throw new Error("Não foi possível carregar os personagens.");
+                }
+
+                const personagens = await response.json();
+                renderizarLista(personagens || []);
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem("Erro ao carregar a lista de personagens.", true);
+            }
+        }
+
+        function renderizarLista(personagens) {
+            const lista = document.getElementById("lista");
+
+            if (!Array.isArray(personagens) || !personagens.length) {
+                lista.innerHTML = `<div class="mensagem-vazia">Nenhum personagem encontrado.</div>`;
+                return;
+            }
+
+            lista.innerHTML = personagens.map(p => {
+                const emCombate = p.personagemEmCombate === true;
+
+                return `
+                    <div class="linha-personagem">
+                        <div class="info-personagem">
+                            <div class="nome-personagem">${escapeHtml(p.personagemNome || "Sem nome")}</div>
+                            <div class="detalhes-personagem">
+                                Classe: ${escapeHtml(p.personagemClasse || "-")} | Nível: ${escapeHtml(p.personagemNivel ?? "-")} | ID: ${escapeHtml(p.id)}
+                            </div>
+                            <span class="estado-combate ${emCombate ? "estado-ativo" : "estado-inativo"}">
+                                ${emCombate ? "Em combate" : "Fora de combate"}
+                            </span>
+                        </div>
+
+                        <div class="acoes-personagem">
+                            ${emCombate
+                        ? `<button class="botao botao-desativar" onclick="desativarCombate(${p.id})">Desativar</button>`
+                        : `<button class="botao botao-ativar" onclick="ativarCombate(${p.id})">Ativar</button>`
+                    }
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        async function ativarCombate(personagemId) {
+            try {
+                limparMensagem();
+
+                const response = await fetch(`${API_BASE}/personagem/${personagemId}/modo-combate/ativar`, {
+                    method: "PATCH"
+                });
+
+                if (!response.ok) {
+                    throw new Error("Não foi possível ativar o modo combate.");
+                }
+
+                mostrarMensagem(`Modo combate ativado para o personagem ${personagemId}.`, false);
+                await carregarPersonagens();
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem(`Erro ao ativar combate do personagem ${personagemId}.`, true);
+            }
+        }
+
+        async function desativarCombate(personagemId) {
+            try {
+                limparMensagem();
+
+                const response = await fetch(`${API_BASE}/personagem/${personagemId}/modo-combate/desativar`, {
+                    method: "PATCH"
+                });
+
+                if (!response.ok) {
+                    throw new Error("Não foi possível desativar o modo combate.");
+                }
+
+                mostrarMensagem(`Modo combate desativado para o personagem ${personagemId}.`, false);
+                await carregarPersonagens();
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem(`Erro ao desativar combate do personagem ${personagemId}.`, true);
+            }
+        }
+
+        async function ativarCombateTodos() {
+            try {
+                limparMensagem();
+
+                const response = await fetch(`${API_BASE}/personagem`);
+
+                if (!response.ok) {
+                    throw new Error("Não foi possível carregar os personagens.");
+                }
+
+                const personagens = await response.json();
+
+                for (const personagem of personagens) {
+                    if (personagem.personagemEmCombate !== true) {
+                        await fetch(`${API_BASE}/personagem/${personagem.id}/modo-combate/ativar`, {
+                            method: "PATCH"
+                        });
+                    }
+                }
+
+                mostrarMensagem("Modo combate ativado para todos os personagens.", false);
+                await carregarPersonagens();
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem("Erro ao ativar combate para todos.", true);
+            }
+        }
+
+        async function desativarCombateTodos() {
+            try {
+                limparMensagem();
+
+                const response = await fetch(`${API_BASE}/personagem`);
+
+                if (!response.ok) {
+                    throw new Error("Não foi possível carregar os personagens.");
+                }
+
+                const personagens = await response.json();
+
+                for (const personagem of personagens) {
+                    if (personagem.personagemEmCombate === true) {
+                        await fetch(`${API_BASE}/personagem/${personagem.id}/modo-combate/desativar`, {
+                            method: "PATCH"
+                        });
+                    }
+                }
+
+                mostrarMensagem("Modo combate desativado para todos os personagens.", false);
+                await carregarPersonagens();
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem("Erro ao desativar combate para todos.", true);
+            }
+        }
+
+        function abrirFicha(id) {
+            window.location.href = `personagem-ficha.html?id=${id}`;
+        }
+
+        function mostrarMensagem(texto, erro) {
+            const mensagem = document.getElementById("mensagem");
+            mensagem.textContent = texto;
+            mensagem.className = erro ? "mensagem erro" : "mensagem sucesso";
+        }
+
+        function limparMensagem() {
+            const mensagem = document.getElementById("mensagem");
+            mensagem.textContent = "";
+            mensagem.className = "mensagem";
+        }
+
+        function escapeHtml(valor) {
+            return String(valor ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        carregarPersonagens();
+    </script>
+
+</body>
+
+</html>

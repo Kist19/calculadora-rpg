@@ -1,5 +1,8 @@
 package com.arthur.calculadorarpg.item;
 
+import com.arthur.calculadorarpg.arma.ArmaTipoDado;
+import com.arthur.calculadorarpg.efeito.Efeito;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -20,6 +23,12 @@ public class Item {
     @Column(nullable = false)
     private Integer itemPreco;
 
+    @Column(nullable = true)
+    private Integer itemDuracaoTurno;
+
+    @Column(nullable = false)
+    private Double itemEspaco = 0.0;
+
     @Column(nullable = false)
     private Integer itemBonusAtaque = 0;
     @Column(nullable = false)
@@ -39,6 +48,21 @@ public class Item {
     private Integer itemBonusPm = 0;
     @Column(nullable = false)
     private Integer itemPenalidadePm = 0;
+
+    @ManyToOne
+    @JoinColumn(name = "efeito_id", nullable = true)
+    private Efeito efeito;
+
+    @Column(nullable = true)
+    private Integer itemQuantidadeDado;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true, length = 10)
+    private ArmaTipoDado itemTipoDado;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true, length = 10)
+    private DadoTipoAcao itemDadoTipoAcao;
 
     public Item() {
     }
@@ -139,6 +163,52 @@ public class Item {
         this.itemPenalidadePm = itemPenalidadePm;
     }
 
-    
-    
+    public Integer getItemDuracaoTurno() {
+        return itemDuracaoTurno;
+    }
+
+    public void setItemDuracaoTurno(Integer itemDuracaoTurno) {
+        this.itemDuracaoTurno = itemDuracaoTurno;
+    }
+
+    public Efeito getEfeito() {
+        return efeito;
+    }
+
+    public void setEfeito(Efeito efeito) {
+        this.efeito = efeito;
+    }
+
+    public Double getItemEspaco() {
+        return itemEspaco;
+    }
+
+    public void setItemEspaco(Double itemEspaco) {
+        this.itemEspaco = itemEspaco;
+    }
+
+    public Integer getItemQuantidadeDado() {
+        return itemQuantidadeDado;
+    }
+
+    public void setItemQuantidadeDado(Integer itemQuantidadeDado) {
+        this.itemQuantidadeDado = itemQuantidadeDado;
+    }
+
+    public ArmaTipoDado getItemTipoDado() {
+        return itemTipoDado;
+    }
+
+    public void setItemTipoDado(ArmaTipoDado itemTipoDado) {
+        this.itemTipoDado = itemTipoDado;
+    }
+
+    public DadoTipoAcao getItemDadoTipoAcao() {
+        return itemDadoTipoAcao;
+    }
+
+    public void setItemDadoTipoAcao(DadoTipoAcao itemDadoTipoAcao) {
+        this.itemDadoTipoAcao = itemDadoTipoAcao;
+    }
+
 }

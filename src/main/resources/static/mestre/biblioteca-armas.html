@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca de Armas</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/mestre-theme.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            min-height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topo-admin {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .logo-admin {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .menu-admin {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .menu-admin a {
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .conteudo {
+            width: 100%;
+            max-width: 1680px;
+            margin: 0 auto;
+            padding: 18px 18px 10px;
+        }
+
+        .cabecalho {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 18px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .cabecalho-texto {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .cabecalho h1 {
+            margin: 0 0 6px 0;
+            font-size: 34px;
+        }
+
+        .cabecalho p {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .voltar {
+            margin-left: auto;
+            margin-top: 6px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-end;
+        }
+
+        .mensagem {
+            position: fixed;
+            top: 22px;
+            right: 22px;
+            z-index: 9999;
+            min-width: 280px;
+            max-width: 420px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-weight: bold;
+            opacity: 0;
+            transform: translateY(-20px);
+            pointer-events: none;
+            transition: opacity 0.28s ease, transform 0.28s ease;
+            display: block;
+        }
+
+        .mensagem.sucesso,
+        .mensagem.erro {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .mensagem.sucesso {
+            background: rgba(16, 185, 129, 0.16);
+            color: #d1fae5;
+            border: 1px solid rgba(16, 185, 129, 0.34);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+        }
+
+        .mensagem.erro {
+            background: rgba(239, 68, 68, 0.16);
+            color: #fecaca;
+            border: 1px solid rgba(239, 68, 68, 0.34);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 470px 1fr;
+            gap: 16px;
+            align-items: stretch;
+            min-height: 630px;
+        }
+
+        .bloco {
+            border-radius: 16px;
+            padding: 18px;
+            min-width: 0;
+        }
+
+        .bloco h2 {
+            margin: 0 0 8px 0;
+            font-size: 22px;
+        }
+
+        .bloco-form {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 6px;
+        }
+
+        .bloco-lista {
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        #formArma {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 12px;
+        }
+
+        .campo {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .campo.full {
+            grid-column: 1 / -1;
+        }
+
+        .campo label {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .campo input,
+        .campo select {
+            width: 100%;
+            padding: 11px 12px;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .acoes-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .botao {
+            border-radius: 10px;
+            padding: 11px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .botao-primario {
+            color: white;
+        }
+
+        .botao-secundario {
+            border: 1px solid rgba(148, 163, 184, 0.24);
+        }
+
+        .botao-secundario:hover {
+            border-color: rgba(148, 163, 184, 0.34);
+        }
+
+        .botao-perigo {
+            border: 1px solid rgba(239, 68, 68, 0.30);
+        }
+
+        .botao-perigo:hover {
+            border-color: rgba(239, 68, 68, 0.44);
+        }
+
+        .barra-topo-lista {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .barra-topo-lista h2 {
+            margin: 0;
+        }
+
+        .busca {
+            min-width: 260px;
+            flex: 1;
+            max-width: 360px;
+        }
+
+        .busca input {
+            width: 100%;
+            padding: 11px 12px;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .lista-armas {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow-y: auto;
+            padding-right: 4px;
+            min-height: 0;
+            max-height: 700px;
+        }
+
+        .card-item {
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .card-topo {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .card-topo h3 {
+            margin: 0 0 6px 0;
+            font-size: 20px;
+        }
+
+        .card-topo .sub {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .tag {
+            display: inline-block;
+            border-radius: 999px;
+            padding: 5px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 0.02em;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .info-box {
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        .info-box strong {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .info-box span {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .subsecao {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .subsecao h4 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+        }
+
+        .subsecao-detalhes h4 {
+            color: #93c5fd;
+        }
+
+        .subsecao-vinculo h4 {
+            color: #cbd5e1;
+        }
+
+        .linha-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .acoes-card {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .linha-vinculo {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .linha-vinculo select {
+            width: 100%;
+            padding: 11px 12px;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .vazio {
+            text-align: center;
+            padding: 50px 20px;
+            border-radius: 12px;
+        }
+
+        @media (max-width: 1200px) {
+            .layout {
+                grid-template-columns: 430px 1fr;
+            }
+
+            .linha-vinculo {
+                grid-template-columns: 1fr;
+            }
+
+            .linha-vinculo .botao {
+                width: 100%;
+            }
+
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 980px) {
+            .layout {
+                grid-template-columns: 1fr;
+                min-height: unset;
+            }
+
+            .lista-armas {
+                max-height: 420px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .conteudo {
+                padding: 16px;
+            }
+
+            .cabecalho {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .cabecalho h1 {
+                font-size: 28px;
+            }
+
+            .voltar {
+                margin-left: 0;
+                justify-content: flex-start;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .campo.full {
+                grid-column: auto;
+            }
+
+            .barra-topo-lista {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .busca {
+                min-width: unset;
+            }
+
+            .lista-armas {
+                max-height: 380px;
+            }
+
+            .linha-vinculo {
+                grid-template-columns: 1fr;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .mensagem {
+                top: 16px;
+                right: 16px;
+                left: 16px;
+                min-width: unset;
+                max-width: unset;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="topo-admin">
+        <div class="logo-admin">Painel do Mestre</div>
+        <nav class="menu-admin">
+            <a href="dashboard-mestre.html">Dashboard</a>
+            <a href="personagens.html">Personagens</a>
+            <a href="biblioteca.html" class="ativo">Biblioteca</a>
+            <a href="loja-mestre.html">Loja</a>
+            <a href="efeitos.html">Efeitos</a>
+            <a href="combate.html">Combate</a>
+        </nav>
+    </header>
+
+    <div class="conteudo">
+        <section class="cabecalho">
+            <div class="cabecalho-texto">
+                <h1>Biblioteca de Armas</h1>
+                <p>Cadastre, edite, exclua e equipe armas nos personagens.</p>
+            </div>
+
+            <div class="voltar">
+                <button class="botao botao-secundario" onclick="window.location.href='biblioteca.html'">
+                    Voltar para bibliotecas
+                </button>
+            </div>
+        </section>
+
+        <div id="mensagem" class="mensagem"></div>
+
+        <section class="layout">
+            <div class="bloco bloco-form">
+                <h2 id="tituloFormulario">Nova arma</h2>
+
+                <form id="formArma">
+                    <input type="hidden" id="armaId">
+
+                    <div class="form-grid">
+                        <div class="campo full">
+                            <label for="armaNome">Nome</label>
+                            <input type="text" id="armaNome" required maxlength="100">
+                        </div>
+
+                        <div class="campo">
+                            <label for="armaTipoPericia">Tipo de perícia</label>
+                            <select id="armaTipoPericia">
+                                <option value="LUTA">LUTA</option>
+                                <option value="PONTARIA">PONTARIA</option>
+                            </select>
+                        </div>
+
+                        <div class="campo">
+                            <label for="armaQuantidadeDado">Qtd. de dados</label>
+                            <input type="number" id="armaQuantidadeDado" value="1" min="1">
+                        </div>
+
+                        <div class="campo">
+                            <label for="armaTipoDado">Tipo de dado</label>
+                            <select id="armaTipoDado">
+                                <option value="D4">D4</option>
+                                <option value="D6">D6</option>
+                                <option value="D8" selected>D8</option>
+                                <option value="D10">D10</option>
+                                <option value="D12">D12</option>
+                                <option value="D20">D20</option>
+                            </select>
+                        </div>
+
+                        <div class="campo">
+                            <label for="armaCriticoMinimo">Crítico mínimo</label>
+                            <input type="number" id="armaCriticoMinimo" value="20" min="1">
+                        </div>
+
+                        <div class="campo">
+                            <label for="armaCriticoMultiplicador">Crítico x</label>
+                            <input type="number" id="armaCriticoMultiplicador" value="2" min="1">
+                        </div>
+
+                        <div class="campo">
+                            <label for="armaAlcance">Alcance</label>
+                            <select id="armaAlcance">
+                                <option value="PESSOAL">PESSOAL</option>
+                                <option value="TOQUE">TOQUE</option>
+                                <option value="CURTO">CURTO</option>
+                                <option value="MEDIO">MEDIO</option>
+                                <option value="LONGO" selected>LONGO</option>
+                            </select>
+                        </div>
+
+                        <div class="campo">
+                            <label for="armaTipo">Tipo</label>
+                            <select id="armaTipo">
+                                <option value="CORTE">CORTE</option>
+                                <option value="PERFURACAO" selected>PERFURACAO</option>
+                                <option value="IMPACTO">IMPACTO</option>
+                                <option value="MAGICO">MAGICO</option>
+                            </select>
+                        </div>
+
+                        <div class="campo">
+                            <label for="armaEspaco">Espaço</label>
+                            <input type="number" id="armaEspaco" value="1" min="0">
+                        </div>
+
+                        <div class="campo">
+                            <label for="armaPreco">Preço</label>
+                            <input type="number" id="armaPreco" value="0" min="0">
+                        </div>
+                    </div>
+
+                    <div class="acoes-form">
+                        <button type="submit" class="botao botao-primario" id="botaoSalvar">Salvar arma</button>
+                        <button type="button" class="botao botao-secundario" onclick="limparFormulario()">
+                            Cancelar edição
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="bloco bloco-lista">
+                <div class="barra-topo-lista">
+                    <h2>Armas cadastradas</h2>
+                    <div class="busca">
+                        <input type="text" id="buscaArma" placeholder="Buscar arma por nome"
+                            oninput="renderizarArmas()">
+                    </div>
+                </div>
+
+                <div id="listaArmas" class="lista-armas"></div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8080";
+
+        let armas = [];
+        let personagens = [];
+
+        async function inicializarTela() {
+            try {
+                await Promise.all([
+                    carregarArmas(),
+                    carregarPersonagens()
+                ]);
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem("Erro ao inicializar a biblioteca de armas.", true);
+            }
+        }
+
+        async function carregarArmas() {
+            const resposta = await fetch(`${API_BASE}/arma`);
+            if (!resposta.ok) {
+                throw new Error("Erro ao carregar armas.");
+            }
+
+            const dados = await resposta.json();
+            armas = Array.isArray(dados) ? dados : [];
+            renderizarArmas();
+        }
+
+        async function carregarPersonagens() {
+            const resposta = await fetch(`${API_BASE}/personagem`);
+            if (!resposta.ok) {
+                throw new Error("Erro ao carregar personagens.");
+            }
+
+            const dados = await resposta.json();
+            personagens = Array.isArray(dados) ? dados : [];
+            renderizarArmas();
+        }
+
+        function renderizarArmas() {
+            const lista = document.getElementById("listaArmas");
+            const termo = document.getElementById("buscaArma").value.trim().toLowerCase();
+
+            let filtradas = armas;
+
+            if (termo) {
+                filtradas = armas.filter(arma =>
+                    String(arma.armaNome || "").toLowerCase().includes(termo)
+                );
+            }
+
+            if (!filtradas.length) {
+                lista.innerHTML = `<div class="vazio">Nenhuma arma encontrada.</div>`;
+                return;
+            }
+
+            lista.innerHTML = filtradas.map(arma => {
+                const id = arma.id;
+                const nome = arma.armaNome || "Sem nome";
+                const pericia = arma.armaTipoPericia || "-";
+                const qtdDado = arma.armaQuantidadeDado ?? 0;
+                const tipoDado = arma.armaTipoDado || "-";
+                const criticoMinimo = arma.armaCriticoMinimo ?? 0;
+                const criticoMultiplicador = arma.armaCriticoMultiplicador ?? 0;
+                const alcance = arma.armaAlcance || "-";
+                const tipo = arma.armaTipo || "-";
+                const espaco = arma.armaEspaco ?? 0;
+                const preco = arma.armaPreco ?? 0;
+                const danoBase = qtdDado && tipoDado !== "-" ? `${qtdDado}${tipoDado}` : "-";
+
+                return `
+                    <div class="card-item">
+                        <div class="card-topo">
+                            <div>
+                                <h3>${escapeHtml(nome)}</h3>
+                                <span class="tag">ARMA</span>
+                            </div>
+                        </div>
+
+                        <div class="info-grid">
+                            <div class="info-box">
+                                <strong>Dano</strong>
+                                <span>${escapeHtml(danoBase)}</span>
+                            </div>
+                            <div class="info-box">
+                                <strong>Crítico</strong>
+                                <span>${criticoMinimo}/x${criticoMultiplicador}</span>
+                            </div>
+                            <div class="info-box">
+                                <strong>Preço</strong>
+                                <span>${preco}</span>
+                            </div>
+                            <div class="info-box">
+                                <strong>Perícia</strong>
+                                <span>${escapeHtml(pericia)}</span>
+                            </div>
+                            <div class="info-box">
+                                <strong>Alcance</strong>
+                                <span>${escapeHtml(alcance)}</span>
+                            </div>
+                            <div class="info-box">
+                                <strong>Tipo</strong>
+                                <span>${escapeHtml(tipo)}</span>
+                            </div>
+                        </div>
+
+                        <div class="subsecao subsecao-detalhes">
+                            <h4>Detalhes</h4>
+                            <div class="linha-badges">
+                                <span class="badge">Espaço: ${espaco}</span>
+                                <span class="badge">ID: ${id}</span>
+                            </div>
+                        </div>
+
+                        <div class="subsecao subsecao-vinculo">
+                            <h4>Enviar ao inventário</h4>
+                            <div class="linha-vinculo">
+                                <select id="personagemSelect-${id}">
+                                    <option value="">Selecione um personagem</option>
+                                    ${personagens.map(personagem => `
+                                        <option value="${personagem.id}">
+                                            ${escapeHtml(personagem.personagemNome || "Personagem")} (ID ${personagem.id})
+                                        </option>
+                                    `).join("")}
+                                </select>
+
+                                <button class="botao botao-primario" onclick="adicionarArmaAoInventario(${id})">
+                                    Enviar
+                                </button>
+
+                                <button class="botao botao-secundario" onclick="removerArmaDoInventario(${id})">
+                                    Retirar
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="acoes-card">
+                            <button class="botao botao-secundario" onclick="editarArma(${id})">Editar</button>
+                            <button class="botao botao-perigo" onclick="excluirArma(${id}, '${escapeJs(nome)}')">Excluir</button>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        document.getElementById("formArma").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const id = document.getElementById("armaId").value.trim();
+
+            const payload = {
+                armaNome: document.getElementById("armaNome").value.trim(),
+                armaTipoPericia: document.getElementById("armaTipoPericia").value,
+                armaQuantidadeDado: numero("armaQuantidadeDado"),
+                armaTipoDado: document.getElementById("armaTipoDado").value,
+                armaCriticoMinimo: numero("armaCriticoMinimo"),
+                armaCriticoMultiplicador: numero("armaCriticoMultiplicador"),
+                armaAlcance: document.getElementById("armaAlcance").value,
+                armaTipo: document.getElementById("armaTipo").value,
+                armaEspaco: numero("armaEspaco"),
+                armaPreco: numero("armaPreco")
+            };
+
+            if (!payload.armaNome) {
+                mostrarMensagem("Informe o nome da arma.", true);
+                return;
+            }
+
+            if (payload.armaQuantidadeDado < 1) {
+                mostrarMensagem("A quantidade de dados deve ser pelo menos 1.", true);
+                return;
+            }
+
+            if (payload.armaCriticoMinimo < 1 || payload.armaCriticoMultiplicador < 1) {
+                mostrarMensagem("Os campos de crítico devem ser maiores que zero.", true);
+                return;
+            }
+
+            try {
+                limparMensagem();
+
+                let resposta;
+
+                if (id) {
+                    resposta = await fetch(`${API_BASE}/arma/${id}`, {
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                } else {
+                    resposta = await fetch(`${API_BASE}/arma`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                }
+
+                if (!resposta.ok) {
+                    const textoErro = await resposta.text();
+                    throw new Error(textoErro || "Erro ao salvar arma.");
+                }
+
+                mostrarMensagem(id ? "Arma atualizada com sucesso." : "Arma cadastrada com sucesso.", false);
+                limparFormulario();
+                await carregarArmas();
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem(erro.message || "Erro ao salvar arma.", true);
+            }
+        });
+
+        function editarArma(id) {
+            const arma = armas.find(item => String(item.id) === String(id));
+
+            if (!arma) {
+                mostrarMensagem("Arma não encontrada para edição.", true);
+                return;
+            }
+
+            document.getElementById("tituloFormulario").textContent = "Editar arma";
+            document.getElementById("botaoSalvar").textContent = "Atualizar arma";
+
+            document.getElementById("armaId").value = arma.id || "";
+            document.getElementById("armaNome").value = arma.armaNome || "";
+            document.getElementById("armaTipoPericia").value = arma.armaTipoPericia || "LUTA";
+            document.getElementById("armaQuantidadeDado").value = arma.armaQuantidadeDado ?? 1;
+            document.getElementById("armaTipoDado").value = arma.armaTipoDado || "D8";
+            document.getElementById("armaCriticoMinimo").value = arma.armaCriticoMinimo ?? 20;
+            document.getElementById("armaCriticoMultiplicador").value = arma.armaCriticoMultiplicador ?? 2;
+            document.getElementById("armaAlcance").value = arma.armaAlcance || "LONGO";
+            document.getElementById("armaTipo").value = arma.armaTipo || "PERFURACAO";
+            document.getElementById("armaEspaco").value = arma.armaEspaco ?? 1;
+            document.getElementById("armaPreco").value = arma.armaPreco ?? 0;
+        }
+
+        async function excluirArma(id, nome) {
+            const confirmar = confirm(`Deseja realmente excluir a arma "${nome}"?`);
+            if (!confirmar) return;
+
+            try {
+                limparMensagem();
+
+                const resposta = await fetch(`${API_BASE}/arma/${id}`, {
+                    method: "DELETE"
+                });
+
+                if (!resposta.ok) {
+                    const textoErro = await resposta.text();
+                    throw new Error(textoErro || "Erro ao excluir arma.");
+                }
+
+                mostrarMensagem("Arma excluída com sucesso.", false);
+                await carregarArmas();
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem(erro.message || "Erro ao excluir arma.", true);
+            }
+        }
+
+        async function buscarInventarioDoPersonagem(personagemId) {
+            const resposta = await fetch(`${API_BASE}/inventario/base/personagem/${personagemId}`);
+
+            if (!resposta.ok) {
+                const textoErro = await resposta.text();
+                throw new Error(textoErro || "Erro ao buscar inventário base do personagem.");
+            }
+
+            const dados = await resposta.json();
+            const inventarioId = dados?.inventarioId;
+
+            if (!inventarioId) {
+                throw new Error(
+                    "Não foi possível identificar o inventário do personagem. Verifique o retorno da rota /inventario/base/personagem/{personagemId}."
+                );
+            }
+
+            return inventarioId;
+        }
+
+        async function adicionarArmaAoInventario(armaId) {
+            const select = document.getElementById(`personagemSelect-${armaId}`);
+            const personagemId = select?.value;
+
+            if (!personagemId) {
+                mostrarMensagem("Selecione um personagem para enviar a arma ao inventário.", true);
+                return;
+            }
+
+            try {
+                limparMensagem();
+
+                const armaBiblioteca = armas.find(arma => String(arma.id) === String(armaId));
+
+                if (!armaBiblioteca) {
+                    throw new Error("Arma da biblioteca não encontrada.");
+                }
+
+                const armaJaExiste = await buscarArmaEquivalenteNoInventario(personagemId, armaBiblioteca);
+
+                if (armaJaExiste) {
+                    throw new Error("Esse personagem já possui essa arma no inventário.");
+                }
+
+                const inventarioId = await buscarInventarioDoPersonagem(personagemId);
+
+                const resposta = await fetch(`${API_BASE}/arma/${armaId}/inventario/${inventarioId}`, {
+                    method: "POST"
+                });
+
+                if (!resposta.ok) {
+                    const textoErro = await resposta.text();
+                    throw new Error(textoErro || "Erro ao adicionar arma ao inventário.");
+                }
+
+                mostrarMensagem("Arma enviada ao inventário com sucesso.", false);
+            } catch (erro) {
+                console.error("Erro ao adicionar arma ao inventário:", erro);
+                mostrarMensagem(erro.message || "Erro ao adicionar arma ao inventário.", true);
+            }
+        }
+
+        async function removerArmaDoInventario(armaId) {
+            const select = document.getElementById(`personagemSelect-${armaId}`);
+            const personagemId = select?.value;
+
+            if (!personagemId) {
+                mostrarMensagem("Selecione um personagem para retirar a arma do inventário.", true);
+                return;
+            }
+
+            try {
+                limparMensagem();
+
+                const armaBiblioteca = armas.find(arma => String(arma.id) === String(armaId));
+
+                if (!armaBiblioteca) {
+                    throw new Error("Arma da biblioteca não encontrada.");
+                }
+
+                const armaInventario = await buscarArmaEquivalenteNoInventario(personagemId, armaBiblioteca);
+
+                if (!armaInventario) {
+                    throw new Error("Essa arma não está no inventário do personagem selecionado.");
+                }
+
+                const resposta = await fetch(`${API_BASE}/arma/${armaInventario.id}/remover-inventario`, {
+                    method: "PATCH"
+                });
+
+                if (!resposta.ok) {
+                    const textoErro = await resposta.text();
+                    throw new Error(textoErro || "Erro ao retirar arma do inventário.");
+                }
+
+                mostrarMensagem("Arma retirada do inventário com sucesso.", false);
+            } catch (erro) {
+                console.error("Erro ao retirar arma do inventário:", erro);
+                mostrarMensagem(erro.message || "Erro ao retirar arma do inventário.", true);
+            }
+        }
+
+        function limparFormulario() {
+            document.getElementById("tituloFormulario").textContent = "Nova arma";
+            document.getElementById("botaoSalvar").textContent = "Salvar arma";
+            document.getElementById("armaId").value = "";
+            document.getElementById("formArma").reset();
+
+            document.getElementById("armaTipoPericia").value = "LUTA";
+            document.getElementById("armaQuantidadeDado").value = 1;
+            document.getElementById("armaTipoDado").value = "D8";
+            document.getElementById("armaCriticoMinimo").value = 20;
+            document.getElementById("armaCriticoMultiplicador").value = 2;
+            document.getElementById("armaAlcance").value = "LONGO";
+            document.getElementById("armaTipo").value = "PERFURACAO";
+            document.getElementById("armaEspaco").value = 1;
+            document.getElementById("armaPreco").value = 0;
+        }
+
+        function numero(id) {
+            const valor = document.getElementById(id).value;
+            return Number(valor || 0);
+        }
+
+        function mostrarMensagem(texto, erro) {
+            const el = document.getElementById("mensagem");
+            el.textContent = texto;
+            el.className = erro ? "mensagem erro" : "mensagem sucesso";
+
+            clearTimeout(el._timer);
+            el._timer = setTimeout(() => {
+                el.className = "mensagem";
+                el.textContent = "";
+            }, 3200);
+        }
+
+        function limparMensagem() {
+            const el = document.getElementById("mensagem");
+            el.textContent = "";
+            el.className = "mensagem";
+        }
+
+        function escapeHtml(texto) {
+            return String(texto)
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#039;");
+        }
+
+        function escapeJs(texto) {
+            return String(texto).replace(/'/g, "\\'");
+        }
+
+        function armasSaoEquivalentes(armaA, armaB) {
+            if (!armaA || !armaB) return false;
+
+            return String(armaA.armaNome || '').trim().toLowerCase() === String(armaB.armaNome || '').trim().toLowerCase()
+                && String(armaA.armaTipoPericia || '') === String(armaB.armaTipoPericia || '')
+                && Number(armaA.armaQuantidadeDado || 0) === Number(armaB.armaQuantidadeDado || 0)
+                && String(armaA.armaTipoDado || '') === String(armaB.armaTipoDado || '')
+                && Number(armaA.armaCriticoMinimo || 0) === Number(armaB.armaCriticoMinimo || 0)
+                && Number(armaA.armaCriticoMultiplicador || 0) === Number(armaB.armaCriticoMultiplicador || 0)
+                && String(armaA.armaAlcance || '') === String(armaB.armaAlcance || '')
+                && String(armaA.armaTipo || '') === String(armaB.armaTipo || '')
+                && Number(armaA.armaEspaco || 0) === Number(armaB.armaEspaco || 0)
+                && Number(armaA.armaPreco || 0) === Number(armaB.armaPreco || 0);
+        }
+
+        function extrairArmasDoInventario(inventarioCompleto) {
+            if (!inventarioCompleto) return [];
+
+            if (Array.isArray(inventarioCompleto.armas)) {
+                return inventarioCompleto.armas;
+            }
+
+            if (Array.isArray(inventarioCompleto.inventarioArmas)) {
+                return inventarioCompleto.inventarioArmas;
+            }
+
+            if (Array.isArray(inventarioCompleto.listaArmas)) {
+                return inventarioCompleto.listaArmas;
+            }
+
+            if (Array.isArray(inventarioCompleto.armaLista)) {
+                return inventarioCompleto.armaLista;
+            }
+
+            if (inventarioCompleto.inventario && Array.isArray(inventarioCompleto.inventario.armas)) {
+                return inventarioCompleto.inventario.armas;
+            }
+
+            return [];
+        }
+
+        async function buscarArmaEquivalenteNoInventario(personagemId, armaBiblioteca) {
+            const resposta = await fetch(`${API_BASE}/inventario/completo/personagem/${personagemId}`);
+
+            if (!resposta.ok) {
+                const textoErro = await resposta.text();
+                throw new Error(textoErro || "Erro ao buscar inventário completo do personagem.");
+            }
+
+            const inventarioCompleto = await resposta.json();
+            const armasInventario = extrairArmasDoInventario(inventarioCompleto);
+
+            return armasInventario.find(armaInventario =>
+                armasSaoEquivalentes(armaInventario, armaBiblioteca)
+            ) || null;
+        }
+
+        inicializarTela();
+    </script>
+</body>
+
+</html>

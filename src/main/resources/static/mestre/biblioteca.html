@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca do Mestre</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        .topo-admin {
+            background: #0f172a;
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .logo-admin {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .menu-admin {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .menu-admin a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: #1e293b;
+        }
+
+        .menu-admin a:hover,
+        .menu-admin a.ativo {
+            background: #334155;
+        }
+
+        .conteudo {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 28px 24px;
+        }
+
+        .cabecalho {
+            margin-bottom: 24px;
+        }
+
+        .cabecalho h1 {
+            margin: 0 0 10px 0;
+            font-size: 30px;
+        }
+
+        .cabecalho p {
+            margin: 0;
+            color: #475569;
+            font-size: 18px;
+        }
+
+        .grid-bibliotecas {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 220px;
+        }
+
+        .card h2 {
+            margin: 0 0 12px 0;
+            font-size: 26px;
+        }
+
+        .card p {
+            margin: 0 0 18px 0;
+            color: #475569;
+            line-height: 1.5;
+            font-size: 17px;
+        }
+
+        .card button {
+            border: none;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            background: #2563eb;
+            color: white;
+            width: fit-content;
+        }
+
+        .card button:hover {
+            background: #1d4ed8;
+        }
+
+        .card button:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 700px) {
+            .conteudo {
+                padding: 20px 16px;
+            }
+
+            .cabecalho h1 {
+                font-size: 26px;
+            }
+
+            .cabecalho p {
+                font-size: 16px;
+            }
+
+            .card {
+                min-height: unset;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../css/mestre-theme.css">
+</head>
+
+<body>
+    <header class="topo-admin">
+        <div class="logo-admin">Painel do Mestre</div>
+        <nav class="menu-admin">
+            <a href="dashboard-mestre.html">Dashboard</a>
+            <a href="personagens.html">Personagens</a>
+            <a href="biblioteca.html" class="ativo">Biblioteca</a>
+            <a href="loja-mestre.html">Loja</a>
+            <a href="efeitos.html">Efeitos</a>
+            <a href="combate.html">Combate</a>
+        </nav>
+    </header>
+
+    <main class="conteudo">
+        <section class="cabecalho">
+            <h1>Biblioteca do Sistema</h1>
+            <p>Escolha qual biblioteca deseja gerenciar no painel do mestre.</p>
+        </section>
+
+        <section class="grid-bibliotecas">
+            <div class="card">
+                <div>
+                    <h2>Habilidades</h2>
+                    <p>Cadastre, edite, exclua e vincule habilidades aos personagens.</p>
+                </div>
+                <button onclick="window.location.href='biblioteca-habilidades.html'">Abrir habilidades</button>
+            </div>
+
+            <div class="card">
+                <div>
+                    <h2>Armas</h2>
+                    <p>Gerencie armas cadastradas para uso futuro no inventário, loja e criação inicial do personagem.
+                    </p>
+                </div>
+                <button onclick="window.location.href='biblioteca-armas.html'">Abrir armas</button>
+            </div>
+
+            <div class="card">
+                <div>
+                    <h2>Armaduras e Escudos</h2>
+                    <p>Organize armaduras e escudos para equipar personagens e montar kits iniciais.</p>
+                </div>
+                <button onclick="window.location.href='biblioteca-armaduras.html'">Abrir armaduras</button>
+            </div>
+
+            <div class="card">
+                <div>
+                    <h2>Itens</h2>
+                    <p>Cadastre itens gerais para inventário, loja, uso em sessão e distribuição inicial.</p>
+                </div>
+                <button onclick="window.location.href='biblioteca-itens.html'">Abrir itens</button>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>

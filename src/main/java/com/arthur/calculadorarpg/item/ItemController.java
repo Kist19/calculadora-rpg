@@ -1,5 +1,6 @@
 package com.arthur.calculadorarpg.item;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -30,13 +31,23 @@ public class ItemController {
         return itemService.listarItens();
     }
 
+    @GetMapping("/{itemId}")
+    public Item buscarPorId(@PathVariable Long itemId) {
+        return itemService.buscarPorId(itemId);
+    }
+
     @PatchMapping("/{id}")
     public Item atualizarItem(@PathVariable Long id, @RequestBody Item dadosAtualizados) {
         return itemService.atualizarItem(id, dadosAtualizados);
     }
 
     @DeleteMapping("/{id}")
-    public void deletarItem(@PathVariable Long id) {
-        itemService.deletarItem(id);
+    public ResponseEntity<String> deletarItem(@PathVariable Long id) {
+        try {
+            itemService.deletarItem(id);
+            return ResponseEntity.ok("Item deletado com sucesso.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

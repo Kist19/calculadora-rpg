@@ -1,0 +1,50 @@
+
+:root {
+    --bg: #09111b;
+    --bg-soft: #0d1724;
+    --panel: #0f1a29;
+    --panel-2: #142133;
+    --card: #121d2d;
+    --card-soft: #182538;
+    --surface: #0e1826;
+    --surface-2: #1b2a40;
+
+    --border: #24354a;
+    --border-light: #34506f;
+
+    --text: #eef3fb;
+    --muted: #9aa9bd;
+
+    --primary: #d5b56d;
+    --primary-strong: #ead29a;
+    --primary-hover: #dfc27f;
+    --button-text: #10151d;
+
+    --danger: #cf7a7a;
+    --success: #74c08c;
+
+    --shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+    --shadow-soft: 0 10px 24px rgba(0, 0, 0, 0.18);
+    --transition: 0.18s ease;
+
+    --font-ui: "Segoe UI", Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-display: "Segoe UI", Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+    --radius-lg: 18px;
+    --radius-md: 14px;
+    --radius-sm: 12px;
+}
+
+html,
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-ui);
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}

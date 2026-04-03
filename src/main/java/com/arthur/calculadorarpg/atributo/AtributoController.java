@@ -20,9 +20,11 @@ public class AtributoController {
         this.atributoService = atributoServico;
     }
 
-    @PostMapping
-    public Atributo criarAtributo(@RequestBody Atributo atributo) {
-        return atributoService.criarAtributo(atributo);
+    @PostMapping("/personagem/{personagemId}")
+    public Atributo criarAtributo(@PathVariable Long personagemId,
+            @RequestBody Atributo atributo) {
+
+        return atributoService.criarAtributo(personagemId, atributo);
     }
 
     @GetMapping
@@ -30,13 +32,20 @@ public class AtributoController {
         return atributoService.listarAtributos();
     }
 
-    @PatchMapping("/{id}")
-    public Atributo atualizarAtributo(@PathVariable Long id, @RequestBody Atributo dadosAtualizados) {
-        return atributoService.atualizarAtributo(id, dadosAtualizados);
+    @GetMapping("/personagem/{personagemId}")
+    public Atributo buscarAtributoPorPersonagemId(@PathVariable Long personagemId) {
+        return atributoService.buscarAtributoPorPersonagemId(personagemId);
     }
 
-    @DeleteMapping("/{id}")
-    public void deletarAtributo(@PathVariable Long id) {
-        atributoService.deletarAtributo(id);
+    @PatchMapping("/personagem/{personagemId}")
+    public Atributo atualizarAtributoPorPersonagemId(
+            @PathVariable Long personagemId,
+            @RequestBody Atributo dadosAtualizados) {
+        return atributoService.atualizarAtributoPorPersonagemId(personagemId, dadosAtualizados);
+    }
+
+    @DeleteMapping("/personagem/{personagemId}")
+    public void deletarAtributoPorPersonagemId(@PathVariable Long personagemId) {
+        atributoService.deletarAtributoPorPersonagemId(personagemId);
     }
 }
