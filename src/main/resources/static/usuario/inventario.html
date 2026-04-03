@@ -6,47 +6,194 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventário</title>
 
-        <style>
-        * { box-sizing: border-box; }
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
         :root {
-            --bg:#05101d; --panel:#112033; --panel-soft:#17283d; --line:#243b5a; --line-strong:#2f4a70;
-            --text:#f4f7fb; --muted:#aac0dd; --accent:#e0c27a; --accent-strong:#f0d595; --accent-text:#111827;
-            --shadow:0 14px 38px rgba(0,0,0,.28);
+            --bg: #05101d;
+            --panel: #112033;
+            --panel-soft: #17283d;
+            --line: #243b5a;
+            --line-strong: #2f4a70;
+            --text: #f4f7fb;
+            --muted: #aac0dd;
+            --accent: #e0c27a;
+            --accent-strong: #f0d595;
+            --accent-text: #111827;
+            --shadow: 0 14px 38px rgba(0, 0, 0, .28);
         }
-        html, body {
-            margin:0; height:100%; font-family:Arial,sans-serif; background: radial-gradient(circle at top, #0a1a2c 0%, var(--bg) 58%); color:var(--text); overflow:hidden;
+
+        html,
+        body {
+            margin: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            background: radial-gradient(circle at top, #0a1a2c 0%, var(--bg) 58%);
+            color: var(--text);
+            overflow: hidden;
         }
-        body { display:flex; justify-content:center; }
+
+        body {
+            display: flex;
+            justify-content: center;
+        }
+
         .app {
-            width:100%; max-width:430px; height:100vh; display:flex; flex-direction:column;
-            background:linear-gradient(180deg, rgba(5,16,29,.98) 0%, rgba(4,13,24,.98) 100%);
-            border-left:1px solid rgba(47,74,112,.32); border-right:1px solid rgba(47,74,112,.32);
+            width: 100%;
+            max-width: 430px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(180deg, rgba(5, 16, 29, .98) 0%, rgba(4, 13, 24, .98) 100%);
+            border-left: 1px solid rgba(47, 74, 112, .32);
+            border-right: 1px solid rgba(47, 74, 112, .32);
         }
-        .conteudo { flex:1; min-height:0; overflow:hidden; padding:10px; display:flex; flex-direction:column; gap:8px; }
-        .card { background:linear-gradient(180deg, rgba(18,32,51,.98) 0%, rgba(21,36,56,.98) 100%); border:1px solid var(--line); border-radius:16px; padding:12px; box-shadow:var(--shadow); }
-        .nome { font-size:19px; font-weight:800; color:var(--accent-strong); }
-        .sub { font-size:13px; color:var(--muted); margin-top:4px; }
-        .resumo { display:flex; justify-content:space-between; gap:14px; align-items:center; font-size:14px; }
-        .lista-card { flex:1; min-height:0; overflow:hidden; display:flex; flex-direction:column; }
-        .lista { flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:10px; }
-        .lista::-webkit-scrollbar { width:6px; } .lista::-webkit-scrollbar-thumb { background:rgba(170,192,221,.22); border-radius:999px; }
-        .grupo { display:flex; flex-direction:column; gap:6px; }
-        .grupo strong { font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
-        .item { display:flex; justify-content:space-between; gap:12px; padding:10px; border:1px solid var(--line); border-radius:12px; background:rgba(255,255,255,.04); font-size:14px; }
-        .item span { font-weight:800; white-space:nowrap; }
-        .vazio { font-size:14px; color:var(--muted); line-height:1.5; }
-        .barra-acoes { padding:4px 10px 8px; flex-shrink:0; }
+
+        .conteudo {
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .card {
+            background: linear-gradient(180deg, rgba(18, 32, 51, .98) 0%, rgba(21, 36, 56, .98) 100%);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .nome {
+            font-size: 19px;
+            font-weight: 800;
+            color: var(--accent-strong);
+        }
+
+        .sub {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .resumo {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .lista-card {
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .lista {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .lista::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .lista::-webkit-scrollbar-thumb {
+            background: rgba(170, 192, 221, .22);
+            border-radius: 999px;
+        }
+
+        .grupo {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .grupo strong {
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, .04);
+            font-size: 14px;
+        }
+
+        .item span {
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .vazio {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .barra-acoes {
+            padding: 4px 10px 8px;
+            flex-shrink: 0;
+        }
+
         .botao {
-            width:100%; border:none; border-radius:16px; min-height:50px; padding:12px 12px;
-            background:linear-gradient(180deg, var(--accent-strong) 0%, var(--accent) 100%); color:var(--accent-text);
-            font-weight:800; font-size:14px; cursor:pointer;
+            width: 100%;
+            border: none;
+            border-radius: 16px;
+            min-height: 50px;
+            padding: 12px 12px;
+            background: linear-gradient(180deg, var(--accent-strong) 0%, var(--accent) 100%);
+            color: var(--accent-text);
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
         }
-        .menu-inferior { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; padding:8px 10px 12px; flex-shrink:0; }
+
+        .menu-inferior {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 8px;
+            padding: 8px 10px 12px;
+            flex-shrink: 0;
+        }
+
         .menu-inferior button {
-            width:100%; min-width:0; min-height:48px; border-radius:15px; border:1px solid var(--line);
-            background:var(--panel-soft); color:var(--text); padding:10px 4px; font-size:13px; font-weight:800; cursor:pointer;
+            width: 100%;
+            min-width: 0;
+            min-height: 48px;
+            border-radius: 15px;
+            border: 1px solid var(--line);
+            background: var(--panel-soft);
+            color: var(--text);
+            padding: 10px 4px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
         }
-        .menu-inferior .ativo { background:linear-gradient(180deg, var(--accent-strong) 0%, var(--accent) 100%); color:var(--accent-text); }
+
+        .menu-inferior .ativo {
+            background: linear-gradient(180deg, var(--accent-strong) 0%, var(--accent) 100%);
+            color: var(--accent-text);
+        }
     </style>
 </head>
 
@@ -81,7 +228,7 @@
     </div>
 
     <script>
-        const API = "http://localhost:8080";
+        const API_BASE = window.location.origin;
         const id = new URLSearchParams(location.search).get("id");
 
         let personagemAtual = null;

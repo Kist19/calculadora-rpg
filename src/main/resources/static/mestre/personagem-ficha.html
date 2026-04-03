@@ -486,7 +486,7 @@
     </main>
 
     <script>
-        const API_BASE = "http://localhost:8080";
+        const API_BASE = window.location.origin;
         const parametros = new URLSearchParams(window.location.search);
         const personagemId = Number(parametros.get("id"));
 

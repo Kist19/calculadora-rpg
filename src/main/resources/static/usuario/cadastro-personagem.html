@@ -445,22 +445,22 @@
         padding: 12px 14px 14px;
       }
     }
-  
 
-  .botao:focus-visible,
-  .modal-fechar:focus-visible,
-  .campo input:focus-visible,
-  .campo select:focus-visible {
-    outline: 2px solid rgba(207, 178, 119, 0.55);
-    outline-offset: 2px;
-  }
 
-  .botao:disabled {
-    opacity: 0.62;
-    cursor: not-allowed;
-    transform: none;
-  }
-</style>
+    .botao:focus-visible,
+    .modal-fechar:focus-visible,
+    .campo input:focus-visible,
+    .campo select:focus-visible {
+      outline: 2px solid rgba(207, 178, 119, 0.55);
+      outline-offset: 2px;
+    }
+
+    .botao:disabled {
+      opacity: 0.62;
+      cursor: not-allowed;
+      transform: none;
+    }
+  </style>
 </head>
 
 <body>
@@ -703,7 +703,7 @@
   </div>
 
   <script>
-    const API_BASE = 'http://localhost:8080';
+    const API_BASE = window.location.origin;
     const params = new URLSearchParams(window.location.search);
     const usuarioId = params.get("usuarioId");
 
